@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Anti-Aliased Decimation · Master's Thesis Article · Elaman Nazarkulov</title>
+<style>
+  :root {
+    --bg: #0b1220; --surface: #141d38; --surface-2: #1b2747;
+    --line: #243056; --primary: #3b82f6; --primary-2: #60a5fa; --accent: #22d3ee;
+    --ok: #22c55e; --warn: #f59e0b; --bad: #ef4444; --text: #e6ecff; --muted: #94a3b8;
+    --card: rgba(255,255,255,0.04); --card-strong: rgba(255,255,255,0.08);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; height: 100%; overflow: hidden;
+    background: radial-gradient(1200px 800px at 70% -10%, #1a2a55 0%, var(--bg) 55%) fixed;
+    color: var(--text); font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .deck { position: relative; width: 100vw; height: 100vh; }
+  .slide {
+    position: absolute; inset: 0; padding: 60px 80px;
+    opacity: 0; pointer-events: none;
+    transform: translateX(40px) scale(0.985);
+    transition: opacity .5s ease, transform .6s cubic-bezier(.22,.8,.32,1);
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  .slide.active { opacity: 1; pointer-events: auto; transform: none; }
+  .slide.previous { transform: translateX(-40px) scale(0.985); }
+
+  .topbar {
+    position: absolute; top: 18px; left: 28px; right: 28px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 12px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--muted); z-index: 5;
+  }
+  .topbar .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; color: var(--text); }
+  .brand .logo {
+    width: 24px; height: 24px; border-radius: 6px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    display: grid; place-items: center; color: white; font-weight: 700; font-size: 12px;
+    box-shadow: 0 4px 14px rgba(59,130,246,.35);
+  }
+  .topbar-right { display: flex; gap: 18px; align-items: center; }
+  .langs { display: flex; gap: 6px; }
+  .lang-btn {
+    appearance: none; border: 1px solid var(--line); background: var(--surface);
+    color: var(--muted); border-radius: 8px; padding: 5px 10px; cursor: pointer;
+    font-size: 11px; font-weight: 600; letter-spacing: .08em;
+    transition: all .2s ease; text-transform: uppercase;
+  }
+  .lang-btn:hover { color: var(--text); border-color: var(--primary-2); }
+  .lang-btn.active {
+    background: var(--primary); border-color: var(--primary); color: white;
+    box-shadow: 0 0 12px rgba(59,130,246,.4);
+  }
+
+  .footer {
+    position: absolute; bottom: 14px; left: 28px; right: 28px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 12px; color: var(--muted); z-index: 5;
+  }
+  .dots { display: flex; gap: 6px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,.15);
+    transition: all .3s ease; cursor: pointer; }
+  .dot.active { background: var(--primary); width: 22px; border-radius: 4px; }
+  .nav { display: flex; gap: 8px; align-items: center; }
+  .btn-nav {
+    appearance: none; border: 1px solid var(--line); background: var(--surface);
+    color: var(--text); border-radius: 8px; padding: 6px 10px; cursor: pointer;
+    font-size: 12px;
+  }
+  .btn-nav:hover { background: var(--surface-2); border-color: var(--primary); }
+
+  h1, h2, h3 { margin: 0; font-weight: 700; letter-spacing: -.01em; }
+  h1 { font-size: 56px; line-height: 1.05; }
+  h2 { font-size: 38px; line-height: 1.1; }
+  h3 { font-size: 20px; line-height: 1.2; color: var(--primary-2); }
+  p, li { line-height: 1.55; color: var(--text); font-size: 18px; }
+  .eyebrow { font-size: 12px; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--accent); font-weight: 600; margin-bottom: 16px; }
+  .lead { font-size: 20px; color: #c4cffc; max-width: 880px; }
+  .muted { color: var(--muted); }
+  .accent { color: var(--accent); }
+  .ok { color: var(--ok); }
+
+  .slide.active .reveal { animation: riseFade .7s ease both; }
+  .slide.active .reveal-1 { animation-delay: .1s; }
+  .slide.active .reveal-2 { animation-delay: .25s; }
+  .slide.active .reveal-3 { animation-delay: .4s; }
+  .slide.active .reveal-4 { animation-delay: .55s; }
+  .slide.active .reveal-5 { animation-delay: .7s; }
+  .slide.active .reveal-6 { animation-delay: .85s; }
+  @keyframes riseFade {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .slide.active .slide-in-left  { animation: inLeft .7s ease both; }
+  .slide.active .slide-in-right { animation: inRight .7s ease both; }
+  @keyframes inLeft  { from {opacity:0; transform:translateX(-40px)} to{opacity:1;transform:none} }
+  @keyframes inRight { from {opacity:0; transform:translateX( 40px)} to{opacity:1;transform:none} }
+
+  .stat {
+    display: inline-flex; flex-direction: column; padding: 16px 20px;
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    min-width: 200px;
+  }
+  .stat .num { font-size: 38px; font-weight: 700; color: var(--primary-2); line-height:1.05; }
+  .stat .lbl { font-size: 12px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; margin-top: 4px; }
+
+  .card { background: var(--card-strong); border: 1px solid var(--line); border-radius: 12px; padding: 14px 18px; }
+  .card h4 { margin: 0 0 8px; font-size: 13px; font-weight: 600; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .08em; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; height: 100%; min-height: 0; }
+  .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+  .hero { display: flex; flex-direction: column; justify-content: center; gap: 22px; flex: 1; }
+  .bigline {
+    font-size: 64px; font-weight: 800; letter-spacing: -.02em; line-height: 1.05;
+    background: linear-gradient(135deg, #e6ecff 0%, #9bb4ff 50%, #22d3ee 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+
+  .progress-bar { position: absolute; left: 0; right: 0; top: 0; height: 2px;
+    background: rgba(255,255,255,.04); z-index: 10; }
+  .progress-bar > span { display: block; height: 100%; width: 0%;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    transition: width .4s ease; }
+
+  /* dark code block */
+  .code-block {
+    background: #1e1e2e; border: 1px solid var(--line); border-radius: 12px;
+    padding: 18px 22px; position: relative; box-shadow: 0 18px 40px rgba(0,0,0,.4);
+  }
+  .code-block::before {
+    content: ""; position: absolute; inset: 0 0 auto 0; height: 3px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    border-radius: 12px 12px 0 0;
+  }
+  .code-block pre {
+    margin: 0; color: #e6e6ec;
+    font-family: "JetBrains Mono", Consolas, ui-monospace, monospace;
+    font-size: 14px; line-height: 1.65; white-space: pre;
+  }
+  .tok-kw { color: #c792ea; } .tok-mod { color: #82aaff; }
+  .tok-str { color: #c3e88d; } .tok-num { color: #f78c6c; }
+  .tok-bool { color: #ff5370; } .tok-com { color: #676e95; font-style: italic; }
+  .tok-fn { color: #ffcb6b; }
+
+  .num-card {
+    background: var(--card-strong); border: 1px solid var(--line);
+    border-radius: 12px; padding: 12px 14px 12px 50px; position: relative;
+  }
+  .num-card::before {
+    content: attr(data-n); position: absolute; left: 12px; top: 11px;
+    width: 28px; height: 28px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white; font-weight: 700; font-size: 13px;
+    display: grid; place-items: center;
+    box-shadow: 0 4px 12px rgba(59,130,246,.35);
+  }
+  .num-card h4 { margin: 0 0 3px; color: var(--primary-2); font-size: 12px;
+    text-transform: uppercase; letter-spacing: .08em; }
+  .num-card p { margin: 0; font-size: 14px; color: #c7d2fe; line-height: 1.5; }
+
+  table.mini { width: 100%; border-collapse: collapse; font-size: 14px; }
+  table.mini th, table.mini td { padding: 9px 12px; text-align: left; }
+  table.mini thead { color: var(--muted); border-bottom: 1px solid var(--line); }
+  table.mini tbody tr { border-bottom: 1px solid rgba(255,255,255,.04); }
+  table.mini td.num, table.mini th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .delta-pos { color: var(--ok); font-weight: 600; }
+
+  .pill { display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 999px; font-size: 12px;
+    background: rgba(59,130,246,.14); color: #bfd6ff; border: 1px solid rgba(59,130,246,.4); }
+  .pill.ok { background: rgba(34,197,94,.14); color: #a7f0c2; border-color: rgba(34,197,94,.4); }
+
+  .figure-frame {
+    background: rgba(255,255,255,.03); border: 1px solid var(--line);
+    border-radius: 12px; padding: 12px; text-align: center;
+  }
+  .figure-frame img { max-width: 100%; max-height: 65vh; border-radius: 8px; }
+  .figure-frame .cap {
+    margin-top: 8px; font-size: 13px; color: var(--muted); font-style: italic;
+  }
+
+  .kbd { display: inline-block; padding: 2px 8px; border-radius: 6px;
+    background: rgba(255,255,255,.08); border: 1px solid var(--line);
+    font-family: "JetBrains Mono", monospace; font-size: 11px;
+    color: var(--text); vertical-align: middle; }
+  ul { padding-left: 20px; }
+  ul li + li { margin-top: 6px; }
+</style>
+</head>
+<body>
+
+<div class="progress-bar"><span id="progressBar"></span></div>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="logo">M</div>
+    <span data-i18n="brand">Manas Üniversitesi · Yüksek Lisans Tezi Yayını</span>
+  </div>
+  <div class="topbar-right">
+    <div class="langs" role="tablist">
+      <button class="lang-btn" data-lang="tr">TR</button>
+      <button class="lang-btn" data-lang="en">EN</button>
+    </div>
+    <div style="display:flex; gap:6px; align-items:center;">
+      <span class="kbd">←</span><span class="kbd">→</span>
+      <span data-i18n="nav_hint">slaytlar arası geçiş</span>
+    </div>
+  </div>
+</div>
+
+<div class="deck" id="deck">
+
+  <!-- 1. TITLE -->
+  <section class="slide" data-title-key="t1">
+    <div class="hero">
+      <div class="eyebrow reveal reveal-1" data-i18n="s1_eyebrow">Bahar 2026 · Yüksek Lisans Yayın Makalesi</div>
+      <div class="bigline reveal reveal-2"><span data-i18n="s1_t1">12 kanallı EKG sınıflandırmasında</span><br><span data-i18n="s1_t2">belirleyici adım: anti-aliasing'li altörnekleme.</span></div>
+      <p class="lead reveal reveal-3" data-i18n="s1_lead" data-i18n-html="1">
+        Chapman–Shaoxing veri seti üzerinde temel bir 1D-CNN, <strong>%88.43'ten %97.34'e</strong> —
+        ne attention, ne LSTM, ne focal loss; yalnızca <code>scipy.signal.decimate</code> ile 5000 → 500 örnek.
+      </p>
+      <div class="reveal reveal-4" style="display:flex; gap:14px; margin-top:14px; flex-wrap:wrap;">
+        <div class="stat"><span class="num">+8.91 pp</span><span class="lbl" data-i18n="s1_k1">test doğruluğu</span></div>
+        <div class="stat"><span class="num">+0.1024</span><span class="lbl" data-i18n="s1_k2">makro F1</span></div>
+        <div class="stat"><span class="num">3.3×</span><span class="lbl" data-i18n="s1_k3">çıkarım hızlanması</span></div>
+        <div class="stat"><span class="num">11/11</span><span class="lbl" data-i18n="s1_k4">başarısız sınıf kurtarıldı</span></div>
+      </div>
+      <div class="reveal reveal-5 muted" style="margin-top: 22px; font-size:14px;">
+        <span data-i18n="s1_author">Elaman Nazarkulov</span> ·
+        <span data-i18n="s1_dept">Bilgisayar Mühendisliği</span> ·
+        <span data-i18n="s1_uni">Kırgız–Türk Manas Üniversitesi</span>
+        <br>
+        <span data-i18n="s1_supervisor">Tez Danışmanı: Doç. Dr. Bakıt Şarşembayev</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. PROBLEM -->
+  <section class="slide" data-title-key="t2">
+    <div class="eyebrow reveal reveal-1" data-i18n="s2_eyebrow">Problem</div>
+    <h2 class="reveal reveal-2" data-i18n="s2_title">Temel modelden tam modele geçiş, neredeyse zorunlu görünüyordu.</h2>
+    <p class="lead reveal reveal-3" style="margin-top: 14px;" data-i18n="s2_lead">
+      Önceki tez döneminde Chapman–Shaoxing üzerinde eğittiğimiz 1D-CNN, %88.43 test doğruluğu ve makro-F1 0.8713 ile durdu.
+      78 etiketten 11'i F1 < 0.60'da çöktü. Doğal refleks: attention katmanı, LSTM dalı, focal loss, etiket-taksonomi temizliği.
+    </p>
+    <div class="three-col reveal reveal-4" style="margin-top:30px;">
+      <div class="card">
+        <h4 data-i18n="s2_a_h">Yayımlanan baseline</h4>
+        <p style="font-size:32px; font-weight:700; color:var(--bad); margin:6px 0;">88.43%</p>
+        <p class="muted" style="font-size:13px;" data-i18n="s2_a_p">5000 örnek, attention yok, focal loss yok.</p>
+      </div>
+      <div class="card">
+        <h4 data-i18n="s2_b_h">v2 raporundaki hedef</h4>
+        <p style="font-size:32px; font-weight:700; color:var(--warn); margin:6px 0;">94.8%</p>
+        <p class="muted" style="font-size:13px;" data-i18n="s2_b_p">Attention + LSTM + augmentation + focal loss + adaptive threshold.</p>
+      </div>
+      <div class="card" style="background: rgba(34,197,94,.08); border-color: rgba(34,197,94,.4);">
+        <h4 data-i18n="s2_c_h">Bu çalışmada elde edildi</h4>
+        <p style="font-size:32px; font-weight:700; color:var(--ok); margin:6px 0;">97.34%</p>
+        <p class="muted" style="font-size:13px;" data-i18n="s2_c_p">Aynı baseline 1D-CNN + 5000 → 500 anti-aliased decimation.</p>
+      </div>
+    </div>
+    <p class="muted reveal reveal-5" style="margin-top:24px;" data-i18n="s2_kicker" data-i18n-html="1">
+      <strong>Hedefe, mimari değiştirilmeden ulaşıldı.</strong>
+      Tek değişiklik bir <code>scipy</code> çağrısı.
+    </p>
+  </section>
+
+  <!-- 3. RESEARCH QUESTION -->
+  <section class="slide" data-title-key="t3">
+    <div class="eyebrow reveal reveal-1" data-i18n="s3_eyebrow">Araştırma sorusu</div>
+    <h2 class="reveal reveal-2" data-i18n="s3_title">Tüm sürede 5000 örnek aslında gerçekten gerekli miydi?</h2>
+    <div class="card reveal reveal-3" style="margin-top: 30px; max-width: 920px; padding: 22px 28px;">
+      <p style="font-size: 22px; line-height: 1.45; margin: 0;" data-i18n="s3_q" data-i18n-html="1">
+        <em>EKG'nin tanısal içeriği seyrek bir referans-nokta grafında (P, Q, R, S, T) yaşıyorsa
+        ve örneklerin %98'i sadece taban-interpolasyonuysa, neden tüm 5000 örneği saklayalım?</em>
+      </p>
+    </div>
+    <div class="reveal reveal-4" style="margin-top:30px;">
+      <h3 data-i18n="s3_h_h">Hipotez</h3>
+      <ul>
+        <li data-i18n="s3_h1">5000 örnek, CNN'in yararlı kullanabileceğinden fazla zamansal artıklık taşır.</li>
+        <li data-i18n="s3_h2">Anti-aliasing'li altörnekleme tanısal içeriği koruyup gradyan sinyalini yoğunlaştırır.</li>
+        <li data-i18n="s3_h3">Mimari iyileştirmelere atfedilen kazançların önemli bir kısmı aslında giriş-uzunluğu optimizasyonudur.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 4. METHOD OVERVIEW -->
+  <section class="slide" data-title-key="t4">
+    <div class="eyebrow reveal reveal-1" data-i18n="s4_eyebrow">Yöntem</div>
+    <h2 class="reveal reveal-2" data-i18n="s4_title">Pipeline'a tek bir adım eklendi. Diğer her şey aynı kaldı.</h2>
+    <div class="reveal reveal-3" style="margin-top: 28px;">
+      <div style="display: flex; gap: 12px; align-items:stretch; flex-wrap: wrap;">
+        <div class="card" style="flex: 1 1 140px;"><h4 data-i18n="s4_p1">1 · Yeniden örnekle</h4><p class="muted" style="font-size:13px;">500 Hz</p></div>
+        <div class="card" style="flex: 1 1 140px;"><h4 data-i18n="s4_p2">2 · Bant geçir</h4><p class="muted" style="font-size:13px;">0.5–150 Hz</p></div>
+        <div class="card" style="flex: 1 1 140px;"><h4 data-i18n="s4_p3">3 · Z-skor</h4><p class="muted" style="font-size:13px;">±3σ kırpma</p></div>
+        <div class="card" style="flex: 1 1 140px;"><h4 data-i18n="s4_p4">4 · Segmentle</h4><p class="muted" style="font-size:13px;">12 × 5000</p></div>
+        <div class="card" style="flex: 1 1 140px;"><h4 data-i18n="s4_p5">5 · SQI filtre</h4><p class="muted" style="font-size:13px;">≥ 0.85</p></div>
+        <div class="card" style="flex: 1 1 140px; background: rgba(34,211,238,.08); border-color: rgba(34,211,238,.5);">
+          <h4 class="accent" data-i18n="s4_p6">6 · Decimate (yeni)</h4>
+          <p style="font-size:13px;" data-i18n="s4_p6p">5000 → 1000 / 500</p>
+        </div>
+        <div class="card" style="flex: 1 1 140px;"><h4 data-i18n="s4_p7">7 · Augment</h4><p class="muted" style="font-size:13px;" data-i18n="s4_p7p">destek-düğüm</p></div>
+      </div>
+    </div>
+    <div class="reveal reveal-4" style="margin-top: 30px;">
+      <h3 data-i18n="s4_data_h">Veri ve model</h3>
+      <p data-i18n="s4_data_p">
+        Chapman–Shaoxing 12 kanallı EKG (45.152 kayıt, 78 çoklu-etiket sınıf).
+        Baseline 1D-CNN (3.72 M parametre). Stratified 68/12/20 split, sabit seed.
+        NVIDIA RTX 5090, AMP (FP16). PyTorch 2.4 · SciPy 1.13.
+      </p>
+    </div>
+  </section>
+
+  <!-- 5. CODE / DECIMATION -->
+  <section class="slide" data-title-key="t5">
+    <div class="eyebrow reveal reveal-1" data-i18n="s5_eyebrow">Anahtar adım</div>
+    <h2 class="reveal reveal-2" data-i18n="s5_title">Üç satırlık değişiklik. Filtreleme + zero-phase + altörnekleme.</h2>
+    <div class="two-col" style="margin-top: 24px; flex:1; min-height:0; grid-template-columns: 1.1fr 1fr;">
+      <div class="reveal slide-in-left" style="display:flex; align-items:center;">
+        <div class="code-block" style="width:100%;">
+<pre><span class="tok-kw">from</span> <span class="tok-mod">scipy.signal</span> <span class="tok-kw">import</span> decimate
+
+<span class="tok-com"># factor = 5   →  5000 → 1000 örnek (etkin 100 Hz)</span>
+<span class="tok-com"># factor = 10  →  5000 →  500 örnek (etkin  50 Hz)</span>
+x_down = <span class="tok-fn">decimate</span>(x, factor,
+                  ftype=<span class="tok-str">'iir'</span>,     <span class="tok-com"># Chebyshev tip-I alt-geçiren</span>
+                  n=<span class="tok-num">8</span>,             <span class="tok-com"># filtre derecesi</span>
+                  zero_phase=<span class="tok-bool">True</span>) <span class="tok-com"># P-dalgası fazını korur</span></pre>
+        </div>
+      </div>
+      <div class="reveal slide-in-right" style="display:flex; flex-direction:column; justify-content:center; gap: 10px;">
+        <div class="num-card" data-n="1"><h4 data-i18n="s5_b1_h">Faz korunur</h4><p data-i18n="s5_b1_p">İleri-geri uygulanan filtre, P-dalgası ve QRS zamanlamasını kaydırmaz.</p></div>
+        <div class="num-card" data-n="2"><h4 data-i18n="s5_b2_h">Anti-aliasing zorunlu</h4><p data-i18n="s5_b2_p">Yeni Nyquist'e kadar olan içerik silinir; QRS bandına örtüşme olmaz.</p></div>
+        <div class="num-card" data-n="3"><h4 data-i18n="s5_b3_h">Offline maliyet</h4><p data-i18n="s5_b3_p">Bir kez kabul anında uygulanır; eğitim ve çıkarım maliyeti sıfır.</p></div>
+        <div class="num-card" data-n="4"><h4 data-i18n="s5_b4_h">Aynı veri hijyeni</h4><p data-i18n="s5_b4_p">Seed, augmentation, ayırma — baseline ile birebir aynı; kazanç yalnız buradan.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. GEOMETRIC INVARIANCE FIGURE -->
+  <section class="slide" data-title-key="t6">
+    <div class="eyebrow reveal reveal-1" data-i18n="s6_eyebrow">Neden işe yarıyor — geometrik değişmezlik</div>
+    <h2 class="reveal reveal-2" data-i18n="s6_title">Tanısal içerik ~60 referans noktada yaşar; gerisi taban interpolasyonu.</h2>
+    <div class="reveal reveal-3 figure-frame" style="margin-top: 18px; flex: 1; min-height: 0; display:flex; flex-direction:column; justify-content:center;">
+      <img id="geomImg" src="Figure_geometry_invariance_TR.png" alt="Geometric invariance">
+      <div class="cap" data-i18n="s6_cap">
+        Şekil 1. (A) 5000 örnekte ~60 referans nokta giriş pozisyonlarının ~%1.2'sini kaplar; CNN alıcı alanı pencerenin yalnızca ~%40'ını görür.
+        (B) 500 örneğe altörnekleme sonrası noktalar korunur; yoğunluk 10× artar; alıcı alan tüm pencereyi kapsar.
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. EXPERIMENTAL SETUP -->
+  <section class="slide" data-title-key="t7">
+    <div class="eyebrow reveal reveal-1" data-i18n="s7_eyebrow">Deneysel düzenek</div>
+    <h2 class="reveal reveal-2" data-i18n="s7_title">Tek değişken: giriş uzunluğu. Aynı seed, aynı her şey.</h2>
+    <div class="reveal reveal-3" style="margin-top: 26px; flex:1;">
+      <div class="card">
+        <table class="mini">
+          <thead><tr>
+            <th data-i18n="s7_th1">Konfigürasyon</th>
+            <th class="num" data-i18n="s7_th2">Giriş şekli</th>
+            <th class="num" data-i18n="s7_th3">Parametre</th>
+            <th class="num" data-i18n="s7_th4">Epoch süresi</th>
+            <th data-i18n="s7_th5">Erken durdurma</th>
+          </tr></thead>
+          <tbody>
+            <tr><td>len=5000 (baseline)</td><td class="num">12 × 5000</td><td class="num">3.72 M</td><td class="num">~195 s</td><td>92. epoch</td></tr>
+            <tr><td>len=1000</td><td class="num">12 × 1000</td><td class="num">3.72 M</td><td class="num">~32 s</td><td>92. epoch</td></tr>
+            <tr><td>len=500</td><td class="num">12 × 500</td><td class="num">3.72 M</td><td class="num">~30 s</td><td>100. epoch</td></tr>
+            <tr><td>len=500 + 4 workers</td><td class="num">12 × 500</td><td class="num">3.72 M</td><td class="num">~20 s</td><td>100. epoch</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p class="muted reveal reveal-4" style="margin-top: 18px;" data-i18n="s7_foot">
+      Adam (LR 1e-3, ReduceLROnPlateau), batch 64, BCE + ters frekans ağırlığı, EarlyStopping (sabır 10).
+      Focal loss veya yeniden dengeleme uygulanmadı — atfetmeyi temiz tutmak için.
+    </p>
+  </section>
+
+  <!-- 8. RESULTS TABLE -->
+  <section class="slide" data-title-key="t8">
+    <div class="eyebrow reveal reveal-1" data-i18n="s8_eyebrow">Bulgular · Manşet</div>
+    <h2 class="reveal reveal-2" data-i18n="s8_title">5000 → 500: +8.91 puan doğruluk, 3.3× daha hızlı çıkarım.</h2>
+    <div class="reveal reveal-3" style="margin-top: 22px; flex:1;">
+      <div class="card">
+        <table class="mini">
+          <thead><tr>
+            <th data-i18n="s8_th1">Konfigürasyon</th>
+            <th class="num" data-i18n="s8_th2">Test doğr.</th>
+            <th class="num" data-i18n="s8_th3">Makro F1</th>
+            <th class="num" data-i18n="s8_th4">Çıkarım</th>
+            <th class="num" data-i18n="s8_th5">Güven</th>
+          </tr></thead>
+          <tbody>
+            <tr><td>len=5000 (baseline)</td><td class="num">88.43%</td><td class="num">0.8713</td><td class="num">89.88 ms</td><td class="num">12.89%</td></tr>
+            <tr><td>len=1000</td><td class="num">97.22%</td><td class="num">0.9716</td><td class="num">26.14 ms</td><td class="num">68.88%</td></tr>
+            <tr style="background: rgba(34,197,94,.06);"><td><strong>len=500</strong></td><td class="num"><strong>97.34%</strong></td><td class="num"><strong>0.9737</strong></td><td class="num"><strong>27.20 ms</strong></td><td class="num"><strong>76.23%</strong></td></tr>
+            <tr><td>len=500 + 4 workers</td><td class="num">97.38%</td><td class="num">0.9744</td><td class="num">43.50 ms</td><td class="num">69.59%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="three-col reveal reveal-4" style="margin-top: 18px;">
+      <div class="card"><h4 data-i18n="s8_k1_h">Doğruluk artışı</h4><div style="font-size:26px; color:var(--ok); font-weight:700;">+8.91 pp</div></div>
+      <div class="card"><h4 data-i18n="s8_k2_h">Makro F1 artışı</h4><div style="font-size:26px; color:var(--ok); font-weight:700;">+0.1024</div></div>
+      <div class="card"><h4 data-i18n="s8_k3_h">Çıkarım hızlanması</h4><div style="font-size:26px; color:var(--accent); font-weight:700;">3.3×</div></div>
+    </div>
+  </section>
+
+  <!-- 9. PER-CLASS RECOVERY -->
+  <section class="slide" data-title-key="t9">
+    <div class="eyebrow reveal reveal-1" data-i18n="s9_eyebrow">Bulgular · Sınıf bazında iyileşme</div>
+    <h2 class="reveal reveal-2" data-i18n="s9_title">11 çöken sınıf. Hepsi F1 ≥ 0.95'e kurtarıldı.</h2>
+    <div class="reveal reveal-3" style="margin-top:18px; flex:1; min-height:0;">
+      <div class="card" style="height: 100%;">
+        <table class="mini">
+          <thead><tr>
+            <th data-i18n="s9_th1">Sınıf</th>
+            <th class="num" data-i18n="s9_th2">len=5000</th>
+            <th class="num" data-i18n="s9_th3">len=500</th>
+            <th class="num" data-i18n="s9_th4">Δ</th>
+          </tr></thead>
+          <tbody>
+            <tr><td data-i18n="s9_r1">Sol Ventriküler Hipertrofi</td><td class="num">0.022</td><td class="num">≥ 0.99</td><td class="num delta-pos">+0.97</td></tr>
+            <tr><td data-i18n="s9_r2">EKG: Q dalga anormal</td><td class="num">0.180</td><td class="num">≥ 0.99</td><td class="num delta-pos">+0.81</td></tr>
+            <tr><td data-i18n="s9_r3">İç ileti farklılıkları</td><td class="num">0.286</td><td class="num">≥ 0.98</td><td class="num delta-pos">+0.70</td></tr>
+            <tr><td data-i18n="s9_r4">AV blok</td><td class="num">0.324</td><td class="num">0.984</td><td class="num delta-pos">+0.66</td></tr>
+            <tr><td data-i18n="s9_r5">Erken atriyal kasılma</td><td class="num">0.329</td><td class="num">≥ 0.97</td><td class="num delta-pos">+0.64</td></tr>
+            <tr><td data-i18n="s9_r6">EKG: atriyal fibrilasyon</td><td class="num">0.436</td><td class="num">≥ 0.95</td><td class="num delta-pos">+0.51</td></tr>
+            <tr><td data-i18n="s9_r7">EKG: ST segment değişimi</td><td class="num">0.457</td><td class="num">≥ 0.96</td><td class="num delta-pos">+0.50</td></tr>
+            <tr><td data-i18n="s9_r8">ST segment anormal</td><td class="num">0.474</td><td class="num">≥ 0.96</td><td class="num delta-pos">+0.49</td></tr>
+            <tr><td data-i18n="s9_r9">1. derece AV blok</td><td class="num">0.497</td><td class="num">≥ 0.96</td><td class="num delta-pos">+0.46</td></tr>
+            <tr><td data-i18n="s9_r10">EKG: atriyal flatter</td><td class="num">0.581</td><td class="num">≥ 0.99</td><td class="num delta-pos">+0.41</td></tr>
+            <tr><td data-i18n="s9_r11">EKG: atriyal taşikardi</td><td class="num">0.598</td><td class="num">≥ 0.98</td><td class="num delta-pos">+0.38</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10. RESULTS FIGURE -->
+  <section class="slide" data-title-key="t10">
+    <div class="eyebrow reveal reveal-1" data-i18n="s10_eyebrow">Bulgular · Görselleştirme</div>
+    <h2 class="reveal reveal-2" data-i18n="s10_title">Üç metrik. Aynı eğri.</h2>
+    <div class="reveal reveal-3 figure-frame" style="margin-top: 18px; flex:1; min-height:0; display:flex; flex-direction:column; justify-content:center;">
+      <img src="Figure_seq_length_comparison.png" alt="Sequence length comparison">
+      <div class="cap" data-i18n="s10_cap">
+        Şekil 2. Dört konfigürasyon için test doğruluğu, makro-F1 ve tekil-örnek çıkarım süresi.
+      </div>
+    </div>
+  </section>
+
+  <!-- 11. DISCUSSION -->
+  <section class="slide" data-title-key="t11">
+    <div class="eyebrow reveal reveal-1" data-i18n="s11_eyebrow">Tartışma · Neden %88 → %97</div>
+    <h2 class="reveal reveal-2" data-i18n="s11_title">Üç kuvvet birleşir. Hepsi aynı geometrik resmin sonucu.</h2>
+    <div class="three-col reveal reveal-3" style="margin-top: 28px;">
+      <div class="num-card" data-n="i">
+        <h4 data-i18n="s11_a_h">Alıcı alan</h4>
+        <p data-i18n="s11_a_p">2048 örneklik CNN penceresi 5000'de %40'ı, 500'de %100'ü kapsar — ritm bağlamı artık erişilebilir.</p>
+      </div>
+      <div class="num-card" data-n="ii">
+        <h4 data-i18n="s11_b_h">Referans-nokta yoğunluğu</h4>
+        <p data-i18n="s11_b_p">~60 fiducial nokta 5000 pozisyonun %1.2'sinden 500 pozisyonun %12'sine — gradyan 10× yoğunlaşır.</p>
+      </div>
+      <div class="num-card" data-n="iii">
+        <h4 data-i18n="s11_c_h">Parametre tasarrufu</h4>
+        <p data-i18n="s11_c_p">Aynı 3.72 M parametre, taban modellemekten morfoloji ayrımına yeniden tahsis edilir.</p>
+      </div>
+    </div>
+    <div class="card reveal reveal-4" style="margin-top: 24px; background: rgba(245,158,11,.06); border-color: rgba(245,158,11,.4);">
+      <h4 class="warn" data-i18n="s11_aa_h">Anti-aliasing kritik — hayati değil değil!</h4>
+      <p data-i18n="s11_aa_p">Filtresiz strided pooling ön denemelerimizde QRS enerjisini alt frekansa örtüştürür ve baseline'dan da düşük doğruluk verir. Chebyshev-I filtresi, +10 pp F1 ile baseline-altı arasındaki farkı yapar.</p>
+    </div>
+  </section>
+
+  <!-- 12. LIMITATIONS / FUTURE -->
+  <section class="slide" data-title-key="t12">
+    <div class="two-col" style="height:100%;">
+      <div>
+        <div class="eyebrow reveal reveal-1" data-i18n="s12_eyebrow_l">Sınırlılıklar</div>
+        <h2 class="reveal reveal-2" data-i18n="s12_title_l">Sınırlılıklar.</h2>
+        <ul class="reveal reveal-3" style="margin-top:14px;">
+          <li data-i18n="s12_l1">Tek veri seti: Chapman–Shaoxing.</li>
+          <li data-i18n="s12_l2">500 örneğin altı henüz karakterize edilmedi.</li>
+          <li data-i18n="s12_l3">Yüksek-frekans alt-tanılar (geç potansiyeller) için geçerli olmayabilir.</li>
+          <li data-i18n="s12_l4">Daha derin / attention'lı modellerle etkileşim ölçülmedi.</li>
+        </ul>
+      </div>
+      <div>
+        <div class="eyebrow reveal reveal-1" data-i18n="s12_eyebrow_f">Gelecek çalışmalar</div>
+        <h2 class="reveal reveal-2" data-i18n="s12_title_f">Yedi takip.</h2>
+        <ol class="reveal reveal-4" style="margin-top:14px; padding-left: 22px;">
+          <li data-i18n="s12_f1">PTB-XL üzerinde çapraz-veri seti doğrulaması.</li>
+          <li data-i18n="s12_f2">Etiket-taksonomi temizliği (78 → ~55).</li>
+          <li data-i18n="s12_f3">Decimate-500 girdisinde Attention-CNN-LSTM.</li>
+          <li data-i18n="s12_f4">Focal loss γ ∈ {1, 2, 3}.</li>
+          <li data-i18n="s12_f5">Uyarlanabilir per-sınıf eşikleme.</li>
+          <li data-i18n="s12_f6">GradCAM / SHAP açıklanabilirlik.</li>
+          <li data-i18n="s12_f7">Raspberry Pi 4 üzerinde INT8 nicemleme.</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13. CONCLUSION -->
+  <section class="slide" data-title-key="t13">
+    <div class="hero" style="align-items:flex-start;">
+      <div class="eyebrow reveal reveal-1" data-i18n="s13_eyebrow">Sonuç</div>
+      <div class="bigline reveal reveal-2"><span data-i18n="s13_t1">Chapman–Shaoxing baseline'ımızdaki en büyük tek</span><br><span data-i18n="s13_t2">kaldıraç mimari değildi; giriş temsiliydi.</span></div>
+      <p class="lead reveal reveal-3" style="max-width: 920px;" data-i18n="s13_lead">
+        12 kanallı EKG girişinin 5000 → 500 örneğe anti-aliasing'li altörneklenmesi, temel 1D-CNN baseline'ını,
+        attention-hibrit halefi için yayımlanan %94.8 hedefini — modelde, kayıpta veya artırma reçetesinde hiçbir değişiklik yapmadan — aşan bir modele dönüştürür.
+      </p>
+      <div class="reveal reveal-4" style="display:flex; gap:16px; flex-wrap:wrap; margin-top:14px;">
+        <div class="pill ok"><span data-i18n="s13_p1">elaman.job@gmail.com</span></div>
+        <div class="pill"><span data-i18n="s13_p2">Manas Üniversitesi · Bilgisayar Mühendisliği</span></div>
+        <div class="pill"><span data-i18n="s13_p3">Bahar 2026 · Yüksek Lisans Yayın Makalesi</span></div>
+      </div>
+      <p class="muted reveal reveal-5" style="margin-top: 22px;" data-i18n="s13_thanks">
+        Teşekkürler. Sorular için: ←/→ slayt indeksi, Esc kapatır.
+      </p>
+    </div>
+  </section>
+
+</div>
+
+<div class="footer">
+  <div class="dots" id="dots"></div>
+  <div class="nav">
+    <button class="btn-nav" id="prev"><span data-i18n="nav_prev">← Önceki</span></button>
+    <span id="counter" style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted);"></span>
+    <button class="btn-nav" id="next"><span data-i18n="nav_next">Sonraki →</span></button>
+  </div>
+</div>
+
+<script>
+const I18N = {
+  tr: {
+    brand: "Manas Üniversitesi · Yüksek Lisans Tezi Yayını",
+    nav_hint: "slaytlar arası geçiş",
+    nav_prev: "← Önceki", nav_next: "Sonraki →",
+    t1:"Başlık", t2:"Problem", t3:"Soru", t4:"Yöntem", t5:"Decimation",
+    t6:"Geometrik değişmezlik", t7:"Düzenek", t8:"Bulgular",
+    t9:"Sınıf bazında", t10:"Görselleştirme", t11:"Tartışma", t12:"Sınırlar/Gelecek", t13:"Sonuç",
+
+    s1_eyebrow: "Bahar 2026 · Yüksek Lisans Yayın Makalesi",
+    s1_t1: "12 kanallı EKG sınıflandırmasında",
+    s1_t2: "belirleyici adım: anti-aliasing'li altörnekleme.",
+    s1_lead: "Chapman–Shaoxing veri seti üzerinde temel bir 1D-CNN, <strong>%88.43'ten %97.34'e</strong> — ne attention, ne LSTM, ne focal loss; yalnızca <code>scipy.signal.decimate</code> ile 5000 → 500 örnek.",
+    s1_k1: "test doğruluğu", s1_k2: "makro F1", s1_k3: "çıkarım hızlanması", s1_k4: "başarısız sınıf kurtarıldı",
+    s1_author: "Elaman Nazarkulov", s1_dept: "Bilgisayar Mühendisliği",
+    s1_uni: "Kırgız–Türk Manas Üniversitesi",
+    s1_supervisor: "Tez Danışmanı: Doç. Dr. Bakıt Şarşembayev",
+
+    s2_eyebrow: "Problem",
+    s2_title: "Temel modelden tam modele geçiş, neredeyse zorunlu görünüyordu.",
+    s2_lead: "Önceki tez döneminde Chapman–Shaoxing üzerinde eğittiğimiz 1D-CNN, %88.43 test doğruluğu ve makro-F1 0.8713 ile durdu. 78 etiketten 11'i F1 < 0.60'da çöktü. Doğal refleks: attention katmanı, LSTM dalı, focal loss, etiket-taksonomi temizliği.",
+    s2_a_h: "Yayımlanan baseline",
+    s2_a_p: "5000 örnek, attention yok, focal loss yok.",
+    s2_b_h: "v2 raporundaki hedef",
+    s2_b_p: "Attention + LSTM + augmentation + focal loss + adaptive threshold.",
+    s2_c_h: "Bu çalışmada elde edildi",
+    s2_c_p: "Aynı baseline 1D-CNN + 5000 → 500 anti-aliased decimation.",
+    s2_kicker: "<strong>Hedefe, mimari değiştirilmeden ulaşıldı.</strong> Tek değişiklik bir <code>scipy</code> çağrısı.",
+
+    s3_eyebrow: "Araştırma sorusu",
+    s3_title: "Tüm sürede 5000 örnek aslında gerçekten gerekli miydi?",
+    s3_q: "<em>EKG'nin tanısal içeriği seyrek bir referans-nokta grafında (P, Q, R, S, T) yaşıyorsa ve örneklerin %98'i sadece taban-interpolasyonuysa, neden tüm 5000 örneği saklayalım?</em>",
+    s3_h_h: "Hipotez",
+    s3_h1: "5000 örnek, CNN'in yararlı kullanabileceğinden fazla zamansal artıklık taşır.",
+    s3_h2: "Anti-aliasing'li altörnekleme tanısal içeriği koruyup gradyan sinyalini yoğunlaştırır.",
+    s3_h3: "Mimari iyileştirmelere atfedilen kazançların önemli bir kısmı aslında giriş-uzunluğu optimizasyonudur.",
+
+    s4_eyebrow: "Yöntem",
+    s4_title: "Pipeline'a tek bir adım eklendi. Diğer her şey aynı kaldı.",
+    s4_p1: "1 · Yeniden örnekle", s4_p2: "2 · Bant geçir", s4_p3: "3 · Z-skor",
+    s4_p4: "4 · Segmentle", s4_p5: "5 · SQI filtre",
+    s4_p6: "6 · Decimate (yeni)", s4_p6p: "5000 → 1000 / 500",
+    s4_p7: "7 · Augment", s4_p7p: "destek-düğüm",
+    s4_data_h: "Veri ve model",
+    s4_data_p: "Chapman–Shaoxing 12 kanallı EKG (45.152 kayıt, 78 çoklu-etiket sınıf). Baseline 1D-CNN (3.72 M parametre). Stratified 68/12/20 split, sabit seed. NVIDIA RTX 5090, AMP (FP16). PyTorch 2.4 · SciPy 1.13.",
+
+    s5_eyebrow: "Anahtar adım",
+    s5_title: "Üç satırlık değişiklik. Filtreleme + zero-phase + altörnekleme.",
+    s5_b1_h: "Faz korunur",
+    s5_b1_p: "İleri-geri uygulanan filtre, P-dalgası ve QRS zamanlamasını kaydırmaz.",
+    s5_b2_h: "Anti-aliasing zorunlu",
+    s5_b2_p: "Yeni Nyquist'e kadar olan içerik silinir; QRS bandına örtüşme olmaz.",
+    s5_b3_h: "Offline maliyet",
+    s5_b3_p: "Bir kez kabul anında uygulanır; eğitim ve çıkarım maliyeti sıfır.",
+    s5_b4_h: "Aynı veri hijyeni",
+    s5_b4_p: "Seed, augmentation, ayırma — baseline ile birebir aynı; kazanç yalnız buradan.",
+
+    s6_eyebrow: "Neden işe yarıyor — geometrik değişmezlik",
+    s6_title: "Tanısal içerik ~60 referans noktada yaşar; gerisi taban interpolasyonu.",
+    s6_cap: "Şekil 1. (A) 5000 örnekte ~60 referans nokta giriş pozisyonlarının ~%1.2'sini kaplar; CNN alıcı alanı pencerenin yalnızca ~%40'ını görür. (B) 500 örneğe altörnekleme sonrası noktalar korunur; yoğunluk 10× artar; alıcı alan tüm pencereyi kapsar.",
+
+    s7_eyebrow: "Deneysel düzenek",
+    s7_title: "Tek değişken: giriş uzunluğu. Aynı seed, aynı her şey.",
+    s7_th1: "Konfigürasyon", s7_th2: "Giriş şekli", s7_th3: "Parametre", s7_th4: "Epoch süresi", s7_th5: "Erken durdurma",
+    s7_foot: "Adam (LR 1e-3, ReduceLROnPlateau), batch 64, BCE + ters frekans ağırlığı, EarlyStopping (sabır 10). Focal loss veya yeniden dengeleme uygulanmadı — atfetmeyi temiz tutmak için.",
+
+    s8_eyebrow: "Bulgular · Manşet",
+    s8_title: "5000 → 500: +8.91 puan doğruluk, 3.3× daha hızlı çıkarım.",
+    s8_th1: "Konfigürasyon", s8_th2: "Test doğr.", s8_th3: "Makro F1", s8_th4: "Çıkarım", s8_th5: "Güven",
+    s8_k1_h: "Doğruluk artışı", s8_k2_h: "Makro F1 artışı", s8_k3_h: "Çıkarım hızlanması",
+
+    s9_eyebrow: "Bulgular · Sınıf bazında iyileşme",
+    s9_title: "11 çöken sınıf. Hepsi F1 ≥ 0.95'e kurtarıldı.",
+    s9_th1: "Sınıf", s9_th2: "len=5000", s9_th3: "len=500", s9_th4: "Δ",
+    s9_r1: "Sol Ventriküler Hipertrofi",
+    s9_r2: "EKG: Q dalga anormal",
+    s9_r3: "İç ileti farklılıkları",
+    s9_r4: "AV blok",
+    s9_r5: "Erken atriyal kasılma",
+    s9_r6: "EKG: atriyal fibrilasyon",
+    s9_r7: "EKG: ST segment değişimi",
+    s9_r8: "ST segment anormal",
+    s9_r9: "1. derece AV blok",
+    s9_r10: "EKG: atriyal flatter",
+    s9_r11: "EKG: atriyal taşikardi",
+
+    s10_eyebrow: "Bulgular · Görselleştirme",
+    s10_title: "Üç metrik. Aynı eğri.",
+    s10_cap: "Şekil 2. Dört konfigürasyon için test doğruluğu, makro-F1 ve tekil-örnek çıkarım süresi.",
+
+    s11_eyebrow: "Tartışma · Neden %88 → %97",
+    s11_title: "Üç kuvvet birleşir. Hepsi aynı geometrik resmin sonucu.",
+    s11_a_h: "Alıcı alan",
+    s11_a_p: "2048 örneklik CNN penceresi 5000'de %40'ı, 500'de %100'ü kapsar — ritm bağlamı artık erişilebilir.",
+    s11_b_h: "Referans-nokta yoğunluğu",
+    s11_b_p: "~60 fiducial nokta 5000 pozisyonun %1.2'sinden 500 pozisyonun %12'sine — gradyan 10× yoğunlaşır.",
+    s11_c_h: "Parametre tasarrufu",
+    s11_c_p: "Aynı 3.72 M parametre, taban modellemekten morfoloji ayrımına yeniden tahsis edilir.",
+    s11_aa_h: "Anti-aliasing kritik",
+    s11_aa_p: "Filtresiz strided pooling ön denemelerimizde QRS enerjisini alt frekansa örtüştürür ve baseline'dan da düşük doğruluk verir. Chebyshev-I filtresi, +10 pp F1 ile baseline-altı arasındaki farkı yapar.",
+
+    s12_eyebrow_l: "Sınırlılıklar", s12_title_l: "Sınırlılıklar.",
+    s12_l1: "Tek veri seti: Chapman–Shaoxing.",
+    s12_l2: "500 örneğin altı henüz karakterize edilmedi.",
+    s12_l3: "Yüksek-frekans alt-tanılar (geç potansiyeller) için geçerli olmayabilir.",
+    s12_l4: "Daha derin / attention'lı modellerle etkileşim ölçülmedi.",
+    s12_eyebrow_f: "Gelecek çalışmalar", s12_title_f: "Yedi takip.",
+    s12_f1: "PTB-XL üzerinde çapraz-veri seti doğrulaması.",
+    s12_f2: "Etiket-taksonomi temizliği (78 → ~55).",
+    s12_f3: "Decimate-500 girdisinde Attention-CNN-LSTM.",
+    s12_f4: "Focal loss γ ∈ {1, 2, 3}.",
+    s12_f5: "Uyarlanabilir per-sınıf eşikleme.",
+    s12_f6: "GradCAM / SHAP açıklanabilirlik.",
+    s12_f7: "Raspberry Pi 4 üzerinde INT8 nicemleme.",
+
+    s13_eyebrow: "Sonuç",
+    s13_t1: "Chapman–Shaoxing baseline'ımızdaki en büyük tek",
+    s13_t2: "kaldıraç mimari değildi; giriş temsiliydi.",
+    s13_lead: "12 kanallı EKG girişinin 5000 → 500 örneğe anti-aliasing'li altörneklenmesi, temel 1D-CNN baseline'ını, attention-hibrit halefi için yayımlanan %94.8 hedefini — modelde, kayıpta veya artırma reçetesinde hiçbir değişiklik yapmadan — aşan bir modele dönüştürür.",
+    s13_p1: "elaman.job@gmail.com",
+    s13_p2: "Manas Üniversitesi · Bilgisayar Mühendisliği",
+    s13_p3: "Bahar 2026 · Yüksek Lisans Yayın Makalesi",
+    s13_thanks: "Teşekkürler. Sorular için: ←/→ slayt indeksi, Esc kapatır."
+  },
+
+  en: {
+    brand: "Manas University · Master's Thesis Journal Article",
+    nav_hint: "to navigate",
+    nav_prev: "← Prev", nav_next: "Next →",
+    t1:"Title", t2:"Problem", t3:"Question", t4:"Method", t5:"Decimation",
+    t6:"Geometric invariance", t7:"Setup", t8:"Results",
+    t9:"Per-class", t10:"Figure", t11:"Discussion", t12:"Limits/Future", t13:"Conclusion",
+
+    s1_eyebrow: "Spring 2026 · Master's Journal Article",
+    s1_t1: "The decisive step in 12-lead",
+    s1_t2: "ECG classification: anti-aliased decimation.",
+    s1_lead: "On the Chapman–Shaoxing corpus, a plain 1D-CNN goes <strong>from 88.43% to 97.34%</strong> — no attention, no LSTM, no focal loss; only <code>scipy.signal.decimate</code> from 5000 → 500 samples.",
+    s1_k1: "test accuracy", s1_k2: "macro F1", s1_k3: "inference speedup", s1_k4: "failure classes recovered",
+    s1_author: "Elaman Nazarkulov", s1_dept: "Computer Engineering",
+    s1_uni: "Kyrgyz–Turkish Manas University",
+    s1_supervisor: "Supervisor: Assoc. Prof. Bakıt Şarşambayev",
+
+    s2_eyebrow: "Problem",
+    s2_title: "The move from baseline to full model looked unavoidable.",
+    s2_lead: "In the previous thesis phase our 1D-CNN on Chapman–Shaoxing stalled at 88.43% test accuracy and 0.8713 macro-F1; 11 of 78 labels collapsed below F1 < 0.60. The natural reflex was attention, LSTM, focal loss, label cleanup.",
+    s2_a_h: "Published baseline",
+    s2_a_p: "5000 samples, no attention, no focal loss.",
+    s2_b_h: "v2 report target",
+    s2_b_p: "Attention + LSTM + augmentation + focal loss + adaptive threshold.",
+    s2_c_h: "What this paper achieves",
+    s2_c_p: "Same baseline 1D-CNN + 5000 → 500 anti-aliased decimation.",
+    s2_kicker: "<strong>Target reached without an architecture change.</strong> One <code>scipy</code> call.",
+
+    s3_eyebrow: "Research question",
+    s3_title: "Did we ever actually need 5000 samples?",
+    s3_q: "<em>If the diagnostic content of an ECG lives in a sparse fiducial-point graph (P, Q, R, S, T) and 98% of samples are baseline interpolation, why keep all 5000?</em>",
+    s3_h_h: "Hypothesis",
+    s3_h1: "5000 samples carries more temporal redundancy than the CNN can usefully exploit.",
+    s3_h2: "Anti-aliased decimation preserves diagnostic content while concentrating gradient signal.",
+    s3_h3: "Much of the gain attributed to architecture is actually input-length optimisation.",
+
+    s4_eyebrow: "Method",
+    s4_title: "One step added to the pipeline. Everything else unchanged.",
+    s4_p1: "1 · Resample", s4_p2: "2 · Bandpass", s4_p3: "3 · Z-score",
+    s4_p4: "4 · Segment", s4_p5: "5 · SQI filter",
+    s4_p6: "6 · Decimate (new)", s4_p6p: "5000 → 1000 / 500",
+    s4_p7: "7 · Augment", s4_p7p: "support-node",
+    s4_data_h: "Data and model",
+    s4_data_p: "Chapman–Shaoxing 12-lead ECG (45,152 records, 78 multi-label classes). Baseline 1D-CNN (3.72 M params). Stratified 68/12/20 split, fixed seed. NVIDIA RTX 5090, AMP (FP16). PyTorch 2.4 · SciPy 1.13.",
+
+    s5_eyebrow: "The key step",
+    s5_title: "Three lines of code. Filter + zero-phase + decimate.",
+    s5_b1_h: "Phase preserved",
+    s5_b1_p: "Forward-backward filtering does not shift P-wave or QRS timing.",
+    s5_b2_h: "Anti-aliasing required",
+    s5_b2_p: "Content above the new Nyquist is removed — no folding into the QRS band.",
+    s5_b3_h: "Offline cost",
+    s5_b3_p: "Applied once at ingest. Zero training overhead. Zero inference penalty.",
+    s5_b4_h: "Same data hygiene",
+    s5_b4_p: "Seed, augmentation and split are unchanged from baseline — the gain is from this step alone.",
+
+    s6_eyebrow: "Why it works — geometric invariance",
+    s6_title: "Diagnostic content lives in ~60 fiducial points; the rest is baseline interpolation.",
+    s6_cap: "Figure 1. (A) At 5000 samples ~60 fiducial points cover ~1.2% of input positions; the CNN's receptive field sees only ~40% of the window. (B) After decimation to 500 samples the same points are preserved; density rises 10×; receptive field spans the whole window.",
+
+    s7_eyebrow: "Experimental setup",
+    s7_title: "One variable: input length. Same seed, same everything.",
+    s7_th1: "Configuration", s7_th2: "Input shape", s7_th3: "Params", s7_th4: "Epoch time", s7_th5: "Early stop",
+    s7_foot: "Adam (LR 1e-3, ReduceLROnPlateau), batch 64, BCE + inverse-frequency weights, EarlyStopping (patience 10). No focal loss or rebalancing — to keep attribution clean.",
+
+    s8_eyebrow: "Results · Headline",
+    s8_title: "5000 → 500: +8.91 pp accuracy, 3.3× faster inference.",
+    s8_th1: "Configuration", s8_th2: "Test acc", s8_th3: "Macro F1", s8_th4: "Inference", s8_th5: "Confidence",
+    s8_k1_h: "Accuracy gain", s8_k2_h: "Macro F1 gain", s8_k3_h: "Inference speedup",
+
+    s9_eyebrow: "Results · Per-class recovery",
+    s9_title: "11 collapsed classes. All recovered to F1 ≥ 0.95.",
+    s9_th1: "Class", s9_th2: "len=5000", s9_th3: "len=500", s9_th4: "Δ",
+    s9_r1: "Left Ventricular Hypertrophy",
+    s9_r2: "ECG: Q-wave abnormal",
+    s9_r3: "Interior diff. conduction",
+    s9_r4: "Atrioventricular block",
+    s9_r5: "Premature atrial contraction",
+    s9_r6: "ECG: atrial fibrillation",
+    s9_r7: "ECG: ST segment changes",
+    s9_r8: "ST segment abnormal",
+    s9_r9: "First-degree AV block",
+    s9_r10: "ECG: atrial flutter",
+    s9_r11: "ECG: atrial tachycardia",
+
+    s10_eyebrow: "Results · Visualisation",
+    s10_title: "Three metrics. Same curve.",
+    s10_cap: "Figure 2. Test accuracy, macro-F1 and single-sample inference time across four configurations.",
+
+    s11_eyebrow: "Discussion · Why 88% → 97%",
+    s11_title: "Three forces compound. All from the same geometric picture.",
+    s11_a_h: "Receptive field",
+    s11_a_p: "2048-sample CNN window covers 40% at 5000, 100% at 500 — multi-beat context becomes accessible.",
+    s11_b_h: "Fiducial-point density",
+    s11_b_p: "~60 fiducial points span 1.2% of 5000 positions vs 12% of 500 — gradient signal 10× denser.",
+    s11_c_h: "Parameter economy",
+    s11_c_p: "Same 3.72 M parameters reallocated from baseline modelling to morphology discrimination.",
+    s11_aa_h: "Anti-aliasing is load-bearing",
+    s11_aa_p: "A naïve strided pooling without filter folds QRS energy into low frequencies; in our preliminary tests this performed worse than baseline. The Chebyshev-I filter is the difference between +10 pp F1 and below-baseline.",
+
+    s12_eyebrow_l: "Limitations", s12_title_l: "Limitations.",
+    s12_l1: "Single dataset: Chapman–Shaoxing.",
+    s12_l2: "Decimation factor below 500 samples not characterised.",
+    s12_l3: "May not hold for high-frequency sub-diagnoses (late potentials).",
+    s12_l4: "Interaction with deeper / attention-augmented models not measured.",
+    s12_eyebrow_f: "Future work", s12_title_f: "Seven follow-ups.",
+    s12_f1: "PTB-XL cross-dataset validation.",
+    s12_f2: "Label-taxonomy cleanup (78 → ~55).",
+    s12_f3: "Attention-CNN-LSTM on decimate-500 input.",
+    s12_f4: "Focal loss γ ∈ {1, 2, 3}.",
+    s12_f5: "Adaptive per-class thresholding.",
+    s12_f6: "GradCAM / SHAP explainability.",
+    s12_f7: "INT8 quantisation on Raspberry Pi 4.",
+
+    s13_eyebrow: "Conclusion",
+    s13_t1: "The single biggest lever in our",
+    s13_t2: "Chapman–Shaoxing baseline was not the architecture — it was the input.",
+    s13_lead: "Anti-aliased decimation of the 12-lead ECG input from 5000 to 500 samples turns a plain 1D-CNN baseline into a model that exceeds the 94.8% target published for its attention-hybrid successor — without any change to the model, the loss, or the augmentation recipe.",
+    s13_p1: "elaman.job@gmail.com",
+    s13_p2: "Manas University · Computer Engineering",
+    s13_p3: "Spring 2026 · Master's Journal Article",
+    s13_thanks: "Thank you. Use ←/→ to navigate, Esc to exit overview."
+  }
+};
+
+(function () {
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const dotsContainer = document.getElementById('dots');
+  const prev = document.getElementById('prev');
+  const next = document.getElementById('next');
+  const counter = document.getElementById('counter');
+  const progressBar = document.getElementById('progressBar');
+  const langBtns = Array.from(document.querySelectorAll('.lang-btn'));
+  let current = 0;
+
+  const STORAGE = 'cardio_diss_lang';
+  const supported = ['tr', 'en'];
+  const browserLang = (navigator.language || 'tr').slice(0, 2).toLowerCase();
+  let lang = localStorage.getItem(STORAGE) || (supported.includes(browserLang) ? browserLang : 'tr');
+
+  function applyLang(target) {
+    if (!supported.includes(target)) target = 'tr';
+    lang = target;
+    const dict = I18N[lang];
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (!(key in dict)) return;
+      const asHtml = el.getAttribute('data-i18n-html') === '1';
+      if (asHtml) el.innerHTML = dict[key];
+      else el.textContent = dict[key];
+    });
+    document.documentElement.lang = lang;
+    langBtns.forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+    // Swap localised assets (geometry-invariance figure)
+    const geomImg = document.getElementById('geomImg');
+    if (geomImg) {
+      geomImg.src = (lang === 'tr')
+        ? 'Figure_geometry_invariance_TR.png'
+        : 'Figure_geometry_invariance.png';
+    }
+    localStorage.setItem(STORAGE, lang);
+  }
+
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.addEventListener('click', () => go(i));
+    dotsContainer.appendChild(d);
+  });
+
+  function go(i) {
+    if (i < 0 || i >= slides.length) return;
+    const dots = Array.from(dotsContainer.children);
+    slides[current].classList.remove('active');
+    slides[current].classList.add('previous');
+    dots[current].classList.remove('active');
+    current = i;
+    slides[current].classList.add('active');
+    slides[current].classList.remove('previous');
+    dots[current].classList.add('active');
+    counter.textContent = String(current + 1).padStart(2, '0') + ' / ' + String(slides.length).padStart(2, '0');
+    progressBar.style.width = (((current + 1) / slides.length) * 100) + '%';
+  }
+
+  next.addEventListener('click', () => go(Math.min(current + 1, slides.length - 1)));
+  prev.addEventListener('click', () => go(Math.max(current - 1, 0)));
+  langBtns.forEach(b => b.addEventListener('click', () => applyLang(b.dataset.lang)));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { go(Math.min(current + 1, slides.length - 1)); e.preventDefault(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { go(Math.max(current - 1, 0)); e.preventDefault(); }
+    else if (e.key === 'Home') go(0);
+    else if (e.key === 'End') go(slides.length - 1);
+  });
+
+  let startX = 0;
+  document.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) > 50) (dx < 0 ? go(Math.min(current + 1, slides.length - 1)) : go(Math.max(current - 1, 0)));
+  }, { passive: true });
+
+  applyLang(lang);
+  go(0);
+})();
+</script>
+</body>
+</html>
