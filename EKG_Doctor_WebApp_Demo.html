@@ -1,0 +1,2043 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CardioLens — A Day with the 12-Lead ECG Assistant</title>
+<style>
+  :root {
+    --bg: #0b1220; --bg-2: #111a30; --surface: #141d38; --surface-2: #1b2747;
+    --line: #243056; --primary: #3b82f6; --primary-2: #60a5fa; --accent: #22d3ee;
+    --ok: #22c55e; --warn: #f59e0b; --bad: #ef4444; --text: #e6ecff; --muted: #94a3b8;
+    --card: rgba(255,255,255,0.04); --card-strong: rgba(255,255,255,0.08);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; height: 100%; overflow: hidden;
+    background: radial-gradient(1200px 800px at 70% -10%, #1a2a55 0%, var(--bg) 55%) fixed;
+    color: var(--text);
+    font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .deck { position: relative; width: 100vw; height: 100vh; }
+  .slide {
+    position: absolute; inset: 0; padding: 60px 80px;
+    opacity: 0; pointer-events: none;
+    transform: translateX(40px) scale(0.985);
+    transition: opacity .5s ease, transform .6s cubic-bezier(.22,.8,.32,1);
+    display: flex; flex-direction: column;
+  }
+  .slide.active { opacity: 1; pointer-events: auto; transform: none; }
+  .slide.previous { transform: translateX(-40px) scale(0.985); }
+
+  .topbar {
+    position: absolute; top: 18px; left: 28px; right: 28px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 12px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--muted); z-index: 5;
+  }
+  .topbar .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; color: var(--text); }
+  .brand .logo {
+    width: 22px; height: 22px; border-radius: 6px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    display: grid; place-items: center; color: white; font-weight: 700; font-size: 12px;
+    box-shadow: 0 4px 14px rgba(59,130,246,.35);
+  }
+
+  /* Language switcher */
+  .langs { display: flex; align-items: center; gap: 6px; }
+  .lang-btn {
+    appearance: none; border: 1px solid var(--line); background: var(--surface);
+    color: var(--muted); border-radius: 8px; padding: 5px 10px; cursor: pointer;
+    font-size: 11px; font-weight: 600; letter-spacing: .08em;
+    transition: all .2s ease; text-transform: uppercase;
+  }
+  .lang-btn:hover { color: var(--text); border-color: var(--primary-2); }
+  .lang-btn.active {
+    background: var(--primary); border-color: var(--primary); color: white;
+    box-shadow: 0 0 12px rgba(59,130,246,.4);
+  }
+
+  .topbar-right { display: flex; gap: 18px; align-items: center; }
+
+  .footer {
+    position: absolute; bottom: 14px; left: 28px; right: 28px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 12px; color: var(--muted); z-index: 5;
+  }
+  .dots { display: flex; gap: 6px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,.15);
+    transition: all .3s ease; cursor: pointer; }
+  .dot.active { background: var(--primary); width: 22px; border-radius: 4px; }
+  .nav { display: flex; gap: 8px; align-items: center; }
+  .btn-nav {
+    appearance: none; border: 1px solid var(--line); background: var(--surface);
+    color: var(--text); border-radius: 8px; padding: 6px 10px; cursor: pointer;
+    font-size: 12px; display: flex; align-items: center; gap: 6px;
+    transition: background .2s ease, border-color .2s ease, transform .05s;
+  }
+  .btn-nav:hover { background: var(--surface-2); border-color: var(--primary); }
+  .btn-nav:active { transform: translateY(1px); }
+
+  h1, h2, h3 { margin: 0; font-weight: 700; letter-spacing: -.01em; }
+  h1 { font-size: 60px; line-height: 1.05; }
+  h2 { font-size: 40px; line-height: 1.1; }
+  h3 { font-size: 22px; line-height: 1.2; color: var(--primary-2); }
+  p, li { line-height: 1.55; color: var(--text); }
+  .eyebrow { font-size: 12px; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--accent); font-weight: 600; margin-bottom: 18px; }
+  .lead { font-size: 20px; color: #c4cffc; max-width: 820px; }
+  .muted { color: var(--muted); }
+  .accent { color: var(--accent); }
+  .ok { color: var(--ok); }
+  .bad { color: var(--bad); }
+  .warn { color: var(--warn); }
+  .mono { font-family: "JetBrains Mono", Consolas, ui-monospace, monospace; }
+
+  .slide.active .reveal { animation: riseFade .7s ease both; }
+  .slide.active .reveal-1 { animation-delay: .1s; }
+  .slide.active .reveal-2 { animation-delay: .25s; }
+  .slide.active .reveal-3 { animation-delay: .4s; }
+  .slide.active .reveal-4 { animation-delay: .55s; }
+  .slide.active .reveal-5 { animation-delay: .7s; }
+  .slide.active .reveal-6 { animation-delay: .85s; }
+  .slide.active .reveal-7 { animation-delay: 1s; }
+  .slide.active .reveal-8 { animation-delay: 1.15s; }
+  @keyframes riseFade { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .slide.active .slide-in-left { animation: inLeft .7s ease both; }
+  .slide.active .slide-in-right { animation: inRight .7s ease both; }
+  @keyframes inLeft { from { opacity: 0; transform: translateX(-40px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes inRight { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
+
+  .stat {
+    display: inline-flex; flex-direction: column; padding: 18px 22px;
+    background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+    min-width: 220px;
+  }
+  .stat .num { font-size: 44px; font-weight: 700; color: var(--primary-2); }
+  .stat .lbl { font-size: 13px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; margin-top: 4px; }
+
+  .app-frame {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
+    box-shadow: 0 30px 80px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.02);
+    overflow: hidden; display: flex; flex-direction: column;
+  }
+  .app-chrome { display: flex; align-items: center; gap: 10px; padding: 10px 16px;
+    background: #0e1630; border-bottom: 1px solid var(--line);
+    font-size: 12px; color: var(--muted); }
+  .app-chrome .dots-3 { display: flex; gap: 6px; }
+  .app-chrome .dots-3 span { width: 10px; height: 10px; border-radius: 50%; }
+  .app-chrome .dots-3 span:nth-child(1) { background: #ff5f57; }
+  .app-chrome .dots-3 span:nth-child(2) { background: #febc2e; }
+  .app-chrome .dots-3 span:nth-child(3) { background: #28c840; }
+  .addr { font-family: "JetBrains Mono", monospace; font-size: 11px;
+    background: rgba(255,255,255,.05); padding: 4px 10px; border-radius: 999px; color: var(--muted); }
+  .app-body { padding: 22px; display: flex; gap: 22px; flex: 1; min-height: 0; }
+  .col { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+  .card { background: var(--card-strong); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
+  .card h4 { margin: 0 0 10px; font-size: 14px; font-weight: 600; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .08em; }
+  .row { display: flex; justify-content: space-between; align-items: center; gap: 14px; }
+  .row + .row { margin-top: 10px; }
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px;
+    font-size: 12px; background: rgba(59,130,246,.14); color: #bfd6ff; border: 1px solid rgba(59,130,246,.4); }
+  .pill.ok { background: rgba(34,197,94,.14); color: #a7f0c2; border-color: rgba(34,197,94,.4); }
+  .pill.bad { background: rgba(239,68,68,.14); color: #ffc2c2; border-color: rgba(239,68,68,.4); }
+  .pill.warn { background: rgba(245,158,11,.14); color: #ffdda1; border-color: rgba(245,158,11,.4); }
+  .avatar { width: 34px; height: 34px; border-radius: 50%;
+    background: linear-gradient(135deg, #7dd3fc, #818cf8);
+    display: grid; place-items: center; color: #0b1220; font-weight: 700; font-size: 13px; }
+
+  .ecg-frame { background: #0d1630; border: 1px solid var(--line); border-radius: 12px;
+    padding: 10px 14px; position: relative; overflow: hidden; }
+  .ecg-svg { display: block; width: 100%; height: 120px; }
+  .ecg-grid line { stroke: #1a2548; stroke-width: 0.5; }
+  .ecg-grid line.major { stroke: #2a3862; }
+  .ecg-path { fill: none; stroke: #22d3ee; stroke-width: 1.6;
+    stroke-linecap: round; stroke-linejoin: round;
+    filter: drop-shadow(0 0 4px rgba(34,211,238,.45)); }
+  .draw-on .ecg-path { stroke-dasharray: 1600; stroke-dashoffset: 1600;
+    animation: drawLine 3.5s ease forwards .3s; }
+  @keyframes drawLine { to { stroke-dashoffset: 0; } }
+  .live .ecg-path { animation: scroll 4s linear infinite; }
+  @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-240px); } }
+  .ecg-grid-12 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .lead { background: #0d1630; border: 1px solid var(--line); border-radius: 8px;
+    padding: 6px 8px; position: relative; height: 72px; }
+  .lead-label { position: absolute; top: 4px; left: 6px; font-size: 10px; color: var(--muted);
+    font-family: "JetBrains Mono", monospace; }
+  .lead svg { width: 100%; height: 100%; }
+
+  .bar { height: 8px; border-radius: 999px; background: rgba(255,255,255,.06);
+    overflow: hidden; position: relative; }
+  .bar > span { position: absolute; inset: 0; right: auto;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    border-radius: 999px; width: 0;
+    transition: width 1.2s cubic-bezier(.4,.8,.3,1) .2s; }
+  .slide.active .bar > span[data-w] { width: var(--w, 0%); }
+
+  .conf { display: flex; align-items: center; gap: 10px; }
+  .conf .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--primary);
+    box-shadow: 0 0 0 4px rgba(59,130,246,.15);
+    animation: pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 0 4px rgba(59,130,246,.15); }
+    50% { transform: scale(1.2); box-shadow: 0 0 0 9px rgba(59,130,246,.05); }
+  }
+  .heart { width: 28px; height: 28px; display: inline-grid; place-items: center; }
+  .heart svg { width: 28px; height: 28px; fill: #ff6b6b;
+    filter: drop-shadow(0 0 8px rgba(255,107,107,.6)); animation: beat 1.1s ease-in-out infinite; }
+  @keyframes beat { 0%, 100% { transform: scale(1); } 25% { transform: scale(1.18); } 50% { transform: scale(0.96); } }
+
+  .chip-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip { font-size: 12px; padding: 4px 10px; border-radius: 999px;
+    background: rgba(255,255,255,.06); border: 1px solid var(--line); color: var(--text); }
+  .chip.k { background: rgba(34,211,238,.12); border-color: rgba(34,211,238,.4); color: #a7edff; }
+
+  table.mini { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.mini th, table.mini td { padding: 8px 10px; text-align: left; }
+  table.mini thead { color: var(--muted); font-weight: 500; border-bottom: 1px solid var(--line); }
+  table.mini tbody tr { border-bottom: 1px solid rgba(255,255,255,.04); }
+  table.mini tbody tr:hover { background: rgba(255,255,255,.03); }
+
+  .kbd { display: inline-block; padding: 2px 8px; border-radius: 6px;
+    background: rgba(255,255,255,.08); border: 1px solid var(--line);
+    font-family: "JetBrains Mono", monospace; font-size: 11px; color: var(--text);
+    vertical-align: middle; }
+
+  .dropzone { border: 2px dashed rgba(255,255,255,.18); border-radius: 12px;
+    padding: 28px; text-align: center; color: var(--muted); transition: all .3s ease; }
+  .slide.active .dropzone.animated { animation: dropGlow 2s ease infinite alternate .6s; }
+  @keyframes dropGlow {
+    from { border-color: rgba(59,130,246,.3); box-shadow: 0 0 0 0 rgba(59,130,246,0); }
+    to { border-color: rgba(59,130,246,.7); box-shadow: 0 0 20px rgba(59,130,246,.2); }
+  }
+
+  .steps { display: flex; gap: 8px; align-items: center; }
+  .step { flex: 1; height: 6px; border-radius: 999px; background: rgba(255,255,255,.06); position: relative; }
+  .step > i { position: absolute; inset: 0; right: auto; width: 0;
+    background: linear-gradient(90deg, var(--primary), var(--accent)); border-radius: 999px; }
+  .slide.active .step.done > i { width: 100%; transition: width .6s ease; }
+  .slide.active .step.active > i { width: 60%; transition: width 1.6s ease; animation: shimmer 1.2s ease infinite alternate; }
+  @keyframes shimmer { from { opacity: .6; } to { opacity: 1; } }
+
+  .quote { font-size: 26px; line-height: 1.35; font-style: italic; color: #cfd9fb;
+    border-left: 4px solid var(--primary); padding-left: 22px; max-width: 820px; }
+  .quote cite { display: block; margin-top: 16px; font-style: normal; font-size: 14px; color: var(--muted); }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; height: 100%; min-height: 0; }
+  .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+  .hero { display: flex; flex-direction: column; justify-content: center; gap: 26px; flex: 1; }
+  .bigline {
+    font-size: 72px; font-weight: 800; letter-spacing: -.02em; line-height: 1.02;
+    background: linear-gradient(135deg, #e6ecff 0%, #9bb4ff 50%, #22d3ee 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+
+  .progress-bar { position: absolute; left: 0; right: 0; top: 0; height: 2px;
+    background: rgba(255,255,255,.04); z-index: 10; }
+  .progress-bar > span { display: block; height: 100%; width: 0%;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    transition: width .4s ease; }
+
+  .big-stat { display: flex; gap: 28px; align-items: flex-end; margin-top: 20px; flex-wrap: wrap; }
+  .big-stat .v { font-size: 64px; font-weight: 800; color: var(--primary-2); line-height: 1; }
+  .big-stat .k { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; }
+
+  ul { padding-left: 20px; }
+
+  /* Dark code block for the decimation slide (mirrors PPT section 6) */
+  .code-block {
+    background: #1e1e2e;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 22px 26px;
+    position: relative;
+    overflow: auto;
+    box-shadow: 0 20px 50px rgba(0,0,0,.35);
+  }
+  .code-block::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    border-radius: 12px 12px 0 0;
+  }
+  .code-block .code-title {
+    display: flex; align-items: center; gap: 8px;
+    font-family: "JetBrains Mono", Consolas, monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: .08em;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+  }
+  .code-block .code-title .dot-r { width: 8px; height: 8px; border-radius: 50%; background: #ff6b6b; }
+  .code-block .code-title .dot-y { width: 8px; height: 8px; border-radius: 50%; background: #ffcb6b; }
+  .code-block .code-title .dot-g { width: 8px; height: 8px; border-radius: 50%; background: #6cf09d; }
+  .code-block pre {
+    margin: 0;
+    color: #e6e6ec;
+    font-family: "JetBrains Mono", Consolas, ui-monospace, monospace;
+    font-size: 15px;
+    line-height: 1.7;
+    white-space: pre;
+  }
+  .code-block .tok-kw { color: #c792ea; }
+  .code-block .tok-mod { color: #82aaff; }
+  .code-block .tok-str { color: #c3e88d; }
+  .code-block .tok-num { color: #f78c6c; }
+  .code-block .tok-bool { color: #ff5370; }
+  .code-block .tok-com { color: #676e95; font-style: italic; }
+  .code-block .tok-fn { color: #ffcb6b; }
+
+  /* Numbered glossy side cards used by the decimation slide */
+  .num-card {
+    background: var(--card-strong);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px 16px 14px 56px;
+    position: relative;
+  }
+  .num-card::before {
+    content: attr(data-n);
+    position: absolute;
+    left: 14px;
+    top: 12px;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
+    font-weight: 700; font-size: 14px;
+    display: grid; place-items: center;
+    box-shadow: 0 6px 18px rgba(59,130,246,.35);
+  }
+  .num-card h4 { margin: 0 0 4px; color: var(--primary-2); font-size: 13px;
+    text-transform: uppercase; letter-spacing: .08em; }
+  .num-card p { margin: 0; font-size: 14px; color: #c7d2fe; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<div class="progress-bar"><span id="progressBar"></span></div>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="logo">C</div>
+    <span data-i18n="brand">CardioLens · 12-lead ECG Assistant for Clinicians</span>
+  </div>
+  <div class="topbar-right">
+    <div class="langs" role="tablist" aria-label="Language">
+      <button class="lang-btn" data-lang="en" title="English">EN</button>
+      <button class="lang-btn" data-lang="ru" title="Русский">RU</button>
+      <button class="lang-btn" data-lang="ky" title="Кыргызча">KY</button>
+    </div>
+    <div style="display:flex; gap:6px; align-items:center;">
+      <span class="kbd">←</span><span class="kbd">→</span>
+      <span data-i18n="nav_hint">to navigate</span>
+    </div>
+  </div>
+</div>
+
+<div class="deck" id="deck">
+
+  <!-- 1. TITLE -->
+  <section class="slide" data-title-key="t_s1">
+    <div class="hero">
+      <div class="eyebrow reveal reveal-1" data-i18n="s1_eyebrow">For the Cardiology Team</div>
+      <div class="bigline reveal reveal-2"><span data-i18n="s1_title_1">A second pair of eyes</span><br><span data-i18n="s1_title_2">on every ECG.</span></div>
+      <p class="lead reveal reveal-3" data-i18n="s1_lead" data-i18n-html="1">
+        CardioLens reads 12-lead ECGs in under 30 ms and shows you
+        <strong>what it sees, where it sees it, and how confident it is</strong>
+        — so you can confirm, override, and move on.
+      </p>
+      <div class="reveal reveal-4" style="display:flex; gap:16px; margin-top:20px; flex-wrap:wrap;">
+        <div class="pill ok" data-i18n="s1_tag1">Clinical decision support · not a replacement</div>
+        <div class="pill" data-i18n="s1_tag2">97.34% test accuracy · Chapman-Shaoxing</div>
+        <div class="pill" data-i18n="s1_tag3">Every recommendation reviewable & reversible</div>
+      </div>
+      <div class="ecg-frame reveal reveal-5 draw-on" style="margin-top:28px; max-width:860px;">
+        <svg class="ecg-svg" viewBox="0 0 800 120" preserveAspectRatio="none">
+          <g class="ecg-grid">
+            <line x1="0" y1="60" x2="800" y2="60" class="major"/>
+            <line x1="0" y1="30" x2="800" y2="30"/>
+            <line x1="0" y1="90" x2="800" y2="90"/>
+          </g>
+          <path class="ecg-path" d="M0,60 L40,60 L55,58 L65,62 L75,60 L95,60 L100,40 L105,80 L110,20 L115,90 L120,60 L140,60 L150,55 L160,60 L200,60 L215,58 L225,62 L235,60 L255,60 L260,40 L265,80 L270,20 L275,90 L280,60 L300,60 L310,55 L320,60 L360,60 L375,58 L385,62 L395,60 L415,60 L420,40 L425,80 L430,20 L435,90 L440,60 L460,60 L470,55 L480,60 L520,60 L535,58 L545,62 L555,60 L575,60 L580,40 L585,80 L590,20 L595,90 L600,60 L620,60 L630,55 L640,60 L680,60 L695,58 L705,62 L715,60 L735,60 L740,40 L745,80 L750,20 L755,90 L760,60 L780,60 L790,58 L800,60"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. STAKEHOLDERS -->
+  <section class="slide" data-title-key="t_s2">
+    <div class="eyebrow reveal reveal-1" data-i18n="s2_eyebrow">Who this talk is for</div>
+    <h2 class="reveal reveal-2" data-i18n="s2_title">Three people. One tool. Three different views.</h2>
+    <p class="lead reveal reveal-3" style="margin-top:18px;" data-i18n="s2_lead">CardioLens is designed around the clinician's workflow, but it also gives clear, role-appropriate views to the doctor who prescribes care, the department head who is accountable for outcomes, and the IT team who keeps the hospital running.</p>
+    <div class="three-col reveal reveal-4" style="margin-top:38px;">
+      <div class="card">
+        <h4 data-i18n="s2_c1_h">Cardiologist / GP</h4>
+        <p style="margin:6px 0 10px;" data-i18n="s2_c1_p">Needs a confirmed diagnosis in under 2 minutes, with a rationale they can sign off on.</p>
+        <div class="chip-row"><div class="chip k" data-i18n="s2_c1_chip">Queue · Results · Override · Sign</div></div>
+      </div>
+      <div class="card">
+        <h4 data-i18n="s2_c2_h">Department Head</h4>
+        <p style="margin:6px 0 10px;" data-i18n="s2_c2_p">Needs to see throughput, clinician agreement rate, and a clean audit trail for every decision the AI was part of.</p>
+        <div class="chip-row"><div class="chip k" data-i18n="s2_c2_chip">Analytics · Agreement · Audit</div></div>
+      </div>
+      <div class="card">
+        <h4 data-i18n="s2_c3_h">IT / Compliance</h4>
+        <p style="margin:6px 0 10px;" data-i18n="s2_c3_p">Needs role-based access, encrypted PHI at rest and in transit, and integration without changing existing EHR workflows.</p>
+        <div class="chip-row"><div class="chip k" data-i18n="s2_c3_chip">SSO · RBAC · HL7/FHIR</div></div>
+      </div>
+    </div>
+    <p class="muted reveal reveal-5" style="margin-top:30px;" data-i18n="s2_footer" data-i18n-html="1">The rest of this deck is told from the <strong>cardiologist's</strong> point of view — it's a guided tour of the screens they will actually touch, in the order they touch them.</p>
+  </section>
+
+  <!-- 3. PERSONA -->
+  <section class="slide" data-title-key="t_s3">
+    <div class="two-col">
+      <div>
+        <div class="eyebrow reveal reveal-1" data-i18n="s3_eyebrow">Persona</div>
+        <h2 class="reveal reveal-2" data-i18n="s3_title">Dr. Aigul, cardiology registrar.</h2>
+        <p class="lead reveal reveal-3" style="margin-top:14px;" data-i18n="s3_lead">Regional hospital in Osh. 40+ ECGs a day, of which maybe six are genuinely time-critical. She reads on a desktop, sometimes on a tablet at bedside.</p>
+        <div style="display:flex; gap:18px; margin-top:22px; flex-wrap:wrap;">
+          <div class="stat reveal reveal-4"><span class="num">~40</span><span class="lbl" data-i18n="s3_stat1">ECGs / day</span></div>
+          <div class="stat reveal reveal-5"><span class="num">2 min</span><span class="lbl" data-i18n="s3_stat2">target read time</span></div>
+          <div class="stat reveal reveal-6"><span class="num">6</span><span class="lbl" data-i18n="s3_stat3">urgent in a typical shift</span></div>
+        </div>
+        <p class="muted reveal reveal-7" style="margin-top:28px;" data-i18n="s3_footer">Today we follow her through a single case: a 57-year-old post-cath patient with new-onset palpitations.</p>
+      </div>
+      <div class="reveal reveal-4" style="display:flex; flex-direction:column; justify-content:center;">
+        <div class="card">
+          <div class="row">
+            <div class="avatar">A</div>
+            <div style="flex:1;">
+              <div style="font-weight:600;" data-i18n="s3_name">Dr. Aigul K.</div>
+              <div class="muted" style="font-size:12px;" data-i18n="s3_role">Cardiology registrar · Shift 08:00–20:00</div>
+            </div>
+            <div class="pill ok" data-i18n="s3_oncall">On call</div>
+          </div>
+          <hr style="border:none; border-top:1px solid var(--line); margin:14px 0;">
+          <div class="row"><div class="muted" style="font-size:12px;" data-i18n="s3_ask_label">What she asks of the tool</div></div>
+          <ul style="margin:10px 0 0; padding-left:20px;">
+            <li data-i18n="s3_ask_1">Prioritise the queue — urgent ECGs first.</li>
+            <li data-i18n="s3_ask_2" data-i18n-html="1">Show me the diagnosis and <em>where</em> it was seen in the trace.</li>
+            <li data-i18n="s3_ask_3">Let me disagree in one click.</li>
+            <li data-i18n="s3_ask_4">Generate the report; do not make me retype the patient MRN.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. FLOW -->
+  <section class="slide" data-title-key="t_s4">
+    <div class="eyebrow reveal reveal-1" data-i18n="s4_eyebrow">What the workflow looks like</div>
+    <h2 class="reveal reveal-2" data-i18n="s4_title">Five screens. Five taps. End with a signed report.</h2>
+    <div class="steps reveal reveal-3" style="margin-top:40px; max-width:860px;">
+      <div class="step done"><i></i></div><div class="step done"><i></i></div>
+      <div class="step active"><i></i></div><div class="step"><i></i></div><div class="step"><i></i></div>
+    </div>
+    <div class="three-col reveal reveal-4" style="margin-top:24px;">
+      <div class="card"><h4 data-i18n="s4_1h">1 · Triage queue</h4><p data-i18n="s4_1p">Work list, sorted by urgency and waiting time. Colour-coded.</p></div>
+      <div class="card"><h4 data-i18n="s4_2h">2 · Upload</h4><p data-i18n="s4_2p">Drag-and-drop .mat / .csv / paper-scan image. Or stream from device.</p></div>
+      <div class="card"><h4 data-i18n="s4_3h">3 · Reading room</h4><p data-i18n="s4_3p">12-lead trace, AI diagnosis card, confidence, where it looked.</p></div>
+    </div>
+    <div class="three-col reveal reveal-5" style="margin-top:14px;">
+      <div class="card"><h4 data-i18n="s4_4h">4 · Confirm or override</h4><p data-i18n="s4_4p">One click agree; one click disagree + reason. Always the doctor's call.</p></div>
+      <div class="card"><h4 data-i18n="s4_5h">5 · Report</h4><p data-i18n="s4_5p">PDF out to the EHR with the patient's name already in the header.</p></div>
+      <div class="card" style="background:rgba(34,211,238,.08); border-color:rgba(34,211,238,.25);">
+        <h4 class="accent" data-i18n="s4_6h">Audit</h4><p data-i18n="s4_6p">Every click logged; every override reviewable from the analytics tab.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. LOGIN -->
+  <section class="slide" data-title-key="t_s5">
+    <div class="two-col">
+      <div>
+        <div class="eyebrow reveal reveal-1" data-i18n="s5_eyebrow">Step 0 · Sign in</div>
+        <h2 class="reveal reveal-2" data-i18n="s5_title">Single sign-on. Role is set by the hospital, not by the user.</h2>
+        <ul class="reveal reveal-3" style="margin-top:16px; max-width:480px;">
+          <li data-i18n="s5_1">SSO via the hospital's identity provider (SAML / OIDC).</li>
+          <li data-i18n="s5_2" data-i18n-html="1">Role-based access: <span class="chip">Clinician</span> <span class="chip">Department head</span> <span class="chip">Admin</span>.</li>
+          <li data-i18n="s5_3">All sessions encrypted (TLS 1.3). PHI never leaves the hospital VLAN.</li>
+          <li data-i18n="s5_4">Session timeout aligned with hospital policy (default 30 min).</li>
+        </ul>
+      </div>
+      <div class="reveal slide-in-right" style="display:flex; align-items:center; justify-content:center;">
+        <div class="app-frame" style="width: 420px;">
+          <div class="app-chrome"><div class="dots-3"><span></span><span></span><span></span></div>
+            <div class="addr">cardiolens.hospital.local / sign-in</div></div>
+          <div class="app-body" style="flex-direction:column;">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;">
+              <div class="logo" style="width:28px; height:28px; background:linear-gradient(135deg,var(--primary),var(--accent)); border-radius:8px; display:grid;place-items:center; font-weight:700; color:white;">C</div>
+              <div style="font-weight:600;">CardioLens</div>
+            </div>
+            <p class="muted" style="font-size:13px; margin:6px 0 16px;" data-i18n="s5_signin_p">Sign in with your hospital account.</p>
+            <div class="card" style="padding:18px; background: rgba(255,255,255,.03);">
+              <div class="row"><span class="muted" style="font-size:12px;" data-i18n="s5_email">Email</span></div>
+              <div class="mono" style="font-size:13px; color:#bfd6ff; margin-top:6px;">aigul.k@hospital.kg</div>
+              <hr style="border:none; border-top:1px solid var(--line); margin:12px 0;">
+              <div class="row"><span class="muted" style="font-size:12px;" data-i18n="s5_role">Role</span><span class="pill ok" data-i18n="s5_role_val">Cardiologist</span></div>
+            </div>
+            <button class="btn-nav" style="margin-top:16px; padding:10px 14px; justify-content:center; background: var(--primary); border-color: var(--primary); color: white; font-weight:600;" data-i18n="s5_cta">Continue with SSO →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. QUEUE -->
+  <section class="slide" data-title-key="t_s6">
+    <div class="eyebrow reveal reveal-1" data-i18n="s6_eyebrow">Screen 1 · Triage queue</div>
+    <h2 class="reveal reveal-2" data-i18n="s6_title">The first thing she sees every morning.</h2>
+    <div class="reveal reveal-3" style="margin-top:20px; flex:1; min-height:0; display:flex;">
+      <div class="app-frame" style="width: 100%; height: 100%;">
+        <div class="app-chrome">
+          <div class="dots-3"><span></span><span></span><span></span></div>
+          <div class="addr">cardiolens.hospital.local / queue</div>
+          <div style="margin-left:auto; font-size:12px; color:var(--muted);" data-i18n="s6_now">08:14 · Mon 24 Apr 2026</div>
+        </div>
+        <div class="app-body">
+          <div class="col" style="width:230px; flex: 0 0 230px;">
+            <div class="card" style="padding: 14px;">
+              <h4 data-i18n="s6_filters">Filters</h4>
+              <div class="chip-row" style="flex-direction:column; align-items:flex-start;">
+                <div class="chip k" data-i18n="s6_f1">· Urgent (6)</div>
+                <div class="chip" data-i18n="s6_f2">· Routine (12)</div>
+                <div class="chip" data-i18n="s6_f3">· Followup (9)</div>
+                <div class="chip" data-i18n="s6_f4">· My overrides (2)</div>
+              </div>
+            </div>
+            <div class="card">
+              <h4 data-i18n="s6_saved">Saved searches</h4>
+              <div class="chip-row" style="flex-direction:column; align-items:flex-start;">
+                <div class="chip" data-i18n="s6_s1">AF suspects</div>
+                <div class="chip" data-i18n="s6_s2">Post-cath 48h</div>
+              </div>
+            </div>
+          </div>
+          <div class="col" style="flex:1;">
+            <div class="card" style="padding: 10px 14px;">
+              <table class="mini">
+                <thead><tr>
+                  <th data-i18n="s6_th1">Priority</th><th data-i18n="s6_th2">Patient</th>
+                  <th data-i18n="s6_th3">MRN</th><th data-i18n="s6_th4">AI flag</th>
+                  <th data-i18n="s6_th5">Waited</th><th data-i18n="s6_th6">Confidence</th><th></th>
+                </tr></thead>
+                <tbody>
+                  <tr><td><span class="pill bad" data-i18n="s6_prio_urg">Urgent</span></td><td data-i18n="s6_p1">M. Omurov, 72</td><td class="mono">MRN-00483</td><td data-i18n="s6_d1">Acute MI, anterior</td><td data-i18n="s6_w_4min">4 min</td><td><div class="bar" style="--w:92%"><span data-w></span></div></td><td><span class="muted">→</span></td></tr>
+                  <tr><td><span class="pill bad" data-i18n="s6_prio_urg2">Urgent</span></td><td data-i18n="s6_p2">G. Tashieva, 57</td><td class="mono">MRN-00941</td><td data-i18n="s6_d2">ECG: atrial fibrillation</td><td data-i18n="s6_w_2min">2 min</td><td><div class="bar" style="--w:86%"><span data-w></span></div></td><td><span class="muted">→</span></td></tr>
+                  <tr style="background:rgba(59,130,246,.06);"><td><span class="pill" data-i18n="s6_prio_now">Now</span></td><td><strong data-i18n="s6_p3">A. Isaeva, 57</strong> <span class="heart" style="vertical-align:middle;"><svg viewBox="0 0 24 24"><path d="M12 21s-6.7-4.35-9.33-8.06C.54 10.12 1.4 6.2 4.6 5.04c2.1-.77 4.18.22 5.4 1.73C11.22 5.26 13.3 4.27 15.4 5.04c3.2 1.16 4.06 5.08 1.93 7.9C18.7 16.65 12 21 12 21z"/></svg></span></td><td class="mono">MRN-00872</td><td data-i18n="s6_d3">Suspected SVT</td><td data-i18n="s6_w_now">Now</td><td><div class="bar" style="--w:74%"><span data-w></span></div></td><td><span class="accent" data-i18n="s6_open">▶ open</span></td></tr>
+                  <tr><td><span class="pill warn" data-i18n="s6_prio_high">High</span></td><td data-i18n="s6_p4">B. Jumabekov, 49</td><td class="mono">MRN-00519</td><td data-i18n="s6_d4">First-degree AV block</td><td data-i18n="s6_w_11min">11 min</td><td><div class="bar" style="--w:78%"><span data-w></span></div></td><td><span class="muted">→</span></td></tr>
+                  <tr><td><span class="pill" data-i18n="s6_prio_rou">Routine</span></td><td data-i18n="s6_p5">S. Bakirova, 64</td><td class="mono">MRN-01027</td><td data-i18n="s6_d5">Sinus bradycardia</td><td data-i18n="s6_w_22min">22 min</td><td><div class="bar" style="--w:88%"><span data-w></span></div></td><td><span class="muted">→</span></td></tr>
+                  <tr><td><span class="pill" data-i18n="s6_prio_rou2">Routine</span></td><td data-i18n="s6_p6">T. Umetov, 33</td><td class="mono">MRN-00612</td><td data-i18n="s6_d6">Normal sinus rhythm</td><td data-i18n="s6_w_30min">30 min</td><td><div class="bar" style="--w:97%"><span data-w></span></div></td><td><span class="muted">→</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="muted" style="font-size:12px;" data-i18n="s6_sortnote" data-i18n-html="1">Queue sorted by <span class="accent">priority → waiting time</span>. Her cases with open overrides surface to the top.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. UPLOAD -->
+  <section class="slide" data-title-key="t_s7">
+    <div class="eyebrow reveal reveal-1" data-i18n="s7_eyebrow">Screen 2 · Get the ECG in</div>
+    <h2 class="reveal reveal-2" data-i18n="s7_title">Three ways in. Device, file, or photo.</h2>
+    <div class="two-col" style="margin-top:24px; flex:1; min-height:0;">
+      <div class="reveal reveal-3">
+        <div class="app-frame" style="height: 100%;">
+          <div class="app-chrome"><div class="dots-3"><span></span><span></span><span></span></div>
+            <div class="addr">cardiolens.hospital.local / new-ecg</div></div>
+          <div class="app-body" style="flex-direction:column;">
+            <div class="card" style="background: rgba(59,130,246,.05); border-color: rgba(59,130,246,.3);">
+              <h4 data-i18n="s7_for">For patient</h4>
+              <div class="row"><div style="font-weight:600;">A. Isaeva, 57 · MRN-00872</div><span class="pill ok" data-i18n="s7_verified">Verified</span></div>
+            </div>
+            <div class="dropzone animated" style="margin-top: 6px;">
+              <div style="font-size:34px;">⇪</div>
+              <div style="font-weight:600; color: var(--text); margin-top:6px;" data-i18n="s7_dz_title">Drag &amp; drop an ECG file</div>
+              <div class="muted" style="margin-top:4px;" data-i18n="s7_dz_sub">.mat · .csv · .xml (HL7 aECG) · .png / .jpg of a paper strip</div>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:6px;">
+              <button class="btn-nav" style="padding:12px; justify-content:center;" data-i18n="s7_btn1">⚡ Stream from device</button>
+              <button class="btn-nav" style="padding:12px; justify-content:center;" data-i18n="s7_btn2">📷 Photo of paper ECG</button>
+            </div>
+            <div class="muted" style="font-size:12px; margin-top:10px;" data-i18n="s7_foot">Photo capture runs local image-digitisation before analysis. Nothing leaves the hospital network.</div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal reveal-4" style="display:flex; flex-direction:column; gap: 16px;">
+        <div class="card"><h4 data-i18n="s7_v_h">Validation before analysis</h4>
+          <ul style="margin:6px 0 0; padding-left: 20px;">
+            <li data-i18n="s7_v_1">12 leads present, each ≥ 10 s.</li>
+            <li data-i18n="s7_v_2">Signal quality index ≥ 0.85 (flag &amp; ask to retake if not).</li>
+            <li data-i18n="s7_v_3">MRN matches the open patient record; mismatches block upload.</li>
+          </ul></div>
+        <div class="card"><h4 data-i18n="s7_r_h">What the patient record gains</h4>
+          <ul style="margin:6px 0 0; padding-left: 20px;">
+            <li data-i18n="s7_r_1">Raw signal, stored encrypted.</li>
+            <li data-i18n="s7_r_2">Computed signal-quality metadata for this reading.</li>
+            <li data-i18n="s7_r_3">Link to previous readings for the same MRN (for compare).</li>
+          </ul></div>
+        <div class="quote">
+          <span data-i18n="s7_quote">"I don't care how she got the ECG in. I care that by the time I click 'analyse' the patient is on the record."</span>
+          <cite data-i18n="s7_cite">— Dr. Aigul, user research interview, March 2026</cite>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. ANALYSIS -->
+  <section class="slide" data-title-key="t_s8">
+    <div class="eyebrow reveal reveal-1" data-i18n="s8_eyebrow">Screen 3a · The model runs</div>
+    <h2 class="reveal reveal-2" data-i18n="s8_title">27 milliseconds on the server. About a blink.</h2>
+    <div class="two-col" style="margin-top: 30px; flex:1; min-height:0;">
+      <div class="reveal slide-in-left">
+        <div class="app-frame">
+          <div class="app-chrome"><div class="dots-3"><span></span><span></span><span></span></div><div class="addr" data-i18n="s8_addr">analyzing · patient A. Isaeva</div></div>
+          <div class="app-body" style="flex-direction:column; gap:16px;">
+            <div class="ecg-frame live" style="overflow:hidden;">
+              <svg class="ecg-svg" viewBox="0 0 800 120" preserveAspectRatio="none">
+                <g class="ecg-grid">
+                  <line x1="0" y1="60" x2="800" y2="60" class="major"/>
+                  <line x1="0" y1="30" x2="800" y2="30"/>
+                  <line x1="0" y1="90" x2="800" y2="90"/>
+                </g>
+                <path class="ecg-path" d="M0,60 L30,60 L40,55 L50,62 L60,60 L100,60 L105,38 L110,82 L115,24 L120,90 L125,60 L160,60 L170,55 L180,62 L190,60 L240,60 L245,40 L250,78 L255,22 L260,88 L265,60 L300,60 L310,55 L320,62 L330,60 L380,60 L385,40 L390,78 L395,22 L400,88 L405,60 L440,60 L450,55 L460,62 L470,60 L520,60 L525,40 L530,78 L535,22 L540,88 L545,60 L580,60 L590,55 L600,62 L610,60 L660,60 L665,40 L670,78 L675,22 L680,88 L685,60 L720,60 L730,55 L740,62 L750,60 L800,60"/>
+              </svg>
+            </div>
+            <div class="card">
+              <div class="row"><span class="muted" data-i18n="s8_step1">Step 1 · Signal quality check</span><span class="pill ok">SQI 0.94</span></div>
+              <div class="row"><span class="muted" data-i18n="s8_step2">Step 2 · Anti-aliased decimation 5000→500</span><span class="pill ok" data-i18n="s8_done">done</span></div>
+              <div class="row"><span class="muted" data-i18n="s8_step3">Step 3 · 1D-CNN inference</span><span class="pill"><span class="conf"><span class="dot"></span>27 ms</span></span></div>
+              <div class="row"><span class="muted" data-i18n="s8_step4">Step 4 · Narration (local LLM)</span><span class="pill warn">120 ms</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal slide-in-right" style="display:flex; flex-direction:column; justify-content:center; gap:16px;">
+        <div class="card"><h4 data-i18n="s8_r1_h">What the clinician sees while it runs</h4>
+          <p data-i18n="s8_r1_p">A short, honest progress bar. No spinner that hides the state of the system.</p></div>
+        <div class="card"><h4 data-i18n="s8_r2_h" data-i18n-html="1">What the clinician <span class="bad">doesn't</span> see</h4>
+          <ul style="margin:6px 0 0; padding-left: 20px;">
+            <li data-i18n="s8_r2_1">The model's internal class probabilities over 78 categories.</li>
+            <li data-i18n="s8_r2_2">Any label the signal-quality check rejected.</li>
+            <li data-i18n="s8_r2_3">Anything that would slow the decision without adding information.</li>
+          </ul></div>
+        <div class="muted" style="font-size:12px;" data-i18n="s8_foot" data-i18n-html="1">Full raw output is always available in the <span class="chip">Advanced</span> drawer for department-head audits and thesis reporting.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8b. DECIMATION (mirrors PPT section 6) -->
+  <section class="slide" data-title-key="t_sdec">
+    <div class="eyebrow reveal reveal-1" data-i18n="sdec_eyebrow">The core change</div>
+    <h2 class="reveal reveal-2" data-i18n="sdec_title">The Core Change: Anti-Aliased Decimation</h2>
+    <p class="lead reveal reveal-3" style="margin-top:10px;" data-i18n="sdec_sub">A three-line patch to preprocessing. Nothing else changes.</p>
+
+    <div class="two-col" style="margin-top: 24px; flex:1; min-height:0; grid-template-columns: 1.2fr 1fr;">
+      <div class="reveal slide-in-left" style="display:flex; flex-direction:column; justify-content:center;">
+        <div class="code-block">
+          <div class="code-title">
+            <span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span>
+            <span style="margin-left:8px;">preprocessing.py · step 6</span>
+          </div>
+<pre><span class="tok-kw">from</span> <span class="tok-mod">scipy.signal</span> <span class="tok-kw">import</span> decimate
+
+<span class="tok-com"># factor = 5   →  5000 → 1000 samples  (100 Hz effective)</span>
+<span class="tok-com"># factor = 10  →  5000 →  500 samples  ( 50 Hz effective)</span>
+x_down = <span class="tok-fn">decimate</span>(x, factor,
+                  ftype=<span class="tok-str">'iir'</span>,     <span class="tok-com"># Chebyshev type-I low-pass</span>
+                  n=<span class="tok-num">8</span>,             <span class="tok-com"># filter order</span>
+                  zero_phase=<span class="tok-bool">True</span>) <span class="tok-com"># preserves P-wave phase</span></pre>
+        </div>
+        <div class="code-caption" data-i18n="sdec_caption">scipy.signal.decimate — applied once at ingest, before the model ever sees the signal.</div>
+      </div>
+
+      <div class="reveal slide-in-right" style="display:flex; flex-direction:column; justify-content:center; gap: 14px;">
+        <div class="num-card" data-n="1">
+          <h4 data-i18n="sdec_b1_h">Phase preserved</h4>
+          <p data-i18n="sdec_b1_p">zero_phase=True runs the filter forward and backward, so P-wave and QRS timing are not shifted.</p>
+        </div>
+        <div class="num-card" data-n="2">
+          <h4 data-i18n="sdec_b2_h">Proper anti-aliasing</h4>
+          <p data-i18n="sdec_b2_p">Chebyshev type-I low-pass at the new Nyquist removes any signal that would otherwise fold into the QRS band — the difference between +10 pp F1 and worse than baseline.</p>
+        </div>
+        <div class="num-card" data-n="3">
+          <h4 data-i18n="sdec_b3_h">Off-line, no training cost</h4>
+          <p data-i18n="sdec_b3_p">Applied once at ingest. Zero training overhead, 3.3× faster inference, smaller tensors.</p>
+        </div>
+        <div class="num-card" data-n="4">
+          <h4 data-i18n="sdec_b4_h">Same data hygiene as baseline</h4>
+          <p data-i18n="sdec_b4_p">Seed, class weights, augmentation recipe and the split are unchanged from the 5000-sample baseline — the gain is attributable to this step alone.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. RESULTS -->
+  <section class="slide" data-title-key="t_s9">
+    <div class="eyebrow reveal reveal-1" data-i18n="s9_eyebrow">Screen 3b · Reading room</div>
+    <h2 class="reveal reveal-2" data-i18n="s9_title">12-lead view, top diagnosis, confidence, rationale.</h2>
+    <div class="reveal reveal-3" style="margin-top:18px; flex:1; min-height:0; display:flex;">
+      <div class="app-frame" style="width: 100%; height: 100%;">
+        <div class="app-chrome">
+          <div class="dots-3"><span></span><span></span><span></span></div>
+          <div class="addr">cardiolens.hospital.local / reading / #87201</div>
+          <div style="margin-left:auto; font-size:12px; color:var(--muted);" data-i18n="s9_reviewing">Reviewing · Dr. Aigul K.</div>
+        </div>
+        <div class="app-body">
+          <div class="col" style="flex:1.6;">
+            <div class="card" style="padding:12px;">
+              <div class="row" style="margin-bottom:8px;">
+                <div style="font-weight:600;" data-i18n="s9_pinfo">A. Isaeva, 57 · MRN-00872 · 24-Apr-2026 08:19</div>
+                <div class="chip-row">
+                  <span class="chip" data-i18n="s9_c1">12-lead</span><span class="chip">500 Hz</span><span class="chip">10 s</span>
+                </div>
+              </div>
+              <div class="ecg-grid-12">
+                <div class="lead"><span class="lead-label">I</span>   <svg viewBox="0 0 180 50" preserveAspectRatio="none"><path class="ecg-path" d="M0,25 L30,25 L35,18 L40,32 L45,10 L50,40 L55,25 L100,25 L105,18 L110,32 L115,10 L120,40 L125,25 L180,25"/></svg></div>
+                <div class="lead"><span class="lead-label">aVR</span> <svg viewBox="0 0 180 50" preserveAspectRatio="none"><path class="ecg-path" d="M0,25 L30,25 L35,32 L40,18 L45,40 L50,10 L55,25 L100,25 L105,32 L110,18 L115,40 L120,10 L125,25 L180,25"/></svg></div>
+                <div class="lead"><span class="lead-label">V1</span>  <svg viewBox="0 0 180 50" preserveAspectRatio="none"><path class="ecg-path" d="M0,25 L25,25 L28,20 L32,30 L36,14 L40,38 L44,25 L95,25 L98,20 L102,30 L106,14 L110,38 L114,25 L180,25"/></svg></div>
+                <div class="lead"><span class="lead-label">II</span>  <svg viewBox="0 0 180 50" preserveAspectRatio="none"><path class="ecg-path" d="M0,27 L30,27 L35,22 L40,34 L45,6  L50,42 L55,27 L100,27 L105,22 L110,34 L115,6 L120,42 L125,27 L180,27"/></svg></div>
+                <div class="lead"><span class="lead-label">aVL</span> <svg viewBox="0 0 180 50" preserveAspectRatio="none"><path class="ecg-path" d="M0,25 L30,25 L35,18 L40,30 L45,12 L50,36 L55,25 L100,25 L105,18 L110,30 L115,12 L120,36 L125,25 L180,25"/></svg></div>
+                <div class="lead"><span class="lead-label">V2</span>  <svg viewBox="0 0 180 50" preserveAspectRatio="none"><path class="ecg-path" d="M0,30 L25,30 L28,20 L32,40 L36,8 L40,44 L44,30 L95,30 L98,20 L102,40 L106,8 L110,44 L114,30 L180,30"/></svg></div>
+                <div class="lead"><span class="lead-label">III</span> <svg viewBox="0 0 180 50" preserveAspectRatio="none"><path class="ecg-path" d="M0,25 L30,25 L35,22 L40,30 L45,14 L50,38 L55,25 L100,25 L105,22 L110,30 L115,14 L120,38 L125,25 L180,25"/></svg></div>
+                <div class="lead"><span class="lead-label">aVF</span> <svg viewBox="0 0 180 50" preserveAspectRatio="none"><path class="ecg-path" d="M0,27 L30,27 L35,20 L40,32 L45,10 L50,40 L55,27 L100,27 L105,20 L110,32 L115,10 L120,40 L125,27 L180,27"/></svg></div>
+                <div class="lead"><span class="lead-label">V3</span>  <svg viewBox="0 0 180 50" preserveAspectRatio="none"><path class="ecg-path" d="M0,28 L25,28 L28,18 L32,38 L36,10 L40,42 L44,28 L95,28 L98,18 L102,38 L106,10 L110,42 L114,28 L180,28"/></svg></div>
+              </div>
+            </div>
+          </div>
+          <div class="col" style="flex:1;">
+            <div class="card" style="background: linear-gradient(180deg, rgba(59,130,246,.12), rgba(34,211,238,.06)); border-color: rgba(59,130,246,.4);">
+              <h4 style="color: var(--primary-2);" data-i18n="s9_dx_h">AI Diagnosis</h4>
+              <div style="font-size:22px; font-weight:700; line-height:1.15;" data-i18n="s9_dx">Supraventricular tachycardia</div>
+              <div class="muted" style="font-size:13px; margin-top:4px;" data-i18n="s9_dx_diff">differential: AV-nodal re-entry</div>
+              <div class="conf" style="margin-top:14px;">
+                <span class="dot"></span><strong data-i18n="s9_conf">Confidence 74%</strong>
+                <span class="muted" style="font-size:12px;" data-i18n="s9_thresh">· threshold for auto-report 85%</span>
+              </div>
+              <div class="bar" style="--w:74%; margin-top:8px;"><span data-w></span></div>
+            </div>
+            <div class="card">
+              <h4 data-i18n="s9_sec_h">Secondary findings</h4>
+              <div class="row"><span data-i18n="s9_sec_1">Left atrial enlargement</span><span class="pill warn">32%</span></div>
+              <div class="row"><span data-i18n="s9_sec_2">Normal axis</span><span class="pill ok">96%</span></div>
+              <div class="row"><span data-i18n="s9_sec_3">QTc within range</span><span class="pill ok" data-i18n="s9_ok">ok</span></div>
+            </div>
+            <div class="card">
+              <h4 data-i18n="s9_why_h">Why this?</h4>
+              <p style="font-size:13px; margin:4px 0 0; color:#c7d2fe;" data-i18n="s9_why_p">Peak attention on QRS morphology in V1 and rhythm regularity in lead II. Rate ≈ 168 bpm, narrow QRS, no discernable P-waves in lead II. Consistent with supraventricular origin.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10. OVERRIDE -->
+  <section class="slide" data-title-key="t_s10">
+    <div class="eyebrow reveal reveal-1" data-i18n="s10_eyebrow">Screen 4 · The clinician decides</div>
+    <h2 class="reveal reveal-2" data-i18n="s10_title">Agree. Or disagree. Either way, one click.</h2>
+    <div class="two-col" style="margin-top: 20px; flex: 1; min-height:0;">
+      <div class="reveal slide-in-left">
+        <div class="app-frame" style="height:100%;">
+          <div class="app-chrome"><div class="dots-3"><span></span><span></span><span></span></div><div class="addr">reading / #87201 / decide</div></div>
+          <div class="app-body" style="flex-direction:column; gap:16px;">
+            <div class="card" style="background: rgba(34,197,94,.06); border-color: rgba(34,197,94,.35);">
+              <h4 class="ok" data-i18n="s10_agree_h">Agree with AI</h4>
+              <p style="margin:6px 0 0;" data-i18n="s10_agree_p">Signs the report, sends to EHR, closes the case. Tracked in analytics as an AI-concordant reading.</p>
+              <button class="btn-nav" style="margin-top:10px; padding:10px 14px; background: var(--ok); border-color: var(--ok); color: white; font-weight:600;" data-i18n="s10_agree_btn">✓ Sign as supraventricular tachycardia</button>
+            </div>
+            <div class="card" style="background: rgba(239,68,68,.06); border-color: rgba(239,68,68,.35);">
+              <h4 class="bad" data-i18n="s10_dis_h">Disagree — override</h4>
+              <p style="margin:6px 0 6px;" data-i18n="s10_dis_p" data-i18n-html="1">Pick a different diagnosis from the list or write free-text. <strong>A reason is required</strong>.</p>
+              <div class="chip-row" style="margin-top:8px;">
+                <div class="chip k" data-i18n="s10_c1">Atrial flutter with 2:1</div>
+                <div class="chip" data-i18n="s10_c2">Sinus tachy</div>
+                <div class="chip" data-i18n="s10_c3">AVNRT</div>
+                <div class="chip" data-i18n="s10_c4">Other…</div>
+              </div>
+              <div class="muted" style="font-size:12px; margin-top:10px;" data-i18n="s10_reason">Reason: signal artefact in leads V1–V3; will re-acquire.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal slide-in-right" style="display:flex; flex-direction:column; justify-content:center; gap:16px;">
+        <h3 data-i18n="s10_r_h">Why the override path is a first-class button.</h3>
+        <ul>
+          <li data-i18n="s10_r_1">The doctor's name goes on the report — not the model's.</li>
+          <li data-i18n="s10_r_2" data-i18n-html="1">Overrides are <strong>feedback signal</strong>: the analytics tab measures per-clinician agreement rate, and the model retraining pipeline consumes high-confidence overrides as corrective labels.</li>
+          <li data-i18n="s10_r_3">No penalty, no friction, no "are you sure?" modal. One click.</li>
+        </ul>
+        <div class="card">
+          <h4 data-i18n="s10_a_h">After the click</h4>
+          <div class="row"><span data-i18n="s10_a_1">Finalised diagnosis</span><strong data-i18n="s10_a_1v">Atrial flutter with 2:1 conduction</strong></div>
+          <div class="row"><span data-i18n="s10_a_2">Routed to</span><span class="pill" data-i18n="s10_a_2v">EHR · reports queue</span></div>
+          <div class="row"><span data-i18n="s10_a_3">Audit entry</span><span class="pill" data-i18n="s10_a_3v">user A.K. · 08:21:04 · override</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11. COMPARE -->
+  <section class="slide" data-title-key="t_s11">
+    <div class="eyebrow reveal reveal-1" data-i18n="s11_eyebrow">Bonus screen · Compare with prior</div>
+    <h2 class="reveal reveal-2" data-i18n="s11_title">Was this always there? Or is it new?</h2>
+    <p class="lead reveal reveal-3" style="margin-top: 12px;" data-i18n="s11_lead">Every reading stores a vector of 78 per-class probabilities. The compare view overlays today's ECG with any prior one from the same MRN — exact tracings side by side, AI diagnoses aligned, and highlighted deltas ("new: atrial flutter; resolved: ST depression").</p>
+    <div class="reveal reveal-4" style="margin-top: 20px; flex:1; min-height:0; display:flex;">
+      <div class="app-frame" style="width:100%; height:100%;">
+        <div class="app-chrome"><div class="dots-3"><span></span><span></span><span></span></div><div class="addr">compare / A. Isaeva · 24-Apr-2026 vs 11-Mar-2026</div></div>
+        <div class="app-body">
+          <div class="col" style="flex:1;">
+            <div class="card">
+              <h4 data-i18n="s11_t_h">Today · 24 Apr 2026</h4>
+              <div class="ecg-frame" style="padding:4px 8px;"><svg class="ecg-svg" viewBox="0 0 800 80" preserveAspectRatio="none">
+                <g class="ecg-grid"><line x1="0" y1="40" x2="800" y2="40" class="major"/></g>
+                <path class="ecg-path" d="M0,40 L40,40 L50,25 L60,55 L70,10 L80,60 L90,40 L160,40 L170,25 L180,55 L190,10 L200,60 L210,40 L280,40 L290,25 L300,55 L310,10 L320,60 L330,40 L400,40 L410,25 L420,55 L430,10 L440,60 L450,40 L520,40 L530,25 L540,55 L550,10 L560,60 L570,40 L640,40 L650,25 L660,55 L670,10 L680,60 L690,40 L760,40 L770,25 L780,55 L800,40"/>
+              </svg></div>
+              <div class="row" style="margin-top:8px;"><strong data-i18n="s11_t_dx">Atrial flutter with 2:1</strong><span class="pill warn" data-i18n="s11_t_pill">confirmed</span></div>
+            </div>
+          </div>
+          <div class="col" style="flex:1;">
+            <div class="card">
+              <h4 data-i18n="s11_p_h">Prior · 11 Mar 2026</h4>
+              <div class="ecg-frame" style="padding:4px 8px;"><svg class="ecg-svg" viewBox="0 0 800 80" preserveAspectRatio="none">
+                <g class="ecg-grid"><line x1="0" y1="40" x2="800" y2="40" class="major"/></g>
+                <path class="ecg-path" style="stroke:#818cf8;" d="M0,40 L60,40 L70,28 L80,52 L90,18 L100,58 L110,40 L200,40 L210,28 L220,52 L230,18 L240,58 L250,40 L340,40 L350,28 L360,52 L370,18 L380,58 L390,40 L480,40 L490,28 L500,52 L510,18 L520,58 L530,40 L620,40 L630,28 L640,52 L650,18 L660,58 L670,40 L760,40 L770,28 L780,52 L800,40"/>
+              </svg></div>
+              <div class="row" style="margin-top:8px;"><strong data-i18n="s11_p_dx">Normal sinus rhythm</strong><span class="pill ok" data-i18n="s11_p_pill">signed</span></div>
+            </div>
+            <div class="card">
+              <h4 data-i18n="s11_c_h">What changed</h4>
+              <ul style="margin:6px 0 0; padding-left:20px;">
+                <li class="bad" data-i18n="s11_c_1">NEW · Atrial flutter (AI 86% · doctor confirmed)</li>
+                <li class="muted" data-i18n="s11_c_2">Rate 65 → 150 bpm</li>
+                <li class="ok" data-i18n="s11_c_3">RESOLVED · Borderline T-wave inversion in V5-V6</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12. REPORT -->
+  <section class="slide" data-title-key="t_s12">
+    <div class="eyebrow reveal reveal-1" data-i18n="s12_eyebrow">Screen 5 · The report</div>
+    <h2 class="reveal reveal-2" data-i18n="s12_title">One PDF. All the data, the reasoning, and the audit trail.</h2>
+    <div class="two-col" style="margin-top:20px; flex:1; min-height:0;">
+      <div class="reveal slide-in-left">
+        <div class="app-frame" style="height:100%;">
+          <div class="app-chrome"><div class="dots-3"><span></span><span></span><span></span></div><div class="addr">report / #87201.pdf</div></div>
+          <div class="app-body" style="flex-direction:column; gap:10px; background: #fafcff; color: #1a2242;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <div style="font-size:18px; font-weight:700;" data-i18n="s12_title_pdf">ECG report — A. Isaeva, 57</div>
+                <div style="font-size:12px; color:#64748b;" data-i18n="s12_meta">MRN-00872 · 24-Apr-2026 08:19 · Report generated 08:21</div>
+              </div>
+              <div class="logo" style="width:28px; height:28px; background: #3b82f6; border-radius:8px; display:grid; place-items:center; color:white; font-weight:700;">C</div>
+            </div>
+            <hr style="border:none; border-top:1px solid #dbe4f1;">
+            <div style="font-size:13px;" data-i18n="s12_fd" data-i18n-html="1"><strong>Final diagnosis:</strong> Atrial flutter with 2:1 conduction.</div>
+            <div style="font-size:13px;" data-i18n="s12_ai" data-i18n-html="1"><strong>AI suggestion:</strong> Supraventricular tachycardia (74% confidence) — overridden by clinician.</div>
+            <div style="font-size:13px;" data-i18n="s12_rat" data-i18n-html="1"><strong>Rationale:</strong> Regular narrow-complex tachycardia at ~150 bpm; flutter waves visible in II, III, aVF after expansion; signal artefact explains V1–V3 features the model weighted.</div>
+            <div style="background:#f1f5fb; border-radius:8px; padding:10px 12px; font-size:12px; color:#334155;" data-i18n="s12_audit" data-i18n-html="1"><strong>Audit trail:</strong> acquired 08:19 · analysed 08:19:27 · opened 08:20 · overridden 08:21 · signed 08:21:04 · sent to EHR 08:21:05 · clinician: Dr. Aigul K.</div>
+            <div style="display:flex; gap:8px; margin-top:auto;">
+              <button class="btn-nav" style="color:#1a2242; background:#e2ecff; border-color:#b5c6ea;" data-i18n="s12_b1">✉ Send to referring GP</button>
+              <button class="btn-nav" style="color:#1a2242; background:#e2ecff; border-color:#b5c6ea;" data-i18n="s12_b2">⬇ Download PDF</button>
+              <button class="btn-nav" style="color:white; background:#3b82f6; border-color:#3b82f6;" data-i18n="s12_b3">✔ Push to EHR</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal slide-in-right" style="display:flex; flex-direction:column; gap:16px; justify-content:center;">
+        <h3 data-i18n="s12_r_h">What's in the report by default</h3>
+        <ul>
+          <li data-i18n="s12_r_1">Final diagnosis, signed by the clinician.</li>
+          <li data-i18n="s12_r_2" data-i18n-html="1">AI suggestion and confidence — <em>even when overridden</em>.</li>
+          <li data-i18n="s12_r_3">Plain-language rationale (local LLM, reviewable before signing).</li>
+          <li data-i18n="s12_r_4">Full 12-lead trace, grid scale, and signal-quality note.</li>
+          <li data-i18n="s12_r_5">Timestamped audit trail for every touch.</li>
+        </ul>
+        <div class="muted" style="font-size:12px;" data-i18n="s12_r_foot">Rendered server-side in PDF/A-3 so the EHR can archive it, with a machine-readable HL7 aECG attachment for downstream systems.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13. ANALYTICS -->
+  <section class="slide" data-title-key="t_s13">
+    <div class="eyebrow reveal reveal-1" data-i18n="s13_eyebrow">The department head's view</div>
+    <h2 class="reveal reveal-2" data-i18n="s13_title">Throughput, agreement rate, and where the AI is useful.</h2>
+    <div class="three-col reveal reveal-3" style="margin-top:24px;">
+      <div class="card">
+        <h4 data-i18n="s13_k1_h">This week</h4>
+        <div style="font-size:44px; font-weight:700; color: var(--primary-2);">312</div>
+        <div class="muted" style="font-size:12px;" data-i18n="s13_k1_p">ECGs read</div>
+        <div class="bar" style="--w:62%; margin-top:10px;"><span data-w></span></div>
+      </div>
+      <div class="card">
+        <h4 data-i18n="s13_k2_h">AI-concordant</h4>
+        <div style="font-size:44px; font-weight:700; color: var(--ok);">88.5%</div>
+        <div class="muted" style="font-size:12px;" data-i18n="s13_k2_p">signed without override</div>
+        <div class="bar" style="--w:89%; margin-top:10px;"><span data-w></span></div>
+      </div>
+      <div class="card">
+        <h4 data-i18n="s13_k3_h">Median read time</h4>
+        <div style="font-size:44px; font-weight:700; color: var(--accent);" data-i18n="s13_k3_v">1.7 min</div>
+        <div class="muted" style="font-size:12px;" data-i18n="s13_k3_p">from open to sign</div>
+        <div class="bar" style="--w:55%; margin-top:10px;"><span data-w></span></div>
+      </div>
+    </div>
+    <div class="two-col reveal reveal-4" style="margin-top:18px; flex:1; min-height:0;">
+      <div class="card">
+        <h4 data-i18n="s13_t_h">Where overrides happen</h4>
+        <table class="mini" style="margin-top:6px;">
+          <thead><tr>
+            <th data-i18n="s13_th1">Diagnosis class</th><th data-i18n="s13_th2">AI F1</th>
+            <th data-i18n="s13_th3">Override rate</th><th data-i18n="s13_th4">Trend</th>
+          </tr></thead>
+          <tbody>
+            <tr><td data-i18n="s13_r1">Atrial flutter</td><td>0.99</td><td>4.2%</td><td class="ok">↓</td></tr>
+            <tr><td data-i18n="s13_r2">Atrial fibrillation</td><td>0.95</td><td>6.1%</td><td class="ok">↓</td></tr>
+            <tr><td data-i18n="s13_r3">First-degree AV block</td><td>0.96</td><td>8.9%</td><td class="muted">→</td></tr>
+            <tr><td data-i18n="s13_r4">ST segment changes</td><td>0.96</td><td>12.4%</td><td class="warn">↑</td></tr>
+            <tr><td data-i18n="s13_r5">Rare Brugada pattern</td><td>n/a</td><td>—</td><td class="muted" data-i18n="s13_gap">training gap</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h4 data-i18n="s13_f_h">Feedback loop</h4>
+        <p data-i18n="s13_f_p">High-confidence clinician overrides that survive peer review are exported to the retraining pipeline every Friday.</p>
+        <div class="row"><span data-i18n="s13_f_1">Corrective labels this week</span><strong>47</strong></div>
+        <div class="row"><span data-i18n="s13_f_2">Under peer review</span><strong>12</strong></div>
+        <div class="row"><span data-i18n="s13_f_3">Waiting on re-training</span><strong>35</strong></div>
+        <div class="muted" style="font-size:12px; margin-top:10px;" data-i18n="s13_f_foot">The department head owns the "approve for retraining" button; nothing from a live case leaks into training without review.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14. SAFETY -->
+  <section class="slide" data-title-key="t_s14">
+    <div class="eyebrow reveal reveal-1" data-i18n="s14_eyebrow">Safety &amp; governance</div>
+    <h2 class="reveal reveal-2" data-i18n="s14_title">Four guard-rails, visible to the doctor at all times.</h2>
+    <div class="three-col reveal reveal-3" style="margin-top:28px;">
+      <div class="card"><h4 data-i18n="s14_1h">1 · Confidence gate</h4><p data-i18n="s14_1p">Cases under 85% AI confidence never auto-close. The clinician must confirm or override.</p></div>
+      <div class="card"><h4 data-i18n="s14_2h">2 · Override is free</h4><p data-i18n="s14_2p">No "Are you sure?" modal. One click, one required reason, done.</p></div>
+      <div class="card"><h4 data-i18n="s14_3h">3 · Full audit trail</h4><p data-i18n="s14_3p">Every interaction timestamped, attributed, and immutable. Exportable by compliance.</p></div>
+    </div>
+    <div class="three-col reveal reveal-4" style="margin-top:16px;">
+      <div class="card"><h4 data-i18n="s14_4h">4 · No PHI leaves the hospital</h4><p data-i18n="s14_4p">All inference runs on an on-prem GPU. LLM narration uses a local model; no external API is called.</p></div>
+      <div class="card"><h4 data-i18n="s14_5h">Known weak spots, surfaced</h4><p data-i18n="s14_5p">Brugada, long-QT, paediatric ECGs — the tool tells the doctor "out of training distribution" instead of guessing.</p></div>
+      <div class="card"><h4 data-i18n="s14_6h">Clear role boundary</h4><p data-i18n="s14_6p" data-i18n-html="1">CardioLens is <strong>decision support</strong>, not a medical device. Final diagnosis is the clinician's; report is signed by them.</p></div>
+    </div>
+  </section>
+
+  <!-- 15. INTEGRATION -->
+  <section class="slide" data-title-key="t_s15">
+    <div class="eyebrow reveal reveal-1" data-i18n="s15_eyebrow">How it sits in the hospital</div>
+    <h2 class="reveal reveal-2" data-i18n="s15_title">No new logins. No changes to the EHR.</h2>
+    <div class="reveal reveal-3" style="margin-top: 30px; display:flex; justify-content:center;">
+      <svg viewBox="0 0 900 260" width="100%" height="auto" style="max-width: 980px;">
+        <defs>
+          <linearGradient id="lg" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#3b82f6"/><stop offset="1" stop-color="#22d3ee"/>
+          </linearGradient>
+          <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8"/>
+          </marker>
+        </defs>
+        <g font-family="Inter, sans-serif" font-size="13" fill="#e6ecff">
+          <g transform="translate(20,100)">
+            <rect width="150" height="60" rx="12" fill="#1b2747" stroke="#243056"/>
+            <text x="75" y="27" text-anchor="middle" data-i18n="s15_n1_1">ECG device</text>
+            <text x="75" y="46" text-anchor="middle" fill="#94a3b8" font-size="11" data-i18n="s15_n1_2">in the ward</text>
+          </g>
+          <g transform="translate(220,50)">
+            <rect width="170" height="160" rx="12" fill="#141d38" stroke="url(#lg)" stroke-width="2"/>
+            <text x="85" y="30" text-anchor="middle" font-weight="700">CardioLens</text>
+            <text x="85" y="52" text-anchor="middle" fill="#bfd6ff" font-size="11" data-i18n="s15_n2_2">Ingest · Analyse · Narrate</text>
+            <text x="85" y="82" text-anchor="middle" fill="#94a3b8" font-size="11" data-i18n="s15_n2_3">on-prem, one GPU</text>
+            <circle cx="40"  cy="120" r="6" fill="#22d3ee"/>
+            <circle cx="85"  cy="120" r="6" fill="#22d3ee"/>
+            <circle cx="130" cy="120" r="6" fill="#22d3ee"/>
+            <text x="85" y="145" text-anchor="middle" fill="#94a3b8" font-size="11" data-i18n="s15_n2_4">REST API · HL7 aECG</text>
+          </g>
+          <g transform="translate(440,30)">
+            <rect width="170" height="60" rx="12" fill="#1b2747" stroke="#243056"/>
+            <text x="85" y="27" text-anchor="middle" data-i18n="s15_n3_1">EHR</text>
+            <text x="85" y="46" text-anchor="middle" fill="#94a3b8" font-size="11" data-i18n="s15_n3_2">via HL7 FHIR</text>
+          </g>
+          <g transform="translate(440,105)">
+            <rect width="170" height="60" rx="12" fill="#1b2747" stroke="#243056"/>
+            <text x="85" y="27" text-anchor="middle" data-i18n="s15_n4_1">Clinician browser</text>
+            <text x="85" y="46" text-anchor="middle" fill="#94a3b8" font-size="11" data-i18n="s15_n4_2">desktop + tablet</text>
+          </g>
+          <g transform="translate(440,180)">
+            <rect width="170" height="60" rx="12" fill="#1b2747" stroke="#243056"/>
+            <text x="85" y="27" text-anchor="middle" data-i18n="s15_n5_1">Analytics / audit</text>
+            <text x="85" y="46" text-anchor="middle" fill="#94a3b8" font-size="11" data-i18n="s15_n5_2">Dept. head dashboard</text>
+          </g>
+          <g transform="translate(670,135)">
+            <rect width="200" height="60" rx="12" fill="#1b2747" stroke="#243056"/>
+            <text x="100" y="27" text-anchor="middle" data-i18n="s15_n6_1">Retraining pipeline</text>
+            <text x="100" y="46" text-anchor="middle" fill="#94a3b8" font-size="11" data-i18n="s15_n6_2">monthly · peer-reviewed</text>
+          </g>
+          <g stroke="#94a3b8" stroke-width="1.5" fill="none">
+            <path d="M170 130 L220 130" marker-end="url(#arrow)"/>
+            <path d="M390 100 L440 60"  marker-end="url(#arrow)"/>
+            <path d="M390 130 L440 135" marker-end="url(#arrow)"/>
+            <path d="M390 160 L440 210" marker-end="url(#arrow)"/>
+            <path d="M610 210 L670 170" marker-end="url(#arrow)"/>
+            <path d="M670 150 L610 130" stroke-dasharray="4 4" marker-end="url(#arrow)"/>
+          </g>
+        </g>
+      </svg>
+    </div>
+    <div class="three-col reveal reveal-5" style="margin-top: 18px;">
+      <div class="card"><h4 data-i18n="s15_d_h">Deploy</h4><p data-i18n="s15_d_p">One Docker compose, one on-prem GPU (e.g. RTX 5090 / A4000). MRN comes from the EHR; no new patient master.</p></div>
+      <div class="card"><h4 data-i18n="s15_a_h">Authenticate</h4><p data-i18n="s15_a_p">SAML/OIDC against the hospital IdP. SSO means no new passwords for the clinician.</p></div>
+      <div class="card"><h4 data-i18n="s15_i_h">Integrate</h4><p data-i18n="s15_i_p">HL7 aECG ingest, FHIR DiagnosticReport out. Falls back to PDF-to-folder for EHRs without an API.</p></div>
+    </div>
+  </section>
+
+  <!-- 16. BENEFITS -->
+  <section class="slide" data-title-key="t_s16">
+    <div class="eyebrow reveal reveal-1" data-i18n="s16_eyebrow">What this buys the department</div>
+    <h2 class="reveal reveal-2" data-i18n="s16_title">Faster reads, surfaced rare cases, reviewable decisions.</h2>
+    <div class="big-stat reveal reveal-3" style="margin-top:28px;">
+      <div><div class="v">-55%</div><div class="k" data-i18n="s16_k1">read time per ECG</div></div>
+      <div><div class="v">0.974</div><div class="k" data-i18n="s16_k2">macro F1 on 78 labels</div></div>
+      <div><div class="v">27 ms</div><div class="k" data-i18n="s16_k3">inference per sample</div></div>
+      <div><div class="v">100%</div><div class="k" data-i18n="s16_k4">decisions audited</div></div>
+    </div>
+    <div class="two-col reveal reveal-4" style="margin-top:38px;">
+      <div class="card">
+        <h4 data-i18n="s16_d_h">For the doctor</h4>
+        <ul>
+          <li data-i18n="s16_d_1">Fewer manual reads on ordinary cases.</li>
+          <li data-i18n="s16_d_2">Second opinion on rare or borderline cases.</li>
+          <li data-i18n="s16_d_3">Reports drafted, not retyped.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4 data-i18n="s16_h_h">For the department</h4>
+        <ul>
+          <li data-i18n="s16_h_1">Quantifiable agreement rate between clinicians and AI.</li>
+          <li data-i18n="s16_h_2">Fixed audit trail for every recommendation.</li>
+          <li data-i18n="s16_h_3">Corrective feedback loop back into the model.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 17. ROADMAP -->
+  <section class="slide" data-title-key="t_s17">
+    <div class="eyebrow reveal reveal-1" data-i18n="s17_eyebrow">Next 12 weeks (pilot phase)</div>
+    <h2 class="reveal reveal-2" data-i18n="s17_title">A structured pilot with one department.</h2>
+    <div class="three-col reveal reveal-3" style="margin-top:28px;">
+      <div class="card">
+        <h4 data-i18n="s17_1h">Weeks 1–3 · Install</h4>
+        <ul>
+          <li data-i18n="s17_1_1">On-prem GPU node provisioned.</li>
+          <li data-i18n="s17_1_2">SSO wired to hospital IdP.</li>
+          <li data-i18n="s17_1_3">HL7 aECG feed from two ECG machines.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4 data-i18n="s17_2h">Weeks 4–8 · Shadow mode</h4>
+        <ul>
+          <li data-i18n="s17_2_1">CardioLens analyses every ECG silently.</li>
+          <li data-i18n="s17_2_2">Daily concordance report to dept. head.</li>
+          <li data-i18n="s17_2_3">No clinician workflow change.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4 data-i18n="s17_3h">Weeks 9–12 · Assisted mode</h4>
+        <ul>
+          <li data-i18n="s17_3_1">Clinicians open CardioLens for reading.</li>
+          <li data-i18n="s17_3_2">Override path logged; corrections reviewed weekly.</li>
+          <li data-i18n="s17_3_3">Go / no-go decision at week 12.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card reveal reveal-4" style="margin-top: 22px;">
+      <h4 data-i18n="s17_s_h">Success criteria we agree on up-front</h4>
+      <div class="row"><span data-i18n="s17_s_1">Concordance rate with senior cardiologists</span><strong class="ok">≥ 85%</strong></div>
+      <div class="row"><span data-i18n="s17_s_2">Median read-time reduction</span><strong class="ok">≥ 30%</strong></div>
+      <div class="row"><span data-i18n="s17_s_3">Zero safety incidents attributable to CardioLens</span><strong class="ok" data-i18n="s17_s_3v">hard requirement</strong></div>
+    </div>
+  </section>
+
+  <!-- 18. THANK YOU -->
+  <section class="slide" data-title-key="t_s18">
+    <div class="hero" style="align-items:flex-start;">
+      <div class="eyebrow reveal reveal-1" data-i18n="s18_eyebrow">Thank you</div>
+      <div class="bigline reveal reveal-2"><span data-i18n="s18_t1">Review, pilot, or push back —</span><br><span data-i18n="s18_t2">all three move the project forward.</span></div>
+      <p class="lead reveal reveal-3" style="max-width:720px;" data-i18n="s18_lead">CardioLens is a thesis-grade prototype in clinical-deployment form. The one thing we cannot build in a lab is how it feels to a cardiologist at 08:14 on a Monday.</p>
+      <div class="reveal reveal-4" style="display:flex; gap: 16px; flex-wrap:wrap; margin-top: 12px;">
+        <div class="stat"><span class="num">elaman.job@gmail.com</span><span class="lbl" data-i18n="s18_contact">Contact · Elaman Nazarkulov</span></div>
+        <div class="stat"><span class="num">KTMÜ</span><span class="lbl" data-i18n="s18_uni">Kyrgyz–Turkish Manas University · Computer Engineering</span></div>
+      </div>
+      <p class="muted reveal reveal-5" style="margin-top: 24px;" data-i18n="s18_hint" data-i18n-html="1">Press <span class="kbd">←</span> / <span class="kbd">→</span> to move; <span class="kbd">Esc</span> for the slide index.</p>
+    </div>
+  </section>
+
+</div>
+
+<div class="footer">
+  <div class="dots" id="dots"></div>
+  <div class="nav">
+    <button class="btn-nav" id="prev"><span data-i18n="nav_prev">← Prev</span></button>
+    <span id="counter" style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted);"></span>
+    <button class="btn-nav" id="next"><span data-i18n="nav_next">Next →</span></button>
+  </div>
+</div>
+
+<div id="overview" style="position:fixed; inset:0; background: rgba(11,18,32,.96); z-index: 20; display:none; padding: 60px 80px; overflow:auto;">
+  <h2 style="color: var(--text); margin-bottom: 24px;" data-i18n="ov_h">All slides · press Esc to return</h2>
+  <div id="overviewGrid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px;"></div>
+</div>
+
+<script>
+/* ---------- translations ---------- */
+const I18N = {
+  en: {
+    brand: "CardioLens · 12-lead ECG Assistant for Clinicians",
+    nav_hint: "to navigate",
+    nav_prev: "← Prev",
+    nav_next: "Next →",
+    ov_h: "All slides · press Esc to return",
+    slide_label: "Slide",
+    // slide titles (used in overview grid)
+    t_s1: "Welcome", t_s2: "Stakeholders", t_s3: "A day with Dr. A", t_s4: "The 5-step flow",
+    t_s5: "Sign in", t_s6: "Triage queue", t_s7: "Upload / acquire", t_s8: "Analysis",
+    t_sdec: "The core change",
+    t_s9: "Results", t_s10: "Override & sign", t_s11: "Compare", t_s12: "Report",
+    t_s13: "Analytics", t_s14: "Safety", t_s15: "Integration", t_s16: "Benefits",
+    t_s17: "What's next", t_s18: "Thanks",
+    // slide 1
+    s1_eyebrow: "For the Cardiology Team",
+    s1_title_1: "A second pair of eyes",
+    s1_title_2: "on every ECG.",
+    s1_lead: "CardioLens reads 12-lead ECGs in under 30 ms and shows you <strong>what it sees, where it sees it, and how confident it is</strong> — so you can confirm, override, and move on.",
+    s1_tag1: "Clinical decision support · not a replacement",
+    s1_tag2: "97.34% test accuracy · Chapman-Shaoxing",
+    s1_tag3: "Every recommendation reviewable & reversible",
+    // slide 2
+    s2_eyebrow: "Who this talk is for",
+    s2_title: "Three people. One tool. Three different views.",
+    s2_lead: "CardioLens is designed around the clinician's workflow, but it also gives clear, role-appropriate views to the doctor who prescribes care, the department head who is accountable for outcomes, and the IT team who keeps the hospital running.",
+    s2_c1_h: "Cardiologist / GP",
+    s2_c1_p: "Needs a confirmed diagnosis in under 2 minutes, with a rationale they can sign off on.",
+    s2_c1_chip: "Queue · Results · Override · Sign",
+    s2_c2_h: "Department Head",
+    s2_c2_p: "Needs to see throughput, clinician agreement rate, and a clean audit trail for every decision the AI was part of.",
+    s2_c2_chip: "Analytics · Agreement · Audit",
+    s2_c3_h: "IT / Compliance",
+    s2_c3_p: "Needs role-based access, encrypted PHI at rest and in transit, and integration without changing existing EHR workflows.",
+    s2_c3_chip: "SSO · RBAC · HL7/FHIR",
+    s2_footer: "The rest of this deck is told from the <strong>cardiologist's</strong> point of view — it's a guided tour of the screens they will actually touch, in the order they touch them.",
+    // slide 3
+    s3_eyebrow: "Persona",
+    s3_title: "Dr. Aigul, cardiology registrar.",
+    s3_lead: "Regional hospital in Osh. 40+ ECGs a day, of which maybe six are genuinely time-critical. She reads on a desktop, sometimes on a tablet at bedside.",
+    s3_stat1: "ECGs / day", s3_stat2: "target read time", s3_stat3: "urgent in a typical shift",
+    s3_footer: "Today we follow her through a single case: a 57-year-old post-cath patient with new-onset palpitations.",
+    s3_name: "Dr. Aigul K.",
+    s3_role: "Cardiology registrar · Shift 08:00–20:00",
+    s3_oncall: "On call",
+    s3_ask_label: "What she asks of the tool",
+    s3_ask_1: "Prioritise the queue — urgent ECGs first.",
+    s3_ask_2: "Show me the diagnosis and <em>where</em> it was seen in the trace.",
+    s3_ask_3: "Let me disagree in one click.",
+    s3_ask_4: "Generate the report; do not make me retype the patient MRN.",
+    // slide 4
+    s4_eyebrow: "What the workflow looks like",
+    s4_title: "Five screens. Five taps. End with a signed report.",
+    s4_1h: "1 · Triage queue", s4_1p: "Work list, sorted by urgency and waiting time. Colour-coded.",
+    s4_2h: "2 · Upload", s4_2p: "Drag-and-drop .mat / .csv / paper-scan image. Or stream from device.",
+    s4_3h: "3 · Reading room", s4_3p: "12-lead trace, AI diagnosis card, confidence, where it looked.",
+    s4_4h: "4 · Confirm or override", s4_4p: "One click agree; one click disagree + reason. Always the doctor's call.",
+    s4_5h: "5 · Report", s4_5p: "PDF out to the EHR with the patient's name already in the header.",
+    s4_6h: "Audit", s4_6p: "Every click logged; every override reviewable from the analytics tab.",
+    // slide 5
+    s5_eyebrow: "Step 0 · Sign in",
+    s5_title: "Single sign-on. Role is set by the hospital, not by the user.",
+    s5_1: "SSO via the hospital's identity provider (SAML / OIDC).",
+    s5_2: "Role-based access: <span class=\"chip\">Clinician</span> <span class=\"chip\">Department head</span> <span class=\"chip\">Admin</span>.",
+    s5_3: "All sessions encrypted (TLS 1.3). PHI never leaves the hospital VLAN.",
+    s5_4: "Session timeout aligned with hospital policy (default 30 min).",
+    s5_signin_p: "Sign in with your hospital account.",
+    s5_email: "Email", s5_role: "Role", s5_role_val: "Cardiologist",
+    s5_cta: "Continue with SSO →",
+    // slide 6
+    s6_eyebrow: "Screen 1 · Triage queue",
+    s6_title: "The first thing she sees every morning.",
+    s6_now: "08:14 · Mon 24 Apr 2026",
+    s6_filters: "Filters",
+    s6_f1: "· Urgent (6)", s6_f2: "· Routine (12)", s6_f3: "· Followup (9)", s6_f4: "· My overrides (2)",
+    s6_saved: "Saved searches",
+    s6_s1: "AF suspects", s6_s2: "Post-cath 48h",
+    s6_th1: "Priority", s6_th2: "Patient", s6_th3: "MRN", s6_th4: "AI flag", s6_th5: "Waited", s6_th6: "Confidence",
+    s6_prio_urg: "Urgent", s6_prio_urg2: "Urgent", s6_prio_now: "Now", s6_prio_high: "High", s6_prio_rou: "Routine", s6_prio_rou2: "Routine",
+    s6_p1: "M. Omurov, 72", s6_p2: "G. Tashieva, 57", s6_p3: "A. Isaeva, 57",
+    s6_p4: "B. Jumabekov, 49", s6_p5: "S. Bakirova, 64", s6_p6: "T. Umetov, 33",
+    s6_d1: "Acute MI, anterior", s6_d2: "ECG: atrial fibrillation", s6_d3: "Suspected SVT",
+    s6_d4: "First-degree AV block", s6_d5: "Sinus bradycardia", s6_d6: "Normal sinus rhythm",
+    s6_w_4min: "4 min", s6_w_2min: "2 min", s6_w_now: "Now", s6_w_11min: "11 min", s6_w_22min: "22 min", s6_w_30min: "30 min",
+    s6_open: "▶ open",
+    s6_sortnote: "Queue sorted by <span class=\"accent\">priority → waiting time</span>. Her cases with open overrides surface to the top.",
+    // slide 7
+    s7_eyebrow: "Screen 2 · Get the ECG in",
+    s7_title: "Three ways in. Device, file, or photo.",
+    s7_for: "For patient", s7_verified: "Verified",
+    s7_dz_title: "Drag & drop an ECG file",
+    s7_dz_sub: ".mat · .csv · .xml (HL7 aECG) · .png / .jpg of a paper strip",
+    s7_btn1: "⚡ Stream from device",
+    s7_btn2: "📷 Photo of paper ECG",
+    s7_foot: "Photo capture runs local image-digitisation before analysis. Nothing leaves the hospital network.",
+    s7_v_h: "Validation before analysis",
+    s7_v_1: "12 leads present, each ≥ 10 s.",
+    s7_v_2: "Signal quality index ≥ 0.85 (flag & ask to retake if not).",
+    s7_v_3: "MRN matches the open patient record; mismatches block upload.",
+    s7_r_h: "What the patient record gains",
+    s7_r_1: "Raw signal, stored encrypted.",
+    s7_r_2: "Computed signal-quality metadata for this reading.",
+    s7_r_3: "Link to previous readings for the same MRN (for compare).",
+    s7_quote: "\"I don't care how she got the ECG in. I care that by the time I click 'analyse' the patient is on the record.\"",
+    s7_cite: "— Dr. Aigul, user research interview, March 2026",
+    // slide 8
+    s8_eyebrow: "Screen 3a · The model runs",
+    s8_title: "27 milliseconds on the server. About a blink.",
+    s8_addr: "analyzing · patient A. Isaeva",
+    s8_step1: "Step 1 · Signal quality check",
+    s8_step2: "Step 2 · Anti-aliased decimation 5000→500",
+    s8_step3: "Step 3 · 1D-CNN inference",
+    s8_step4: "Step 4 · Narration (local LLM)",
+    s8_done: "done",
+    s8_r1_h: "What the clinician sees while it runs",
+    s8_r1_p: "A short, honest progress bar. No spinner that hides the state of the system.",
+    s8_r2_h: "What the clinician <span class=\"bad\">doesn't</span> see",
+    s8_r2_1: "The model's internal class probabilities over 78 categories.",
+    s8_r2_2: "Any label the signal-quality check rejected.",
+    s8_r2_3: "Anything that would slow the decision without adding information.",
+    s8_foot: "Full raw output is always available in the <span class=\"chip\">Advanced</span> drawer for department-head audits and thesis reporting.",
+    // slide 8b — decimation
+    sdec_eyebrow: "The core change",
+    sdec_title: "The Core Change: Anti-Aliased Decimation",
+    sdec_sub: "A three-line patch to preprocessing. Nothing else changes.",
+    sdec_caption: "scipy.signal.decimate — applied once at ingest, before the model ever sees the signal.",
+    sdec_b1_h: "Phase preserved",
+    sdec_b1_p: "zero_phase=True runs the filter forward and backward, so P-wave and QRS timing are not shifted.",
+    sdec_b2_h: "Proper anti-aliasing",
+    sdec_b2_p: "Chebyshev type-I low-pass at the new Nyquist removes any signal that would otherwise fold into the QRS band — the difference between +10 pp F1 and worse than baseline.",
+    sdec_b3_h: "Off-line, no training cost",
+    sdec_b3_p: "Applied once at ingest. Zero training overhead, 3.3× faster inference, smaller tensors.",
+    sdec_b4_h: "Same data hygiene as baseline",
+    sdec_b4_p: "Seed, class weights, augmentation recipe and the split are unchanged from the 5000-sample baseline — the gain is attributable to this step alone.",
+    // slide 9
+    s9_eyebrow: "Screen 3b · Reading room",
+    s9_title: "12-lead view, top diagnosis, confidence, rationale.",
+    s9_reviewing: "Reviewing · Dr. Aigul K.",
+    s9_pinfo: "A. Isaeva, 57 · MRN-00872 · 24-Apr-2026 08:19",
+    s9_c1: "12-lead",
+    s9_dx_h: "AI Diagnosis", s9_dx: "Supraventricular tachycardia",
+    s9_dx_diff: "differential: AV-nodal re-entry",
+    s9_conf: "Confidence 74%", s9_thresh: "· threshold for auto-report 85%",
+    s9_sec_h: "Secondary findings",
+    s9_sec_1: "Left atrial enlargement", s9_sec_2: "Normal axis", s9_sec_3: "QTc within range", s9_ok: "ok",
+    s9_why_h: "Why this?",
+    s9_why_p: "Peak attention on QRS morphology in V1 and rhythm regularity in lead II. Rate ≈ 168 bpm, narrow QRS, no discernable P-waves in lead II. Consistent with supraventricular origin.",
+    // slide 10
+    s10_eyebrow: "Screen 4 · The clinician decides",
+    s10_title: "Agree. Or disagree. Either way, one click.",
+    s10_agree_h: "Agree with AI",
+    s10_agree_p: "Signs the report, sends to EHR, closes the case. Tracked in analytics as an AI-concordant reading.",
+    s10_agree_btn: "✓ Sign as supraventricular tachycardia",
+    s10_dis_h: "Disagree — override",
+    s10_dis_p: "Pick a different diagnosis from the list or write free-text. <strong>A reason is required</strong>.",
+    s10_c1: "Atrial flutter with 2:1", s10_c2: "Sinus tachy", s10_c3: "AVNRT", s10_c4: "Other…",
+    s10_reason: "Reason: signal artefact in leads V1–V3; will re-acquire.",
+    s10_r_h: "Why the override path is a first-class button.",
+    s10_r_1: "The doctor's name goes on the report — not the model's.",
+    s10_r_2: "Overrides are <strong>feedback signal</strong>: the analytics tab measures per-clinician agreement rate, and the model retraining pipeline consumes high-confidence overrides as corrective labels.",
+    s10_r_3: "No penalty, no friction, no \"are you sure?\" modal. One click.",
+    s10_a_h: "After the click",
+    s10_a_1: "Finalised diagnosis", s10_a_1v: "Atrial flutter with 2:1 conduction",
+    s10_a_2: "Routed to", s10_a_2v: "EHR · reports queue",
+    s10_a_3: "Audit entry", s10_a_3v: "user A.K. · 08:21:04 · override",
+    // slide 11
+    s11_eyebrow: "Bonus screen · Compare with prior",
+    s11_title: "Was this always there? Or is it new?",
+    s11_lead: "Every reading stores a vector of 78 per-class probabilities. The compare view overlays today's ECG with any prior one from the same MRN — exact tracings side by side, AI diagnoses aligned, and highlighted deltas (\"new: atrial flutter; resolved: ST depression\").",
+    s11_t_h: "Today · 24 Apr 2026",
+    s11_t_dx: "Atrial flutter with 2:1", s11_t_pill: "confirmed",
+    s11_p_h: "Prior · 11 Mar 2026",
+    s11_p_dx: "Normal sinus rhythm", s11_p_pill: "signed",
+    s11_c_h: "What changed",
+    s11_c_1: "NEW · Atrial flutter (AI 86% · doctor confirmed)",
+    s11_c_2: "Rate 65 → 150 bpm",
+    s11_c_3: "RESOLVED · Borderline T-wave inversion in V5-V6",
+    // slide 12
+    s12_eyebrow: "Screen 5 · The report",
+    s12_title: "One PDF. All the data, the reasoning, and the audit trail.",
+    s12_title_pdf: "ECG report — A. Isaeva, 57",
+    s12_meta: "MRN-00872 · 24-Apr-2026 08:19 · Report generated 08:21",
+    s12_fd: "<strong>Final diagnosis:</strong> Atrial flutter with 2:1 conduction.",
+    s12_ai: "<strong>AI suggestion:</strong> Supraventricular tachycardia (74% confidence) — overridden by clinician.",
+    s12_rat: "<strong>Rationale:</strong> Regular narrow-complex tachycardia at ~150 bpm; flutter waves visible in II, III, aVF after expansion; signal artefact explains V1–V3 features the model weighted.",
+    s12_audit: "<strong>Audit trail:</strong> acquired 08:19 · analysed 08:19:27 · opened 08:20 · overridden 08:21 · signed 08:21:04 · sent to EHR 08:21:05 · clinician: Dr. Aigul K.",
+    s12_b1: "✉ Send to referring GP",
+    s12_b2: "⬇ Download PDF",
+    s12_b3: "✔ Push to EHR",
+    s12_r_h: "What's in the report by default",
+    s12_r_1: "Final diagnosis, signed by the clinician.",
+    s12_r_2: "AI suggestion and confidence — <em>even when overridden</em>.",
+    s12_r_3: "Plain-language rationale (local LLM, reviewable before signing).",
+    s12_r_4: "Full 12-lead trace, grid scale, and signal-quality note.",
+    s12_r_5: "Timestamped audit trail for every touch.",
+    s12_r_foot: "Rendered server-side in PDF/A-3 so the EHR can archive it, with a machine-readable HL7 aECG attachment for downstream systems.",
+    // slide 13
+    s13_eyebrow: "The department head's view",
+    s13_title: "Throughput, agreement rate, and where the AI is useful.",
+    s13_k1_h: "This week", s13_k1_p: "ECGs read",
+    s13_k2_h: "AI-concordant", s13_k2_p: "signed without override",
+    s13_k3_h: "Median read time", s13_k3_v: "1.7 min", s13_k3_p: "from open to sign",
+    s13_t_h: "Where overrides happen",
+    s13_th1: "Diagnosis class", s13_th2: "AI F1", s13_th3: "Override rate", s13_th4: "Trend",
+    s13_r1: "Atrial flutter", s13_r2: "Atrial fibrillation", s13_r3: "First-degree AV block",
+    s13_r4: "ST segment changes", s13_r5: "Rare Brugada pattern", s13_gap: "training gap",
+    s13_f_h: "Feedback loop",
+    s13_f_p: "High-confidence clinician overrides that survive peer review are exported to the retraining pipeline every Friday.",
+    s13_f_1: "Corrective labels this week",
+    s13_f_2: "Under peer review",
+    s13_f_3: "Waiting on re-training",
+    s13_f_foot: "The department head owns the \"approve for retraining\" button; nothing from a live case leaks into training without review.",
+    // slide 14
+    s14_eyebrow: "Safety & governance",
+    s14_title: "Four guard-rails, visible to the doctor at all times.",
+    s14_1h: "1 · Confidence gate", s14_1p: "Cases under 85% AI confidence never auto-close. The clinician must confirm or override.",
+    s14_2h: "2 · Override is free", s14_2p: "No \"Are you sure?\" modal. One click, one required reason, done.",
+    s14_3h: "3 · Full audit trail", s14_3p: "Every interaction timestamped, attributed, and immutable. Exportable by compliance.",
+    s14_4h: "4 · No PHI leaves the hospital", s14_4p: "All inference runs on an on-prem GPU. LLM narration uses a local model; no external API is called.",
+    s14_5h: "Known weak spots, surfaced", s14_5p: "Brugada, long-QT, paediatric ECGs — the tool tells the doctor \"out of training distribution\" instead of guessing.",
+    s14_6h: "Clear role boundary", s14_6p: "CardioLens is <strong>decision support</strong>, not a medical device. Final diagnosis is the clinician's; report is signed by them.",
+    // slide 15
+    s15_eyebrow: "How it sits in the hospital",
+    s15_title: "No new logins. No changes to the EHR.",
+    s15_n1_1: "ECG device", s15_n1_2: "in the ward",
+    s15_n2_2: "Ingest · Analyse · Narrate", s15_n2_3: "on-prem, one GPU", s15_n2_4: "REST API · HL7 aECG",
+    s15_n3_1: "EHR", s15_n3_2: "via HL7 FHIR",
+    s15_n4_1: "Clinician browser", s15_n4_2: "desktop + tablet",
+    s15_n5_1: "Analytics / audit", s15_n5_2: "Dept. head dashboard",
+    s15_n6_1: "Retraining pipeline", s15_n6_2: "monthly · peer-reviewed",
+    s15_d_h: "Deploy", s15_d_p: "One Docker compose, one on-prem GPU (e.g. RTX 5090 / A4000). MRN comes from the EHR; no new patient master.",
+    s15_a_h: "Authenticate", s15_a_p: "SAML/OIDC against the hospital IdP. SSO means no new passwords for the clinician.",
+    s15_i_h: "Integrate", s15_i_p: "HL7 aECG ingest, FHIR DiagnosticReport out. Falls back to PDF-to-folder for EHRs without an API.",
+    // slide 16
+    s16_eyebrow: "What this buys the department",
+    s16_title: "Faster reads, surfaced rare cases, reviewable decisions.",
+    s16_k1: "read time per ECG", s16_k2: "macro F1 on 78 labels",
+    s16_k3: "inference per sample", s16_k4: "decisions audited",
+    s16_d_h: "For the doctor",
+    s16_d_1: "Fewer manual reads on ordinary cases.",
+    s16_d_2: "Second opinion on rare or borderline cases.",
+    s16_d_3: "Reports drafted, not retyped.",
+    s16_h_h: "For the department",
+    s16_h_1: "Quantifiable agreement rate between clinicians and AI.",
+    s16_h_2: "Fixed audit trail for every recommendation.",
+    s16_h_3: "Corrective feedback loop back into the model.",
+    // slide 17
+    s17_eyebrow: "Next 12 weeks (pilot phase)",
+    s17_title: "A structured pilot with one department.",
+    s17_1h: "Weeks 1–3 · Install",
+    s17_1_1: "On-prem GPU node provisioned.",
+    s17_1_2: "SSO wired to hospital IdP.",
+    s17_1_3: "HL7 aECG feed from two ECG machines.",
+    s17_2h: "Weeks 4–8 · Shadow mode",
+    s17_2_1: "CardioLens analyses every ECG silently.",
+    s17_2_2: "Daily concordance report to dept. head.",
+    s17_2_3: "No clinician workflow change.",
+    s17_3h: "Weeks 9–12 · Assisted mode",
+    s17_3_1: "Clinicians open CardioLens for reading.",
+    s17_3_2: "Override path logged; corrections reviewed weekly.",
+    s17_3_3: "Go / no-go decision at week 12.",
+    s17_s_h: "Success criteria we agree on up-front",
+    s17_s_1: "Concordance rate with senior cardiologists",
+    s17_s_2: "Median read-time reduction",
+    s17_s_3: "Zero safety incidents attributable to CardioLens", s17_s_3v: "hard requirement",
+    // slide 18
+    s18_eyebrow: "Thank you",
+    s18_t1: "Review, pilot, or push back —",
+    s18_t2: "all three move the project forward.",
+    s18_lead: "CardioLens is a thesis-grade prototype in clinical-deployment form. The one thing we cannot build in a lab is how it feels to a cardiologist at 08:14 on a Monday.",
+    s18_contact: "Contact · Elaman Nazarkulov",
+    s18_uni: "Kyrgyz–Turkish Manas University · Computer Engineering",
+    s18_hint: "Press <span class=\"kbd\">←</span> / <span class=\"kbd\">→</span> to move; <span class=\"kbd\">Esc</span> for the slide index."
+  },
+
+  ru: {
+    brand: "CardioLens · Помощник клинициста для 12-канальной ЭКГ",
+    nav_hint: "для навигации",
+    nav_prev: "← Назад",
+    nav_next: "Далее →",
+    ov_h: "Все слайды · нажмите Esc для возврата",
+    slide_label: "Слайд",
+    t_s1: "Начало", t_s2: "Заинтересованные стороны", t_s3: "Рабочий день д-ра А.", t_s4: "5 шагов",
+    t_s5: "Вход", t_s6: "Очередь пациентов", t_s7: "Загрузка", t_s8: "Анализ",
+    t_sdec: "Главное изменение",
+    t_s9: "Результаты", t_s10: "Утверждение / коррекция", t_s11: "Сравнение", t_s12: "Отчёт",
+    t_s13: "Аналитика", t_s14: "Безопасность", t_s15: "Интеграция", t_s16: "Преимущества",
+    t_s17: "Что дальше", t_s18: "Спасибо",
+
+    s1_eyebrow: "Для кардиологического отделения",
+    s1_title_1: "Вторая пара глаз",
+    s1_title_2: "на каждой ЭКГ.",
+    s1_lead: "CardioLens считывает 12-канальную ЭКГ менее чем за 30 мс и показывает, <strong>что система увидела, где именно и насколько уверена</strong>, — чтобы вы подтвердили, исправили и перешли к следующему случаю.",
+    s1_tag1: "Поддержка врачебного решения · не замена",
+    s1_tag2: "Точность 97.34% · Chapman-Shaoxing",
+    s1_tag3: "Каждая рекомендация проверяема и обратима",
+
+    s2_eyebrow: "Кому это адресовано",
+    s2_title: "Три роли. Один инструмент. Три разных взгляда.",
+    s2_lead: "CardioLens построен вокруг рабочего процесса клинициста, но также даёт роль-ориентированные виды: врачу, принимающему решения; заведующему отделением, отвечающему за качество; и ИТ-службе, поддерживающей инфраструктуру больницы.",
+    s2_c1_h: "Кардиолог / терапевт",
+    s2_c1_p: "Нужен подтверждённый диагноз менее чем за 2 минуты с обоснованием, которое можно подписать.",
+    s2_c1_chip: "Очередь · Результаты · Коррекция · Подпись",
+    s2_c2_h: "Заведующий отделением",
+    s2_c2_p: "Нужно видеть пропускную способность, процент согласия врачей с ИИ и чистый журнал аудита по каждому решению.",
+    s2_c2_chip: "Аналитика · Согласие · Аудит",
+    s2_c3_h: "ИТ / комплаенс",
+    s2_c3_p: "Нужен ролевой доступ, шифрование ПДн в покое и при передаче, интеграция без изменений в МИС.",
+    s2_c3_chip: "SSO · RBAC · HL7/FHIR",
+    s2_footer: "Остальная часть презентации ведётся с точки зрения <strong>кардиолога</strong> — это обзор экранов в том порядке, в котором он их открывает.",
+
+    s3_eyebrow: "Персона",
+    s3_title: "Д-р Айгуль, клиника-кардиолог.",
+    s3_lead: "Региональная больница в Оше. Более 40 ЭКГ в день, из них около шести действительно критичны по времени. Читает на ПК, иногда на планшете у кровати пациента.",
+    s3_stat1: "ЭКГ в день", s3_stat2: "целевое время чтения", s3_stat3: "срочных за смену",
+    s3_footer: "Сегодня следим за одним случаем: пациентка 57 лет после катетеризации с впервые возникшими сердцебиениями.",
+    s3_name: "Д-р Айгуль К.",
+    s3_role: "Клиника-кардиолог · Смена 08:00–20:00",
+    s3_oncall: "На дежурстве",
+    s3_ask_label: "Что она ждёт от системы",
+    s3_ask_1: "Упорядочить очередь — срочные ЭКГ в первую очередь.",
+    s3_ask_2: "Показать диагноз и <em>место</em> в записи, где он виден.",
+    s3_ask_3: "Возможность не согласиться одним кликом.",
+    s3_ask_4: "Сгенерировать отчёт, не требуя повторного ввода МРН.",
+
+    s4_eyebrow: "Как выглядит рабочий процесс",
+    s4_title: "Пять экранов. Пять касаний. В финале — подписанный отчёт.",
+    s4_1h: "1 · Очередь сортировки", s4_1p: "Список работ, отсортированный по срочности и времени ожидания. Цветовая кодировка.",
+    s4_2h: "2 · Загрузка", s4_2p: ".mat / .csv / фото бумажной ленты. Или прямой приём с устройства.",
+    s4_3h: "3 · Чтение", s4_3p: "12 каналов, карточка диагноза ИИ, уверенность, зона внимания.",
+    s4_4h: "4 · Подтверждение / коррекция", s4_4p: "Один клик — согласие; один клик — несогласие с причиной. Решает врач.",
+    s4_5h: "5 · Отчёт", s4_5p: "PDF отправляется в МИС с уже заполненным заголовком пациента.",
+    s4_6h: "Аудит", s4_6p: "Каждый клик фиксируется; каждая коррекция доступна во вкладке аналитики.",
+
+    s5_eyebrow: "Шаг 0 · Вход",
+    s5_title: "Единый вход (SSO). Роль задаёт больница, а не пользователь.",
+    s5_1: "SSO через корпоративного провайдера больницы (SAML / OIDC).",
+    s5_2: "Ролевой доступ: <span class=\"chip\">Клиницист</span> <span class=\"chip\">Завотделением</span> <span class=\"chip\">Администратор</span>.",
+    s5_3: "Все сессии шифруются (TLS 1.3). ПДн не покидают VLAN больницы.",
+    s5_4: "Таймаут сессии по политике больницы (по умолчанию 30 мин).",
+    s5_signin_p: "Войдите корпоративной учётной записью.",
+    s5_email: "E-mail", s5_role: "Роль", s5_role_val: "Кардиолог",
+    s5_cta: "Продолжить через SSO →",
+
+    s6_eyebrow: "Экран 1 · Очередь сортировки",
+    s6_title: "Первое, что она видит каждое утро.",
+    s6_now: "08:14 · Пн 24 апр 2026",
+    s6_filters: "Фильтры",
+    s6_f1: "· Срочные (6)", s6_f2: "· Плановые (12)", s6_f3: "· Повторные (9)", s6_f4: "· Мои коррекции (2)",
+    s6_saved: "Сохранённые запросы",
+    s6_s1: "Подозрение на ФП", s6_s2: "После катетеризации 48ч",
+    s6_th1: "Приоритет", s6_th2: "Пациент", s6_th3: "МРН", s6_th4: "Метка ИИ", s6_th5: "Ожидает", s6_th6: "Уверенность",
+    s6_prio_urg: "Срочно", s6_prio_urg2: "Срочно", s6_prio_now: "Сейчас", s6_prio_high: "Высокий", s6_prio_rou: "Планово", s6_prio_rou2: "Планово",
+    s6_p1: "М. Омуров, 72", s6_p2: "Г. Ташиева, 57", s6_p3: "А. Исаева, 57",
+    s6_p4: "Б. Жумабеков, 49", s6_p5: "С. Бакирова, 64", s6_p6: "Т. Уметов, 33",
+    s6_d1: "Острый ИМ, передний", s6_d2: "ЭКГ: фибрилляция предсердий", s6_d3: "Подозрение на НЖТ",
+    s6_d4: "АВ-блокада I ст.", s6_d5: "Синусовая брадикардия", s6_d6: "Нормальный синусовый ритм",
+    s6_w_4min: "4 мин", s6_w_2min: "2 мин", s6_w_now: "Сейчас", s6_w_11min: "11 мин", s6_w_22min: "22 мин", s6_w_30min: "30 мин",
+    s6_open: "▶ открыть",
+    s6_sortnote: "Очередь отсортирована по <span class=\"accent\">приоритету → времени ожидания</span>. Её открытые коррекции — наверху.",
+
+    s7_eyebrow: "Экран 2 · Приём ЭКГ",
+    s7_title: "Три пути: устройство, файл или фото.",
+    s7_for: "Пациент", s7_verified: "Подтверждён",
+    s7_dz_title: "Перетащите файл ЭКГ",
+    s7_dz_sub: ".mat · .csv · .xml (HL7 aECG) · .png / .jpg бумажной ленты",
+    s7_btn1: "⚡ Поток с устройства",
+    s7_btn2: "📷 Фото бумажной ЭКГ",
+    s7_foot: "Захват фото проходит локальное распознавание до анализа. Ничего не покидает сеть больницы.",
+    s7_v_h: "Проверки до анализа",
+    s7_v_1: "Присутствуют все 12 отведений, каждое ≥ 10 с.",
+    s7_v_2: "Индекс качества сигнала ≥ 0.85 (иначе — предложение переснять).",
+    s7_v_3: "МРН совпадает с открытой картой пациента; несовпадение блокирует загрузку.",
+    s7_r_h: "Что добавляется в карту",
+    s7_r_1: "Сырой сигнал, хранится зашифрованно.",
+    s7_r_2: "Метаданные качества сигнала данного измерения.",
+    s7_r_3: "Связь с предыдущими записями того же МРН (для сравнения).",
+    s7_quote: "«Мне не важно, как ЭКГ попала в систему. Важно, чтобы к моменту нажатия „Анализ“ пациент уже был в карте.»",
+    s7_cite: "— Д-р Айгуль, интервью пользователя, март 2026",
+
+    s8_eyebrow: "Экран 3a · Работа модели",
+    s8_title: "27 миллисекунд на сервере. Как мигание глаза.",
+    s8_addr: "анализ · пациент А. Исаева",
+    s8_step1: "Шаг 1 · Проверка качества сигнала",
+    s8_step2: "Шаг 2 · Децимация с анти-алиасингом 5000→500",
+    s8_step3: "Шаг 3 · Инференс 1D-CNN",
+    s8_step4: "Шаг 4 · Объяснение (локальная LLM)",
+    s8_done: "готово",
+    s8_r1_h: "Что видит врач во время анализа",
+    s8_r1_p: "Короткий, честный индикатор прогресса. Без «крутилки», скрывающей состояние.",
+    s8_r2_h: "Что врач <span class=\"bad\">не</span> видит",
+    s8_r2_1: "Внутренние вероятности модели по 78 классам.",
+    s8_r2_2: "Метки, отбракованные проверкой качества сигнала.",
+    s8_r2_3: "Всё, что замедляет решение без пользы.",
+    s8_foot: "Полный сырой вывод всегда доступен во вкладке <span class=\"chip\">Дополнительно</span> для аудита и научной отчётности.",
+    sdec_eyebrow: "Главное изменение",
+    sdec_title: "Главное изменение: децимация с анти-алиасингом",
+    sdec_sub: "Три строки кода в предобработке. Больше ничего не меняется.",
+    sdec_caption: "scipy.signal.decimate — применяется один раз при приёме, ещё до того, как модель увидит сигнал.",
+    sdec_b1_h: "Фаза сохранена",
+    sdec_b1_p: "zero_phase=True пропускает фильтр в прямом и обратном направлении, поэтому фаза P-зубца и QRS не смещается.",
+    sdec_b2_h: "Корректный анти-алиасинг",
+    sdec_b2_p: "Фильтр Чебышева I типа с частотой среза на новом Найквисте удаляет сигналы, которые иначе «сложились» бы в полосу QRS — разница между +10 пп F1 и ухудшением baseline.",
+    sdec_b3_h: "Офлайн, без накладных на обучение",
+    sdec_b3_p: "Применяется один раз при приёме. Нулевые накладные на обучение, в 3.3× быстрее инференс, меньшие тензоры.",
+    sdec_b4_h: "Гигиена данных как в baseline",
+    sdec_b4_p: "Seed, веса классов, рецепт аугментации и разбиение — без изменений относительно baseline 5000 отсчётов. Весь прирост — только от этого шага.",
+
+    s9_eyebrow: "Экран 3b · Рабочее место чтения",
+    s9_title: "12 каналов, главный диагноз, уверенность, обоснование.",
+    s9_reviewing: "Читает · Д-р Айгуль К.",
+    s9_pinfo: "А. Исаева, 57 · МРН-00872 · 24-апр-2026 08:19",
+    s9_c1: "12-канал",
+    s9_dx_h: "Диагноз ИИ", s9_dx: "Наджелудочковая тахикардия",
+    s9_dx_diff: "дифференциал: АВ-узловая реципрокная",
+    s9_conf: "Уверенность 74%", s9_thresh: "· порог авто-отчёта 85%",
+    s9_sec_h: "Сопутствующие находки",
+    s9_sec_1: "Увеличение левого предсердия", s9_sec_2: "Нормальная ось", s9_sec_3: "QTc в норме", s9_ok: "ок",
+    s9_why_h: "Почему так?",
+    s9_why_p: "Пиковое внимание на морфологии QRS в V1 и регулярности ритма во II отведении. Частота ≈ 168 уд/мин, узкие QRS, зубцов P во II не различимо. Соответствует наджелудочковому генезу.",
+
+    s10_eyebrow: "Экран 4 · Решение врача",
+    s10_title: "Согласиться. Или не согласиться. В любом случае — один клик.",
+    s10_agree_h: "Согласиться с ИИ",
+    s10_agree_p: "Подписать отчёт, отправить в МИС, закрыть случай. Учитывается как согласие врача и ИИ.",
+    s10_agree_btn: "✓ Подписать: наджелудочковая тахикардия",
+    s10_dis_h: "Не согласиться — коррекция",
+    s10_dis_p: "Выбрать другой диагноз из списка или ввести свободный текст. <strong>Причина обязательна</strong>.",
+    s10_c1: "Трепетание предсердий 2:1", s10_c2: "Синусовая тахикардия", s10_c3: "АВУРТ", s10_c4: "Другое…",
+    s10_reason: "Причина: артефакт сигнала в V1–V3; будет переснято.",
+    s10_r_h: "Почему коррекция — кнопка первого класса.",
+    s10_r_1: "В отчёте стоит имя врача, а не модели.",
+    s10_r_2: "Коррекции — это <strong>обратная связь</strong>: аналитика измеряет процент согласия на врача, пайплайн дообучения использует уверенные коррекции как корректные метки.",
+    s10_r_3: "Без штрафов, без трения, без «вы уверены?». Один клик.",
+    s10_a_h: "После клика",
+    s10_a_1: "Итоговый диагноз", s10_a_1v: "Трепетание предсердий с проведением 2:1",
+    s10_a_2: "Направлено", s10_a_2v: "МИС · очередь отчётов",
+    s10_a_3: "Запись в аудит", s10_a_3v: "польз. A.K. · 08:21:04 · коррекция",
+
+    s11_eyebrow: "Доп. экран · Сравнение с предыдущим",
+    s11_title: "Это было всегда? Или появилось сейчас?",
+    s11_lead: "Каждое чтение сохраняет вектор из 78 вероятностей по классам. Режим сравнения накладывает сегодняшнюю ЭКГ на любую предыдущую по тому же МРН: точные записи рядом, выровненные диагнозы ИИ и подсвеченные изменения («новое: трепетание; исчезло: депрессия ST»).",
+    s11_t_h: "Сегодня · 24 апр 2026",
+    s11_t_dx: "Трепетание предсердий 2:1", s11_t_pill: "подтверждено",
+    s11_p_h: "Раньше · 11 мар 2026",
+    s11_p_dx: "Нормальный синусовый ритм", s11_p_pill: "подписано",
+    s11_c_h: "Что изменилось",
+    s11_c_1: "НОВОЕ · Трепетание предсердий (ИИ 86% · подтверждено врачом)",
+    s11_c_2: "Частота 65 → 150 уд/мин",
+    s11_c_3: "ИСЧЕЗЛО · пограничная инверсия T в V5–V6",
+
+    s12_eyebrow: "Экран 5 · Отчёт",
+    s12_title: "Один PDF. Все данные, рассуждения и журнал аудита.",
+    s12_title_pdf: "Отчёт ЭКГ — А. Исаева, 57",
+    s12_meta: "МРН-00872 · 24-апр-2026 08:19 · Отчёт сформирован 08:21",
+    s12_fd: "<strong>Итоговый диагноз:</strong> Трепетание предсердий с проведением 2:1.",
+    s12_ai: "<strong>Предложение ИИ:</strong> Наджелудочковая тахикардия (уверенность 74%) — изменено врачом.",
+    s12_rat: "<strong>Обоснование:</strong> регулярная узкокомплексная тахикардия ~150 уд/мин; волны трепетания видны в II, III, aVF при растяжении; артефакт сигнала объясняет особенности V1–V3, которые оценила модель.",
+    s12_audit: "<strong>Журнал аудита:</strong> получено 08:19 · анализ 08:19:27 · открыто 08:20 · коррекция 08:21 · подписано 08:21:04 · отправлено в МИС 08:21:05 · врач: Д-р Айгуль К.",
+    s12_b1: "✉ Направить терапевту",
+    s12_b2: "⬇ Скачать PDF",
+    s12_b3: "✔ Отправить в МИС",
+    s12_r_h: "Что входит в отчёт по умолчанию",
+    s12_r_1: "Итоговый диагноз, подписанный врачом.",
+    s12_r_2: "Предложение ИИ и уверенность — <em>даже если исправлено</em>.",
+    s12_r_3: "Обоснование на обычном языке (локальная LLM, проверяется до подписи).",
+    s12_r_4: "Полная запись 12 каналов, шкала сетки и пометка качества.",
+    s12_r_5: "Журнал аудита с временными метками по каждому действию.",
+    s12_r_foot: "Генерируется на сервере в PDF/A-3 для архивирования в МИС, с машинно-читаемым вложением HL7 aECG для смежных систем.",
+
+    s13_eyebrow: "Взгляд заведующего отделением",
+    s13_title: "Пропускная способность, согласие с ИИ, зоны пользы.",
+    s13_k1_h: "Эта неделя", s13_k1_p: "ЭКГ прочитано",
+    s13_k2_h: "Согласие с ИИ", s13_k2_p: "подписано без коррекции",
+    s13_k3_h: "Медианное время чтения", s13_k3_v: "1.7 мин", s13_k3_p: "от открытия до подписи",
+    s13_t_h: "Где возникают коррекции",
+    s13_th1: "Класс диагноза", s13_th2: "F1 ИИ", s13_th3: "Доля коррекций", s13_th4: "Тренд",
+    s13_r1: "Трепетание предсердий", s13_r2: "Фибрилляция предсердий", s13_r3: "АВ-блокада I ст.",
+    s13_r4: "Изменения ST", s13_r5: "Редкий паттерн Бругада", s13_gap: "нехватка обуч. данных",
+    s13_f_h: "Контур обратной связи",
+    s13_f_p: "Уверенные коррекции врачей, прошедшие рецензию, каждую пятницу экспортируются в пайплайн дообучения.",
+    s13_f_1: "Корректирующих меток на неделе",
+    s13_f_2: "На рецензии",
+    s13_f_3: "Ожидают дообучения",
+    s13_f_foot: "Кнопка «Одобрить для дообучения» — у завотделением; ничто из реальных случаев не попадает в обучение без рецензии.",
+
+    s14_eyebrow: "Безопасность и управление",
+    s14_title: "Четыре защитных барьера — врач видит их всегда.",
+    s14_1h: "1 · Порог уверенности", s14_1p: "Случаи с уверенностью ИИ < 85% никогда не закрываются автоматически. Подтверждает или исправляет врач.",
+    s14_2h: "2 · Коррекция без трения", s14_2p: "Никаких «вы уверены?». Один клик, одна обязательная причина, готово.",
+    s14_3h: "3 · Полный журнал аудита", s14_3p: "Каждое действие с временной меткой, подписью и неизменяемо. Экспорт для комплаенса.",
+    s14_4h: "4 · ПДн не покидают больницу", s14_4p: "Инференс — на on-prem GPU. Объяснение LLM — локальная модель; внешние API не вызываются.",
+    s14_5h: "Известные слабые места — обнажены", s14_5p: "Бругада, длинный QT, детские ЭКГ — система сообщает «вне обучающего распределения», вместо угадывания.",
+    s14_6h: "Чёткая граница ролей", s14_6p: "CardioLens — <strong>поддержка решений</strong>, не медицинское изделие. Итоговый диагноз — врача; отчёт подписывает врач.",
+
+    s15_eyebrow: "Как встраивается в больницу",
+    s15_title: "Без новых паролей. Без изменений МИС.",
+    s15_n1_1: "ЭКГ-устройство", s15_n1_2: "в отделении",
+    s15_n2_2: "Приём · Анализ · Объяснение", s15_n2_3: "on-prem, один GPU", s15_n2_4: "REST API · HL7 aECG",
+    s15_n3_1: "МИС", s15_n3_2: "через HL7 FHIR",
+    s15_n4_1: "Браузер врача", s15_n4_2: "ПК + планшет",
+    s15_n5_1: "Аналитика / аудит", s15_n5_2: "Дашборд завотделением",
+    s15_n6_1: "Пайплайн дообучения", s15_n6_2: "ежемесячно · рецензирование",
+    s15_d_h: "Развернуть", s15_d_p: "Один Docker Compose, один on-prem GPU (например, RTX 5090 / A4000). МРН берётся из МИС; отдельного мастер-справочника пациентов нет.",
+    s15_a_h: "Аутентификация", s15_a_p: "SAML/OIDC к IdP больницы. SSO — никаких новых паролей для врача.",
+    s15_i_h: "Интеграция", s15_i_p: "Приём HL7 aECG, выдача FHIR DiagnosticReport. Для МИС без API — резервная выгрузка PDF в папку.",
+
+    s16_eyebrow: "Что это даёт отделению",
+    s16_title: "Быстрое чтение, внимание к редким случаям, проверяемые решения.",
+    s16_k1: "время чтения ЭКГ", s16_k2: "макро F1 по 78 меткам",
+    s16_k3: "инференс на образец", s16_k4: "решений в аудите",
+    s16_d_h: "Врачу",
+    s16_d_1: "Меньше ручных прочтений типовых случаев.",
+    s16_d_2: "Второе мнение для редких и пограничных случаев.",
+    s16_d_3: "Отчёты готовятся, а не перепечатываются.",
+    s16_h_h: "Отделению",
+    s16_h_1: "Измеримый процент согласия врачей и ИИ.",
+    s16_h_2: "Фиксированный аудит по каждой рекомендации.",
+    s16_h_3: "Контур обратной связи в модель.",
+
+    s17_eyebrow: "Следующие 12 недель (пилот)",
+    s17_title: "Структурированный пилот в одном отделении.",
+    s17_1h: "Недели 1–3 · Установка",
+    s17_1_1: "Настроен on-prem GPU-узел.",
+    s17_1_2: "SSO подключено к IdP больницы.",
+    s17_1_3: "Приём HL7 aECG с двух аппаратов ЭКГ.",
+    s17_2h: "Недели 4–8 · Теневой режим",
+    s17_2_1: "CardioLens молча анализирует каждую ЭКГ.",
+    s17_2_2: "Ежедневный отчёт о согласии — завотделением.",
+    s17_2_3: "Рабочий процесс врача не меняется.",
+    s17_3h: "Недели 9–12 · Ассистивный режим",
+    s17_3_1: "Врачи открывают CardioLens при чтении.",
+    s17_3_2: "Коррекции фиксируются; обзор — еженедельно.",
+    s17_3_3: "Решение go/no-go на 12-й неделе.",
+    s17_s_h: "Критерии успеха, согласованные заранее",
+    s17_s_1: "Согласие со старшими кардиологами",
+    s17_s_2: "Снижение медианного времени чтения",
+    s17_s_3: "Ноль инцидентов безопасности по вине CardioLens", s17_s_3v: "жёсткое требование",
+
+    s18_eyebrow: "Спасибо",
+    s18_t1: "Ревью, пилот или возражение —",
+    s18_t2: "каждое из трёх двигает проект вперёд.",
+    s18_lead: "CardioLens — прототип уровня магистерской работы в клинически пригодной форме. Единственное, что нельзя собрать в лаборатории, — ощущение от работы кардиолога в 08:14 понедельника.",
+    s18_contact: "Контакт · Эламан Назаркулов",
+    s18_uni: "Кыргызско-Турецкий университет «Манас» · Компьютерная инженерия",
+    s18_hint: "Нажмите <span class=\"kbd\">←</span> / <span class=\"kbd\">→</span> для навигации; <span class=\"kbd\">Esc</span> — индекс слайдов."
+  },
+
+  ky: {
+    brand: "CardioLens · 12-каналдуу ЭКГ үчүн дарыгердин жардамчысы",
+    nav_hint: "навигация үчүн",
+    nav_prev: "← Мурунку",
+    nav_next: "Кийинки →",
+    ov_h: "Бардык слайддар · кайтуу үчүн Esc",
+    slide_label: "Слайд",
+    t_s1: "Баштоо", t_s2: "Катышуучулар", t_s3: "Д-р А. күнү", t_s4: "5 кадам",
+    t_s5: "Кирүү", t_s6: "Пациенттер кезеги", t_s7: "Жүктөө", t_s8: "Талдоо",
+    t_sdec: "Негизги өзгөрүү",
+    t_s9: "Жыйынтык", t_s10: "Кабылдоо / оңдоо", t_s11: "Салыштыруу", t_s12: "Отчёт",
+    t_s13: "Аналитика", t_s14: "Коопсуздук", t_s15: "Интеграция", t_s16: "Артыкчылыктар",
+    t_s17: "Кийинки кадам", t_s18: "Рахмат",
+
+    s1_eyebrow: "Кардиология бөлүмү үчүн",
+    s1_title_1: "Ар бир ЭКГга —",
+    s1_title_2: "экинчи көз.",
+    s1_lead: "CardioLens 12-каналдуу ЭКГны 30 мс ичинде окуп, <strong>эмнени көргөнүн, кайсы жерде көргөнүн жана канчалык ишеничтүү экенин</strong> көрсөтөт — сиз ырастап же оңдоп, кийинки окуяга өтөсүз.",
+    s1_tag1: "Клиникалык чечимди колдоо · алмаштыруу эмес",
+    s1_tag2: "Тест тактыгы 97.34% · Chapman-Shaoxing",
+    s1_tag3: "Ар бир сунуш кайтарылма жана текшерилет",
+
+    s2_eyebrow: "Бул кимге багытталган",
+    s2_title: "Үч роль. Бир курал. Үч башка көрүнүш.",
+    s2_lead: "CardioLens клиниктин жумушу айланасында курулган, бирок ар бир ролго ылайыктуу көрүнүш берет: дарылоочу дарыгерге, натыйжалар үчүн жооп берген бөлүм башчысына жана ооруканадагы инфраструктураны тейлеген IT кызматына.",
+    s2_c1_h: "Кардиолог / терапевт",
+    s2_c1_p: "2 мүнөттөн аз убакытта ырасталган диагноз жана кол коё турган негиздеме керек.",
+    s2_c1_chip: "Кезек · Жыйынтык · Оңдоо · Кол коюу",
+    s2_c2_h: "Бөлүм башчысы",
+    s2_c2_p: "Өткөрүү жөндөмүн, дарыгер-ИИ макулдашуу пайызын жана ар бир чечим боюнча таза аудит журналын көрүшү керек.",
+    s2_c2_chip: "Аналитика · Макулдук · Аудит",
+    s2_c3_h: "IT / шайкештик",
+    s2_c3_p: "Ролдук жеткиликтүүлүк, жеке маалыматты шифрлөө (тыныч жана тармакта), учурдагы медициналык маалымат системасына өзгөрүүсүз интеграция керек.",
+    s2_c3_chip: "SSO · RBAC · HL7/FHIR",
+    s2_footer: "Бул презентациянын калганы <strong>кардиологдун</strong> көз карашы менен берилет — дарыгер ачкан экрандар ырааты боюнча жол көрсөтүү.",
+
+    s3_eyebrow: "Персона",
+    s3_title: "Д-р Айгуль, клиника-кардиолог.",
+    s3_lead: "Ош шаарындагы аймактык оорукана. Күнүнө 40тан ашуун ЭКГ, алардын алтоодой убакыт жагынан критикалык. Компьютерден окуйт, кээде бекетте планшеттен дагы.",
+    s3_stat1: "ЭКГ / күн", s3_stat2: "окуу максатуу убактысы", s3_stat3: "бир сменедеги шашылыш",
+    s3_footer: "Бүгүн бир окуяны карайбыз: 57 жаштагы катетерден кийинки пациент, жаңы пайда болгон жүрөк кагышы менен.",
+    s3_name: "Д-р Айгуль К.",
+    s3_role: "Клиника-кардиолог · Смена 08:00–20:00",
+    s3_oncall: "Кезекте",
+    s3_ask_label: "Ал системадан эмнени күтөт",
+    s3_ask_1: "Кезекти тартиптеш — шашылыш ЭКГлар биринчи.",
+    s3_ask_2: "Диагнозду жана аны сигналдын <em>кайсы жеринен</em> көргөнүн көрсөт.",
+    s3_ask_3: "Бир чыкылдатуу менен макул болбоого жол бер.",
+    s3_ask_4: "Отчётту даярда; пациенттин МРНин кайра тергизбе.",
+
+    s4_eyebrow: "Жумуш процесси кандай",
+    s4_title: "Беш экран. Беш тийүү. Аягы — кол коюлган отчёт.",
+    s4_1h: "1 · Триаж кезеги", s4_1p: "Шашылыштыкка жана күтүү убактысына карата иретелген тизме. Түс менен белгиленет.",
+    s4_2h: "2 · Жүктөө", s4_2p: ".mat / .csv / кагаз-сүрөт. Же түзмөктөн агым.",
+    s4_3h: "3 · Окуу бөлмөсү", s4_3p: "12-канал, ИИ диагнозу, ишеним, кайсы жерди карады.",
+    s4_4h: "4 · Ырастоо же оңдоо", s4_4p: "Бир чыкылдатуу — макул; бир чыкылдатуу — макул эмес + себеп. Акыркы сөз — дарыгерде.",
+    s4_5h: "5 · Отчёт", s4_5p: "Пациенттин аты жазылган PDF МИСке жиберилет.",
+    s4_6h: "Аудит", s4_6p: "Ар бир аракет каттыкта; ар бир оңдоо аналитикадан көрүнөт.",
+
+    s5_eyebrow: "Кадам 0 · Кирүү",
+    s5_title: "Бирдиктүү кирүү (SSO). Ролду колдонуучу эмес, оорукана белгилейт.",
+    s5_1: "Оорукананын идентификация провайдери аркылуу SSO (SAML / OIDC).",
+    s5_2: "Ролдук жеткиликтүүлүк: <span class=\"chip\">Клиник</span> <span class=\"chip\">Бөлүм башчысы</span> <span class=\"chip\">Админ</span>.",
+    s5_3: "Бардык сессиялар шифрленген (TLS 1.3). Жеке маалымат оорукананын VLANынан чыкпайт.",
+    s5_4: "Сессиянын тайм-ауту — оорукана саясаты боюнча (баштапкы 30 мүнөт).",
+    s5_signin_p: "Оорукана эсеп жазуусу менен кириңиз.",
+    s5_email: "E-mail", s5_role: "Роль", s5_role_val: "Кардиолог",
+    s5_cta: "SSO менен улантуу →",
+
+    s6_eyebrow: "Экран 1 · Триаж кезеги",
+    s6_title: "Анын эртең менен биринчи көргөнү.",
+    s6_now: "08:14 · Дш 24-апр 2026",
+    s6_filters: "Чыпкалар",
+    s6_f1: "· Шашылыш (6)", s6_f2: "· Пландуу (12)", s6_f3: "· Кайра көрүү (9)", s6_f4: "· Менин оңдооларым (2)",
+    s6_saved: "Сакталган издөөлөр",
+    s6_s1: "ФП шек", s6_s2: "Катетерден 48с кийин",
+    s6_th1: "Маанилүүлүк", s6_th2: "Пациент", s6_th3: "МРН", s6_th4: "ИИ белгиси", s6_th5: "Күтүүдө", s6_th6: "Ишеним",
+    s6_prio_urg: "Шашылыш", s6_prio_urg2: "Шашылыш", s6_prio_now: "Азыр", s6_prio_high: "Жогору", s6_prio_rou: "Пландуу", s6_prio_rou2: "Пландуу",
+    s6_p1: "М. Өмүров, 72", s6_p2: "Г. Ташиева, 57", s6_p3: "А. Исаева, 57",
+    s6_p4: "Б. Жумабеков, 49", s6_p5: "С. Бакирова, 64", s6_p6: "Т. Өмөтов, 33",
+    s6_d1: "Курч ИМ, алдыңкы", s6_d2: "ЭКГ: атриалдык фибрилляция", s6_d3: "НЖТ шеги",
+    s6_d4: "АВ-блокада I д.", s6_d5: "Синус брадикардия", s6_d6: "Кадимки синус ритми",
+    s6_w_4min: "4 мүн", s6_w_2min: "2 мүн", s6_w_now: "Азыр", s6_w_11min: "11 мүн", s6_w_22min: "22 мүн", s6_w_30min: "30 мүн",
+    s6_open: "▶ ачуу",
+    s6_sortnote: "Кезек <span class=\"accent\">маанилүүлүк → күтүү убактысы</span> боюнча иреттелген. Ачык оңдоолору жогоруда.",
+
+    s7_eyebrow: "Экран 2 · ЭКГны жүктөө",
+    s7_title: "Үч жол: түзмөктөн, файлдан же сүрөттөн.",
+    s7_for: "Пациент", s7_verified: "Тастыкталды",
+    s7_dz_title: "ЭКГ файлын сүйрөп таштаңыз",
+    s7_dz_sub: ".mat · .csv · .xml (HL7 aECG) · кагаз лентанын .png / .jpg",
+    s7_btn1: "⚡ Түзмөктөн агым",
+    s7_btn2: "📷 Кагаз ЭКГ сүрөтү",
+    s7_foot: "Сүрөт жергиликтүү санарипке өтүп, анан талданат. Эч нерсе оорукана тармагынан чыкпайт.",
+    s7_v_h: "Талдоого чейинки текшерүү",
+    s7_v_1: "12 жетек даана, ар бири ≥ 10 сек.",
+    s7_v_2: "Сигнал сапат индекси ≥ 0.85 (болбосо — кайра тартууну сунуш кылабыз).",
+    s7_v_3: "МРН ачык пациенттин картасына дал келет; туш келбесе — жүктөө токтотулат.",
+    s7_r_h: "Пациенттин картасына кошулат",
+    s7_r_1: "Чыныгы сигнал, шифрленип сакталат.",
+    s7_r_2: "Ушул өлчөөнүн сигнал сапат метадатасы.",
+    s7_r_3: "Ошол эле МРН боюнча мурунку жазуулар менен байланыш (салыштыруу үчүн).",
+    s7_quote: "«ЭКГ кантип системага тийгенин кам санабайм. „Талдоо“ баскычын басканымда пациент картада болсо — жетиштүү.»",
+    s7_cite: "— Д-р Айгуль, колдонуучу интервьюсу, март 2026",
+
+    s8_eyebrow: "Экран 3a · Модель иштейт",
+    s8_title: "Серверде 27 миллисекунд. Көз ирмемдей.",
+    s8_addr: "талдоо · пациент А. Исаева",
+    s8_step1: "Кадам 1 · Сигнал сапатын текшерүү",
+    s8_step2: "Кадам 2 · Анти-алиасинг менен децимация 5000→500",
+    s8_step3: "Кадам 3 · 1D-CNN инференс",
+    s8_step4: "Кадам 4 · Түшүндүрмө (жергиликтүү LLM)",
+    s8_done: "даяр",
+    s8_r1_h: "Талдоо учурунда дарыгер эмнени көрөт",
+    s8_r1_p: "Кыска, чынчыл прогресс. Системанын абалын жашырган «айлануу» жок.",
+    s8_r2_h: "Дарыгер эмнени <span class=\"bad\">көрбөйт</span>",
+    s8_r2_1: "Моделдин 78 класс боюнча ички ыктымалдыктары.",
+    s8_r2_2: "Сигнал сапатынан өтпөгөн белгилер.",
+    s8_r2_3: "Пайдасыз түрдө чечимди жайлаткан нерселер.",
+    s8_foot: "Толук чийки чыгаруу <span class=\"chip\">Кошумча</span> бөлүгүндө — аудит жана илимий отчёт үчүн.",
+    sdec_eyebrow: "Негизги өзгөрүү",
+    sdec_title: "Негизги өзгөрүү: анти-алиасинг менен децимация",
+    sdec_sub: "Алдын ала иштетүүгө үч сап код. Башка эч нерсе өзгөрбөйт.",
+    sdec_caption: "scipy.signal.decimate — кабыл алууда бир жолу колдонулат, модель сигналды көрө электе.",
+    sdec_b1_h: "Фаза сакталды",
+    sdec_b1_p: "zero_phase=True чыпканы алдыга жана артка бир эле жолу өткөрөт; ошондуктан P тиши жана QRS фазасы жылбайт.",
+    sdec_b2_h: "Туура анти-алиасинг",
+    sdec_b2_p: "Жаңы Найквист жыштыгындагы Чебышев I-түр чыпкасы QRS тилкесине катталып калчу сигналдарды жок кылат — +10 пп F1 менен baseline төмөндөтүүнүн ортосундагы айырма.",
+    sdec_b3_h: "Оффлайн, окутуу чыгашасы жок",
+    sdec_b3_p: "Кабыл алууда бир жолу колдонулат. Окутуу накталайы нөл, инференс 3.3× тез, тензорлор кичине.",
+    sdec_b4_h: "Baseline менен бирдей гигиена",
+    sdec_b4_p: "Seed, класс салмактары, аугментация рецепти жана бөлүштүрүү 5000-үлгү baseline менен бирдей — бүт жакшыруу ушул кадамга таандык.",
+
+    s9_eyebrow: "Экран 3b · Окуу бөлмөсү",
+    s9_title: "12-канал, негизги диагноз, ишеним, негиздеме.",
+    s9_reviewing: "Окуп жатат · Д-р Айгуль К.",
+    s9_pinfo: "А. Исаева, 57 · МРН-00872 · 24-апр-2026 08:19",
+    s9_c1: "12-канал",
+    s9_dx_h: "ИИ диагнозу", s9_dx: "Надкардинок (наджелудочковая) тахикардия",
+    s9_dx_diff: "дифференциал: АВ түйүн реципроктук",
+    s9_conf: "Ишеним 74%", s9_thresh: "· автоматтык отчёт чеги 85%",
+    s9_sec_h: "Кошумча табылгалар",
+    s9_sec_1: "Сол куулук кеңейгени", s9_sec_2: "Кадимки октук", s9_sec_3: "QTc нормада", s9_ok: "ок",
+    s9_why_h: "Эмне үчүн ушул?",
+    s9_why_p: "QRS морфологиясы V1де жана ритм туруктуулугу II жетегинде жогорку көңүл. Ритм ≈ 168 соккуга/мүн, ичке QRS, II жетекте P тиши байкалбайт. Надкардиноктук негизге шайкеш.",
+
+    s10_eyebrow: "Экран 4 · Дарыгер чечет",
+    s10_title: "Макул болуңуз. Же оңдоңуз. Ар бири — бир чыкылдатуу.",
+    s10_agree_h: "ИИ менен макул",
+    s10_agree_p: "Отчётко кол коюу, МИСке жөнөтүү, окуяны жабуу. Аналитикада ИИ-макулдук катары белгиленет.",
+    s10_agree_btn: "✓ Надкардинок тахикардия деп коюу",
+    s10_dis_h: "Макул эмес — оңдоо",
+    s10_dis_p: "Тизмеден башка диагноз тандаңыз же эркин текст жазыңыз. <strong>Себеп милдеттүү</strong>.",
+    s10_c1: "Куулук трепетациясы 2:1", s10_c2: "Синус тахикардия", s10_c3: "АВУРТ", s10_c4: "Башка…",
+    s10_reason: "Себеп: V1–V3те сигнал артефакти; кайра алынат.",
+    s10_r_h: "Эмне үчүн оңдоо — биринчи класстагы баскыч.",
+    s10_r_1: "Отчётто дарыгердин аты — модель эмес.",
+    s10_r_2: "Оңдоолор — <strong>кайра байланыш</strong>: аналитика дарыгер боюнча макулдук пайызын өлчөйт, кайра окуу конвейери ишеничтүү оңдоолорду туура белги катары алат.",
+    s10_r_3: "Жаза жок, тоскоолдук жок, «ишенесизби?» модалы жок. Бир чыкылдатуу.",
+    s10_a_h: "Чыкылдатуудан кийин",
+    s10_a_1: "Акыркы диагноз", s10_a_1v: "Куулук трепетациясы 2:1 өткөрүүсү менен",
+    s10_a_2: "Багытталды", s10_a_2v: "МИС · отчёт кезеги",
+    s10_a_3: "Аудит жазуусу", s10_a_3v: "колдонуучу A.K. · 08:21:04 · оңдоо",
+
+    s11_eyebrow: "Кошумча экран · Мурунку менен салыштыруу",
+    s11_title: "Бул мурда да болгонбу? Же жаңыбы?",
+    s11_lead: "Ар бир окууда 78 класс боюнча ыктымалдык вектору сакталат. Салыштыруу көрүнүшү бүгүнкү ЭКГны ошол эле МРНдин каалаган мурунку ЭКГсы менен үстү-үстүнө коёт — так жазуулар катар, ИИ диагноздору тегиздетилген, өзгөрүүлөр белгиленет («жаңы: трепетация; жоюлду: ST депрессиясы»).",
+    s11_t_h: "Бүгүн · 24-апр 2026",
+    s11_t_dx: "Куулук трепетациясы 2:1", s11_t_pill: "ырасталды",
+    s11_p_h: "Мурун · 11-мар 2026",
+    s11_p_dx: "Кадимки синус ритми", s11_p_pill: "кол коюлган",
+    s11_c_h: "Эмне өзгөрдү",
+    s11_c_1: "ЖАҢЫ · Куулук трепетациясы (ИИ 86% · дарыгер ырастады)",
+    s11_c_2: "Ритм 65 → 150 сок/мүн",
+    s11_c_3: "ЖОЮЛДУ · V5–V6да чек ара T инверсиясы",
+
+    s12_eyebrow: "Экран 5 · Отчёт",
+    s12_title: "Бир PDF. Бардык маалымат, негиздеме жана аудит журналы.",
+    s12_title_pdf: "ЭКГ отчёту — А. Исаева, 57",
+    s12_meta: "МРН-00872 · 24-апр-2026 08:19 · Отчёт 08:21 түзүлдү",
+    s12_fd: "<strong>Акыркы диагноз:</strong> Куулук трепетациясы 2:1 өткөрүүсү менен.",
+    s12_ai: "<strong>ИИ сунушу:</strong> Надкардинок тахикардия (ишеним 74%) — дарыгер өзгөрттү.",
+    s12_rat: "<strong>Негиздеме:</strong> ~150 сок/мүн туруктуу ичке комплекстүү тахикардия; кеңейтүүдө II, III, aVFте трепетация толкундары; моделдин V1–V3 белгилерин сигнал артефакты түшүндүрөт.",
+    s12_audit: "<strong>Аудит журналы:</strong> алынды 08:19 · талдоо 08:19:27 · ачылды 08:20 · оңдоо 08:21 · кол коюлду 08:21:04 · МИСке жиберилди 08:21:05 · дарыгер: Д-р Айгуль К.",
+    s12_b1: "✉ Терапевтке жөнөтүү",
+    s12_b2: "⬇ PDF жүктөп алуу",
+    s12_b3: "✔ МИСке жөнөтүү",
+    s12_r_h: "Отчётко демейде эмне кирет",
+    s12_r_1: "Акыркы диагноз, дарыгер тарабынан кол коюлган.",
+    s12_r_2: "ИИ сунушу жана ишеними — <em>оңдоогонго чейин дагы</em>.",
+    s12_r_3: "Жөнөкөй тилдеги негиздеме (жергиликтүү LLM, кол коюуга чейин текшерилет).",
+    s12_r_4: "Толук 12-канал жазуусу, тор масштаб жана сигнал сапат белгиси.",
+    s12_r_5: "Ар бир иш-аракет үчүн убакыт белгилүү аудит журналы.",
+    s12_r_foot: "МИС архивдеши үчүн сервер жагында PDF/A-3 катары түзүлөт жана ылайыктуу системалар үчүн HL7 aECG машина окуй турган тиркеме менен.",
+
+    s13_eyebrow: "Бөлүм башчысынын көрүнүшү",
+    s13_title: "Өткөрүү жөндөмү, ИИ менен макулдук, пайдалуу жерлер.",
+    s13_k1_h: "Бул жумада", s13_k1_p: "ЭКГ окулду",
+    s13_k2_h: "ИИ менен макул", s13_k2_p: "оңдоосуз кол коюлган",
+    s13_k3_h: "Медиандык окуу убактысы", s13_k3_v: "1.7 мүн", s13_k3_p: "ачуудан кол коюуга чейин",
+    s13_t_h: "Оңдоолор кайда көп",
+    s13_th1: "Диагноз классы", s13_th2: "ИИ F1", s13_th3: "Оңдоо үлүшү", s13_th4: "Тренд",
+    s13_r1: "Куулук трепетациясы", s13_r2: "Атриалдык фибрилляция", s13_r3: "АВ-блокада I д.",
+    s13_r4: "ST сегмент өзгөрүүлөрү", s13_r5: "Бругада сейрек үлгүсү", s13_gap: "окуу маалыматы аз",
+    s13_f_h: "Кайра байланыш контуру",
+    s13_f_p: "Рецензиядан өткөн ишеничтүү дарыгер оңдоолору ар жума сайын кайра окуу конвейерине экспорттолот.",
+    s13_f_1: "Ушул жумадагы оңдоо белгилери",
+    s13_f_2: "Рецензияда",
+    s13_f_3: "Кайра окууда күтөт",
+    s13_f_foot: "«Кайра окуу үчүн бекитүү» баскычы бөлүм башчысыныкы; чыныгы окуядан эч нерсе рецензиясыз окууга түшпөйт.",
+
+    s14_eyebrow: "Коопсуздук жана башкаруу",
+    s14_title: "Дарыгер ар дайым көргөн төрт коргонуучу катмар.",
+    s14_1h: "1 · Ишеним чеги", s14_1p: "ИИ ишеними 85%тен аз окуялар эч качан автоматтык түрдө жабылбайт. Дарыгер ырастайт же оңдойт.",
+    s14_2h: "2 · Оңдоо акысыз", s14_2p: "«Ишенесизби?» модалы жок. Бир чыкылдатуу, бир милдеттүү себеп, даяр.",
+    s14_3h: "3 · Толук аудит журналы", s14_3p: "Ар бир иш-аракет убакыт белгиси, ээси жана өзгөрүлбөс. Шайкештик үчүн экспорт.",
+    s14_4h: "4 · Жеке маалымат оорукананын тышкарысына чыкпайт", s14_4p: "Бардык инференс on-prem GPUда. LLM түшүндүрмө жергиликтүү моделде; тышкы API чакырылбайт.",
+    s14_5h: "Белгилүү алсыз жерлер — ачык", s14_5p: "Бругада, узун QT, бала ЭКГсы — система «окуу бөлүштүрүүсүнөн тышкары» деп айтат, божомолдобойт.",
+    s14_6h: "Ачык ролдук чек", s14_6p: "CardioLens — <strong>чечимди колдоо</strong>, медициналык буюм эмес. Акыркы диагноз — дарыгерде; отчётко дарыгер кол коёт.",
+
+    s15_eyebrow: "Ооруканадагы орду",
+    s15_title: "Жаңы сырсөз жок. МИСке өзгөртүү жок.",
+    s15_n1_1: "ЭКГ түзмөгү", s15_n1_2: "бөлүмдө",
+    s15_n2_2: "Алуу · Талдоо · Түшүндүрүү", s15_n2_3: "on-prem, бир GPU", s15_n2_4: "REST API · HL7 aECG",
+    s15_n3_1: "МИС", s15_n3_2: "HL7 FHIR аркылуу",
+    s15_n4_1: "Дарыгердин браузери", s15_n4_2: "ПК + планшет",
+    s15_n5_1: "Аналитика / аудит", s15_n5_2: "Бөлүм башчысынын дашборду",
+    s15_n6_1: "Кайра окуу конвейери", s15_n6_2: "ай сайын · рецензия",
+    s15_d_h: "Жайгаштыруу", s15_d_p: "Бир Docker Compose, бир on-prem GPU (мис. RTX 5090 / A4000). МРН МИСтен келет; өзүнчө пациент мастер жок.",
+    s15_a_h: "Аутентификация", s15_a_p: "Оорукананын IdPсине SAML/OIDC. SSO — дарыгерге жаңы сырсөз керек эмес.",
+    s15_i_h: "Интеграция", s15_i_p: "HL7 aECG алуу, FHIR DiagnosticReport чыгаруу. APIси жок МИС үчүн — PDFти папкага түшүрүү резерви.",
+
+    s16_eyebrow: "Бул бөлүмгө эмне берет",
+    s16_title: "Тез окуу, сейрек окуяларга көңүл, текшерилген чечимдер.",
+    s16_k1: "ЭКГ окуу убактысы", s16_k2: "78 белги боюнча макро F1",
+    s16_k3: "бир үлгү боюнча инференс", s16_k4: "аудитте чечим",
+    s16_d_h: "Дарыгерге",
+    s16_d_1: "Кадимки окуяларда кол менен окуу азаят.",
+    s16_d_2: "Сейрек жана чек окуяларга экинчи пикир.",
+    s16_d_3: "Отчёт даярдалат, кайра терилбейт.",
+    s16_h_h: "Бөлүмгө",
+    s16_h_1: "Дарыгерлер жана ИИ ортосундагы макулдуктун өлчөмү.",
+    s16_h_2: "Ар бир сунушка туруктуу аудит.",
+    s16_h_3: "Моделге кайра байланыш контуру.",
+
+    s17_eyebrow: "Кийинки 12 жума (пилот)",
+    s17_title: "Бир бөлүмдөгү иретүү пилот.",
+    s17_1h: "1–3-жумалар · Орнотуу",
+    s17_1_1: "On-prem GPU түйүнү орнотулду.",
+    s17_1_2: "SSO оорукана IdPсине байланды.",
+    s17_1_3: "HL7 aECG агым эки ЭКГ аппаратынан.",
+    s17_2h: "4–8-жумалар · Көлөкө режим",
+    s17_2_1: "CardioLens ар бир ЭКГны үнсүз талдайт.",
+    s17_2_2: "Күн сайын макулдук отчёту — бөлүм башчысына.",
+    s17_2_3: "Дарыгердин жумушу өзгөрбөйт.",
+    s17_3h: "9–12-жумалар · Жардамчы режим",
+    s17_3_1: "Дарыгерлер окууда CardioLensти ачышат.",
+    s17_3_2: "Оңдоолор катталат; жумалык кайра карап чыгуу.",
+    s17_3_3: "12-жумада go / no-go чечим.",
+    s17_s_h: "Алдын ала макулдашылган ийгилик критерийлери",
+    s17_s_1: "Улук кардиологдор менен макулдук",
+    s17_s_2: "Медиандык окуу убактысынын кыскаруусу",
+    s17_s_3: "CardioLens себебинен нөл коопсуздук окуясы", s17_s_3v: "катуу талап",
+
+    s18_eyebrow: "Рахмат",
+    s18_t1: "Ревью, пилот же каршы пикир —",
+    s18_t2: "үчөөсү тең долбоорду алдыга жылдырат.",
+    s18_lead: "CardioLens — магистратура деңгээлиндеги, клиникалык жайылтууга ылайык прототип. Лабораторияда кура албаган жалгыз нерсе — дүйшөмбү саат 08:14те кардиолог эмнени сезерин билүү.",
+    s18_contact: "Байланыш · Эламан Назаркулов",
+    s18_uni: "Кыргыз-Түрк «Манас» университети · Компьютердик инженерия",
+    s18_hint: "Навигация үчүн <span class=\"kbd\">←</span> / <span class=\"kbd\">→</span>; слайд индекси — <span class=\"kbd\">Esc</span>."
+  }
+};
+
+/* ---------- deck logic with i18n ---------- */
+(function () {
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const dotsContainer = document.getElementById('dots');
+  const prev = document.getElementById('prev');
+  const next = document.getElementById('next');
+  const counter = document.getElementById('counter');
+  const progressBar = document.getElementById('progressBar');
+  const overview = document.getElementById('overview');
+  const overviewGrid = document.getElementById('overviewGrid');
+  const langButtons = Array.from(document.querySelectorAll('.lang-btn'));
+  let current = 0;
+
+  const STORAGE_KEY = 'cardiolens_lang';
+  const supported = ['en', 'ru', 'ky'];
+  const browserLang = (navigator.language || 'en').slice(0, 2).toLowerCase();
+  let lang = localStorage.getItem(STORAGE_KEY) || (supported.includes(browserLang) ? browserLang : 'en');
+
+  function applyLang(targetLang) {
+    if (!supported.includes(targetLang)) targetLang = 'en';
+    lang = targetLang;
+    const dict = I18N[lang];
+    // Walk every element with a data-i18n attribute.
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (!(key in dict)) return;
+      const asHtml = el.getAttribute('data-i18n-html') === '1';
+      if (asHtml) el.innerHTML = dict[key];
+      else el.textContent = dict[key];
+    });
+    document.documentElement.lang = lang;
+    // Update overview tile labels
+    rebuildOverview();
+    // Update active state of buttons
+    langButtons.forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+    localStorage.setItem(STORAGE_KEY, lang);
+  }
+
+  // build dots
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.addEventListener('click', () => go(i));
+    dotsContainer.appendChild(d);
+  });
+
+  function rebuildOverview() {
+    overviewGrid.innerHTML = '';
+    const dict = I18N[lang];
+    slides.forEach((s, i) => {
+      const titleKey = s.dataset.titleKey;
+      const title = (titleKey && dict[titleKey]) || `Slide ${i + 1}`;
+      const slideLabel = dict.slide_label || 'Slide';
+      const card = document.createElement('div');
+      card.style.cssText = `background: var(--surface); border: 1px solid var(--line);
+        border-radius: 10px; padding: 14px 16px; cursor: pointer; color: var(--text);
+        transition: transform .15s, border-color .15s;`;
+      card.innerHTML = `<div style="font-size:11px; color: var(--muted); letter-spacing: .1em; text-transform: uppercase;">${slideLabel} ${i + 1}</div>
+        <div style="font-size: 18px; font-weight: 600; margin-top: 4px;">${title}</div>`;
+      card.addEventListener('mouseenter', () => { card.style.transform = 'translateY(-2px)'; card.style.borderColor = 'var(--primary)'; });
+      card.addEventListener('mouseleave', () => { card.style.transform = ''; card.style.borderColor = 'var(--line)'; });
+      card.addEventListener('click', () => { overview.style.display = 'none'; go(i); });
+      overviewGrid.appendChild(card);
+    });
+  }
+
+  function go(i) {
+    if (i < 0 || i >= slides.length) return;
+    const dots = Array.from(dotsContainer.children);
+    slides[current].classList.remove('active');
+    slides[current].classList.add('previous');
+    dots[current].classList.remove('active');
+    current = i;
+    slides[current].classList.add('active');
+    slides[current].classList.remove('previous');
+    dots[current].classList.add('active');
+    counter.textContent = String(current + 1).padStart(2, '0') + ' / ' + String(slides.length).padStart(2, '0');
+    progressBar.style.width = (((current + 1) / slides.length) * 100) + '%';
+  }
+
+  function nextSlide() { go(Math.min(current + 1, slides.length - 1)); }
+  function prevSlide() { go(Math.max(current - 1, 0)); }
+
+  next.addEventListener('click', nextSlide);
+  prev.addEventListener('click', prevSlide);
+
+  langButtons.forEach(btn => btn.addEventListener('click', () => applyLang(btn.dataset.lang)));
+
+  document.addEventListener('keydown', (e) => {
+    if (overview.style.display === 'block' && e.key === 'Escape') { overview.style.display = 'none'; return; }
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { nextSlide(); e.preventDefault(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { prevSlide(); e.preventDefault(); }
+    else if (e.key === 'Home') go(0);
+    else if (e.key === 'End') go(slides.length - 1);
+    else if (e.key === 'Escape') { overview.style.display = overview.style.display === 'block' ? 'none' : 'block'; }
+  });
+
+  let startX = 0;
+  document.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener('touchend', (e) => {
+    const dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) > 50) (dx < 0 ? nextSlide() : prevSlide());
+  }, { passive: true });
+
+  applyLang(lang);
+  go(0);
+})();
+</script>
+</body>
+</html>
