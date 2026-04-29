@@ -1,0 +1,868 @@
+﻿KIRGIZİSTAN-TÜRKİYE MANAS ÜNİVERSİTESİ  
+YÜKSEK LİSANS / DOKTORA TEZİ YAZIM VE BASIM YÖNERGESİ
+
+BİRİNCİ BÖLÜM
+AMAÇ, KAPSAM ve DAYANAK
+	Amaç
+Madde 1
+Yönergenin amacı, KTMÜ Sosyal Bilimler Enstitüsü’ne bağlı tüm Anabilim/ Anasanat ve Bilim/ Sanat dallarında ve diğer birimlerde yapılacak Yüksek Lisans ve Doktora/ Sanatta Yeterlik tezleri ile araştırma raporları ve seminer çalışmalarının yazımında standartlaşmayı sağlayacak ilke ve kuralları belirlemektir.
+
+	Kapsam
+Madde 2
+Yönerge metninde tezler için geçerli sayılan şekil esaslarının tamamı diğer seminer çalışmaları ve araştırma raporlarını da kapsar.
+
+	Dayanak
+Madde 3
+Bu Yönerge, KTMÜ Üniversitesi Lisansüstü Eğitim ve Öğretim Sınav Yönetmeliği esas alınarak hazırlanmıştır.
+
+İKİNCİ BÖLÜM
+YAZIM DİLİ
+
+	Anlatım Ve Üslup
+Madde 4
+Türkçe ve Kırgızca yazılarda Türkçe ve Kırgızca imlâ kurallarına uyulmalıdır. Çalışmada, anlatılmak istenilen şey net ifade edilmeli, uzun ve karışık cümlelerden kaçınılmalı, cümleler imlâ bakımından düzgün olmalı ve kelimeler yerinde kullanılmalıdır. Cümleler gramer ve fikirce doğru, sade, açık ve uyumlu olmalı, sözcükler iyi seçilmelidir. Cümleler ve paragraflar arasında bağlantı iyi yapılmalı, konu dışı ifadelerle bu bağlantı koparılmamalı ve bölümden bölüme geçişlerde de gerekli bağlantıların kurulmasına özen gösterilmelidir. Türkçe’ye ve Kırgızca’ya yerleşmemiş yabancı sözcüklere fazla yer verilmemelidir. İyelik ifade eden sözcükler (yaptım, gördüm, buldum, çalışmamızda, araştırmamızda, bilim dalımızda, vb.) kullanılmamalıdır. Bunların yerine üçüncü şahıs ve edilgenlik ifade eden sözcükler (yapıldı, çalışmada, bilim dalında vb.) tercih edilmelidir.
+Tezlerde bir veya birden fazla kaynaktan yapılan aktarma veya alıntılar, birbiri ardı sıra bir sayfa veya daha fazla yer tutacak şekilde verilmemelidir. Bunun yerine ya alıntı/aktarmalar arasında tezi hazırlayanın eleştiri, yorum veya açıklamaları da yer almalı veya bu tür uzun aktarmalar tezin ekler kısmında gösterilmelidir. 
+
+	İmlâ ve Noktalama
+Madde 5
+Tezlerde imlâ ve noktalama yönünden Türk Dil Kurumu’nun Türkçe Sözlük ve İmlâ Kılavuzu’na uyulmalıdır. 
+
+
+
+
+
+ÜÇÜNCÜ BÖLÜM
+TEKNİK UNSURLAR
+
+Kağıt Gramajı ve Boyutları 
+Madde 6
+Tez, normal olarak en az 70 gr. birinci hamur beyaz kâğıdın tek yüzüne yazılır. 
+Tezlerde, A4 boyutunda beyaz kâğıt kullanılır. Ancak tablo, grafik, şekil vb. için ciltlemede A4 boyutuna uygun katlanacak farklı kâğıt kullanılabilir.
+
+	Sayfa Düzeni
+Madde 7
+Yazımda, her sayfada üstten 4 cm, soldan 3.5 cm, alttan 3 cm ve sağdan 2.5 cm kenar boşluğu bırakılır ve bu boşluk çerçevesi dışına kesinlikle çıkılmaz. 
+Tez metninde satırlar “iki yana yaslı” (justified) biçiminde ve 1.5 aralıklı yazılmalıdır. Ancak kısaltmalar, tablo, şekil ve sembol listeleri, önsöz, özetler, kaynaklar, ekler, özgeçmiş, metin içindeki tablo ve şekillerin isim ve açıklamaları ve dipnotlar tek aralıklı (single) yazılır. 
+Önsöz, içindekiler, giriş, kaynaklar ve özet gibi ana başlıklar ile bölüm başlıkları sayfa üst kenarından 4 veya 5 cm aşağıdan başlatılır ve bu tür başlıklardan sonra 24 nokta (pt) boşluk bırakılır. 
+Bölümler daima yeni bir sayfadan başlar. Alt bölüm başlıklarından önce (before) 3 nokta (pt) boşluk bırakılır. 
+Paragraflardan önce 6 nokta (6 pt) boşluk bırakılır, paragraflar arasına boş satır konmaz. Alt başlıklar sayfanın son satırı olarak yazılamaz; en azından 2 satır daha sığdırılamıyorsa başlık da sonraki sayfada yer alır.
+Yazımda kelime aralarında, virgül ve noktadan sonra 1 vuruşluk ara verilir. 
+Önsöz, içindekiler, kısaltmalar ve varsa şekiller ve çizelgeler gibi tezin ön kısmının sayfaları küçük Romen rakamlarıyla (i, ii, iii, ...), giriş bölümü ile başlayan tezin metin ve kaynaklar kısmı ise ek(ler) kısmının (doktora tezlerinde tezi hazırlayana ait özgeçmişin) sonuna kadar normal rakamlarla (1,2,3, ...) numaralandırılır. 
+Numaralandırma, iç kapaktan başlatılır; ancak, hem iç kapak, hem de tez onay sayfasında numara gösterilmez. 
+Numaraların gösterildiği ilk sayfa, özet-abstract sayfasıdır. Bu sayfanın numarası, Romen rakamıyla (iii)’dür. (Bkz. Ek. 1)
+Numaralar, birbirini izleyecek biçimde, sayfaların sağ alt kenarına son metin satırı veya dipnot satırından 1.5 satır aralığı aşağıya konulur. Sayfa numaralarının önüne ve arkasına çizgi vb. bir karakter konulmaz. 
+Tezde kullanılan tablo, şekil, grafik, resim, plân, harita vb.’nin numaralandırılmasında, Romen rakamları (I, II, III, ...) veya normal rakamlar (1, 2, 3, ...) kullanılır.
+Tezler tablolar, şekiller ve formüller de dahil olmak üzere bilgisayar ortamında hazırlanır. Ancak bu yolla oluşturulamayan şekiller teknik resim ilkelerine göre çizilir, yazı ve semboller de şablonla yazılır. Tezin hiçbir bölümünde daktilo ya da el ile düzeltme, silinti ve kazıntı yapılmaz.
+Çıktılar lazer ya da mürekkep püskürtmeli yazıcılardan alınır. Daktilo veya nokta vuruşlu yazıcı çıktıları kabul edilmez. 
+Ana ve alt başlıklar dahil tez metni için Times New Roman 12 (açıklama dipnotları 9 ) punto yazı karakteri kullanılır. Geniş ve/veya uzun çizelgelerin tek sayfaya sığdırılması istendiğinde, sadece çizelgelerde metinden 3 veya 4 punto daha küçük harfler kullanılabilir. Ancak bu punto düzeni, tezin bütününde tutarlı bir biçimde uygulanmalıdır.
+Metin, vurgulama gibi özel amaçlar dışında dik ve normal harflerle yazılır.
+Tezde yer alan tüm tablo ve şekillere metin içerisinde atıf yapılır.
+Ana başlıklar ile alt başlıklar arasında konuyu açıklayıcı veya bağlantı sağlayıcı paragrafların bulunmasına dikkat edilir.
+Giriş ve sonuç dışındaki bölüm ve alt bölüm başlıklarında aşağıdaki sistem kullanılmalıdır (Bkz. Ek. 5):
+Bölüm ve alt bölümler, normal rakamlarla numaralandırılır. Bu düzenlemede, bölümler sırasıyla 1, 2, 3, ... şeklinde numaralandırılırken, alt bölümler ve onların da altındakiler için normal rakamlar 1.1., 1.2., 1.3., ..., 1.1.1., 1.1.2., 1.1.3., ..., 1.1.1.1., 1.1.1.2., 1.1.1.3. ... gibi  birden çok haneli olacak şekilde verilir. 
+Birinci derecede bölüm başlıkları büyük harf ile, ikinci derecede alt bölüm başlıkları da her kelimenin ilk harfi büyük olacak şekilde yazılır. Üçüncü derece ve daha sonraki alt bölüm başlıklarında ilk kelimenin ilk harfi dışında tüm kelimeler küçük harfle başlatılır. 
+Özet-abstract, anahtar kelimeler, önsöz, içindekiler, tablolar, şekiller, semboller, kısaltmalar, giriş, sonuç, kaynaklar, ekler ve özgeçmiş gibi ana başlıklar büyük harf ile ve sayfa ortasına gelecek şekilde yazılır.
+Paragraflara (first line) 1.25 cm boşluk verilerek başlanır.
+
+DÖRDÜNCÜ BÖLÜM
+TEZ TESLİM İŞLEMLERİ
+
+Tez Teslimi
+Madde 8
+Yazılmış tezlerin yüksek lisans ve doktorada ciltlenmemiş haliyle 7’şer adet enstitüye teslim edilmesi gerekir. 
+Tez savunmasından sonra tezler, danışmanın raporu ve bu kılavuza uygunluğunu belirten yazısıyla birlikte, ciltlenmiş olarak, yüksek lisans için 4 adet gri, doktora için 5 adet kırmızı karton kapaklı olarak Enstitü’ye teslim edilir. 
+Tezlerden en az birinin içindeki  çizim, fotoğraf, şekiller vb. asıl olmalıdır. Tez cildinin sırtına tezin hazırlandığı anabilim dalı, hazırlayan adı, soyadı, tezin kısa başlığı ve hazırlandığı yıl belirtilir.
+Tez en son haliyle word (pc) formatında iki adet diskete kayıtlı olarak Enstitü’ye teslim edilir.
+
+BEŞİNCİ BÖLÜM
+TERTİP ve DÜZEN
+Şekil Düzeni
+Madde 9
+Tezler ön kısım, metin kısmı ile kaynaklar ve son sayfalar olmak üzere üç kısımdan; ve her kısım da kendi arasında çeşitli bölümlerden oluşur. (Bkz. Ek. 1)
+
+	ÖN KISIM
+
+Dış Kapak ve Sırt
+Madde 10
+Dış kapakta 200-300 gr beyaz krome karton kullanılmalıdır.
+Dış kapak ve sırtın içeriği şu sırayı izler:
+a. KTMÜ Sosyal Bilimler Enstitüsü ve ilgili Anabilim/ Anasanat Dalı ile Bilim/ Sanat Dalı
+b. Tezin adı
+c. Tezin niteliği (Yüksek Lisans/ Doktora)
+d. Tezi hazırlayanın adı ve soyadı (hazırlayan ibaresi kullanılmadan)
+e. Tezin sunulduğu yer ve yıl.
+Tezin dış ve iç kapağında tezin ismi Times New Roman karakterinde 16-18 punto olmalı ve büyük harflerle yazılmalıdır. Farklı karakter kullanılacak ise eş değer bir karakter ve punto tercih edilmelidir.  Tezin adı eksiksiz olarak kapakta yer almalı ve bir satırdan daha uzun olduğunda, satırlar arasında 1.5 aralık boşluk bırakılmalıdır. (Bkz. Ek. 2a, 2b)
+
+Boş Sayfalar
+Madde 11
+Dış kapak ile iç kapak arasına ve ayrıca tezin son sayfası ile dış kapak arasına birer boş yaprak bırakılmalıdır.
+
+İç Kapak 
+Madde 12
+İç kapağın içeriği de şu sırayı izler:
+a. KTMÜ Sosyal Bilimler Enstitüsü ve ilgili Anabilim/ Anasanat Dalı 
+b. Tezin adı
+c. Tezin niteliği (Yüksek Lisans/Doktora)
+d. Tezi hazırlayanın adı ve soyadı (hazırlayan ibaresi kullanılmadan)
+e. Danışman öğretim üyesinin unvanı, adı ve soyadı 
+f. Tezin sunulduğu yer ve yıl.
+İç kapak sayfa numarası “i” olarak düşünülmeli; ancak bu numara iç kapak üzerine yazılmamalıdır. (Bkz. Ek. 3)
+
+	Tez Onay Sayfası
+Madde 13
+Tez onay sayfası ekteki örneğe göre hazırlanmalı, iç kapaktan sonra yer almalıdır. (Bkz. Ek. 4,5)
+
+	Öz  ve Özet  Sayfaları
+Madde 14
+Tezin/Sanatta yeterlik eseri çalışmasının Kırgızistan Türkçesi veya Türkiye Türkçesi ile yazılması ve önüne en az 2 sayfalık bir abstraktının (özünün)  Kırgızca, Türkçe, Rusça ve İngilizce dillerinde konulması gerekir. Ayrıca, 15  sayfadan az olmamak üzere tezlerin/sanatta yeterlik eseri çalışması raporlarının sonuna Kırgızistan Türkçesi ve Türkiye Türkçesi bir özet eklenir. Yabancı dil öğretimi yapan anabilim/anasanat dallarında da tezler/sanatta yeterlik eseri çalışmaları Kırgızistan Türkçesi veya Türkiye Türkçesi ile yazılır.
+Öz’ün amacı bir tezde işlenen konuların ana hatlarını ortaya çıkarmaktır. Özde tezde ele alınan problem kısaca tanıtılır, kullanılan yöntemler, tezin bölümleri ve ulaşılan sonuçlar belirtilir, ayrıca kaynak verilmez. Öz, aslının el altında bulunmadığı durumlarda, belgenin yerini tutacak derecede yeterli bilgi içermelidir. Öz italik yazı karakteri, denklem, tablo, şekil, grafik, kimyasal veya matematiksel formüller, semboller, alt veya üst simge veya diğer standart olmayan simge veya karakterler içermemelidir. Bu kısımda yazım tek (single) aralıklı yapılmalıdır. (Bkz. Ek. 6)
+
+	Anahtar Sözcükler (Key Words)
+Madde 15
+Tezin ilgi alanını tespite yönelik 4-8 kelimeden oluşan anahtar kelimeler öz sayfasının altında verilmelidir. (Bkz. Ek. 6)
+Önsöz
+Madde 16 
+Önsöz, tezin amacı, önemi, kısaca kapsamı, gerekiyorsa karşılaşılan güçlükler konusundaki bilgilerin yanı sıra, tezin hazırlanmasında maddi, manevi katkısı olan kişi ve/veya kuruluşlara teşekkür gibi açıklamaları içerir. Tez çalışması KTMÜ Araştırma Projesi dışında bir projeye bağlı olarak gerçekleşmişse, projenin ve ilgili kuruluşun adı da bu bölümde belirtilir. Teşekkür edilen kişilerin unvanı (varsa), adı soyadı, görevli olduğu kuruluş (tırnak içinde) ve çalışmaya olan katkısı kısa ve öz bir şekilde ifade edilir. Önsöz metni iki sayfayı geçmez. 
+Önsöz metninin altında sağa dayalı olarak ad ve soyadı; sola dayalı olarak da yer ve yıl biçiminde tarih yazılır.
+
+İçindekiler
+Madde 17
+İçindekiler kısmında, bölümlendirmeye uygun bir biçimde, özetten başlayarak, tezin tüm kısımları, bölüm ve alt bölüm başlıkları sayfa numaraları ile birlikte verilir. (Bkz. Ek. 7)
+
+	Kısaltmalar
+Madde 18
+Tezde kullanılan kısaltmalar “Kısaltmalar” başlığı altında ve alfabetik sırayla dizilir ve her kısaltmanın karşısına açılımı belirtilir. (Bkz. Ek. 8) Tezde yapılan bu kısaltmalar ayrıca ilk geçtikleri yerde parantez içinde sadece bir defa açıklanır. Yaygın olarak kullanılan ve yerleşmiş bulunan standart kısaltmalarda TDK Yazım Kılavuzu’na uyulur. 
+
+Tablo, Şekil, Resim, Fotoğraf, Grafik, Sembol vb.’nin Listeleri
+Madde 19
+Şekil, grafik, fotoğraf, çizim, formül gibi resimlemelerin hepsi şekil olarak isimlendirilmeli, arabik sayılarla aşağıda belirtilen şekilde numaralandırılmalı ve şekil açıklamaları şekillerin altına ilk kelimenin ilk harfi büyük diğerleri küçük harf olarak yazılmalıdır. Resimleme alt yazıları ve varsa alındıkları kaynaklar 2 satır aralığı kullanılarak 12 punto ile yazılmalıdır, bir sayfaya sığdırma zorunluluğu halinde 1 satır aralığı kullanılarak 10 punto kullanılabilir (Bkz. Ek. 9).
+Tablolar arabik sayılarla aşağıda belirtilen şekilde numaralandırılmalı başlıkları tablonun üstüne sadece ilk kelimenin ilk harfi büyük diğerleri küçük harf olarak  1 satır aralığı kullanılarak 12 punto ile yazılmalıdır, bir sayfaya sığdırma zorunluluğu halinde 10 punto kullanılabilir.
+Hazırlanacak şekiller (grafik, diyagram, fotoğraf, vb.) yazı ile anlatımda güçlük çekilen; yapılan işi, anlatılmaya çalışılan düşünceyi veya elde edilen verileri daha etkili olarak aktarabilecek nitelikte olmalı, gereksiz şekillerden kaçınılmalıdır.
+Şekiller üzerinde yer alacak tüm çizgi, işaret, sembol, rakam ve yazılarda, bilgisayar yazıcısı, daktilo, rapido ya da Letraset çıkartma türü bir araç kullanılmalıdır. Bu tür çizgi, işaret, sembol rakam ve yazılar, çıplak gözle kolayca seçilebilir ve okunabilir büyüklükte olmalıdır.
+Tez sayfası üzerine tercihen fotoğraf yapıştırılmamalı, fotoğraflar dijitalize edilerek yazıcıdan çıktı alınmalı veya renkli fotokopi kullanılmalıdır. Fotoğraf yapıştırılması zorunlu olduğu durumlarda, fotoğraflar tez sayfaları arasında olabilecek kabarıklığı önlemek amacı ile ince fotoğraf kağıdı üzerine basılmalıdır. Bireylerin kimliğini belli edecek tarzda fotoğraf konulmamalıdır. Hasta ya da deneklerin fotoğraflarında gözler kimliği belli etmeyecek şekilde bantlanmalıdır. Özel durumlarda, teze konulacak gözleri bantlı olmayan fotoğrafların yayınlanması için fotoğrafı çekilen kişiden izin alındığına ilişkin ibare bulunmalıdır.
+Resimlemeler anlatıldıkları sayfa veya bir sonraki sayfaya yerleştirilmelidir. Bir sayfadan daha büyük olan tablolar metin içerisinde bulunmak zorunda ise bir sayfa boyutlarında uygun bir yerden bölünmelidir, tablonun devamı bir sonraki sayfada aynı tablo numarası ve aynı başlıkla yazılmalı ancak tablo numarasından sonra (devam) ibaresi konulmalıdır. Şekil ve tablolar ile açıklamaları sayfa kenarında bırakılması gereken boşluklara taşmayacak şekilde, sayfa içerisinde düzenli bir biçimde yerleştirilmelidir.
+Tablo numaralandırılması romen rakamı ile yapılmalı ve numaradan sonra tek nokta kullanılmalıdır. Tüm tablo, şekil ve formüllerin numaralandırılmasında sadece rakamlar kullanılmalıdır. Bunlar, her bölüm içinde kendi aralarında, birbirlerinden bağımsız olarak ayrı ayrı numaralandırılmalıdır.
+•	Birinci Bölüm’ün tablo ve şekilleri:
+Tablo 1.1., 
+Şekil 1.1., 
+•	İkinci Bölüm’ün tablo ve şekilleri:
+Tablo 2.1., 
+Şekil 2.1., 
+Şekil 2.2. 
+Formüller numaralandırılırken, numaranın başında “Formül” ibaresi yer almamalı, bölüm içindeki sırasına göre numaralandırmalıdır. Ancak, metin içinde değinilirken “Formül 2.1.” şeklinde yazılmalıdır.
+Tablo veya şekil ile (açıklamaları dahil) alt ve üst metin arasında 1 satır boşluk bırakılmalıdır. Tüm açıklamaların yazımında 1,5 satır aralığı kullanılmalıdır.
+Tablo açıklamaları, tablonun üstüne, şekil açıklamaları ise, şeklin altına yazılmalıdır. Tablo ve şekil açıklamaları olabildiğince kısa ve öz olmalıdır. Tablo ve şekil açıklamalarının yazımında da “blok” sistemi korunmalı; açıklamaların bir satırdan daha uzun olması halinde, ikinci ve diğer satırlar, açıklamanın satır başı hizasından başlamalıdır. Tablo ve şekil altı açıklamalarının sonuna nokta konulmalıdır.
+Formüllere ait numaralar, formülün olduğu satırda, sayfanın sağ kenarından 2 cm içeride kalacak şekilde parantez içerisinde yazılmalıdır.
+
+	METİN KISMI
+
+Giriş
+Madde 20
+Giriş, tezin metin kısmının ilk öğesidir. Bu nedenle, tez metninin sayfaları, Giriş’ten başlayarak Arap rakamlarıyla numaralandırılır.
+Giriş bölümünde, önsözde belirtilenler tekrar edilmemek üzere, çalışmada çözümlenmesi amaçlanan bilimsel sorun; araştırmanın kapsamı, uygulanan yöntem ve teknikler; araştırmada kullanılan materyalin temin şekli, miktarı, nitelikleri ve temsil ettiği popülasyon; tez konusu ve mevcut problemin çözümü ile ilgili önceki çalışmaların ana-fikirleri, metotları ve sonuçları gibi okuyucuyu konuya hazırlayıcı nitelikteki bilgilerden gerekli görülenlere bir düzen içinde sentezlenmiş özetleriyle yer verilir ancak bunlar için bölüm alt başlıkları açılmaz.
+Giriş bölümünde fazla sayıda paragraf düzenlemekten mümkün olduğu kadar kaçınılır.
+Giriş ve kaynak araştırması bölümünün sayfa sayısı tezin toplam sayfasının % 20’sini aşamaz. Bu bölümde zorunluluk dışında şekil ve çizelgeye yer verilmez. 
+
+Bölümler 
+Madde 21
+Giriş’ten sonra, ana metnin bölümleri yer alır. Bölümlerde, gerek duyulan ayrıntı düzeyine bağlı olarak tezi sonuca götürecek bilgi ve açıklamalar, uygun düşünce silsilesi içinde ortaya konur. Bölüm ve alt bölümlerin belirlenmesinde gereksiz ayrıntıya girilmez. 
+Her tez, özel zorunluluklar dışında en az üç bölümden oluşur.
+
+Alıntılar
+Madde 22
+Tezde, başka kaynaklardan aynen aktarılarak yapılan alıntılar tırnak içinde (“  ”) gösterilir. Özü değiştirilmemek kaydıyla, tezi hazırlayanın kendi cümleleriyle özet yahut yorum olarak yapılan alıntılar ise tırnak arasına alınmadan verilir. Her iki durumda da, alıntı yapılan kaynağa (metin, tablo, şekil vb.) mutlaka atıfta bulunulur ve atıfların her birine, bölüm içinde birbirini izleyecek tarzda numara verilir. 
+Aynen aktarmalarda, bilgilerin tamamına yer verilebileceği gibi; cümle, paragraf veya sayfa halindeki bilgilerin sadece belli kısımları da verilebilir. Bu durumda, cümlelerde belli kelimelerin, çeşitli cümlelerin, paragraf ve sayfaların atlanarak verildiğini göstermek üzere, atlanan yerler parantez içinde üç nokta (...) ile belirtilir. 
+Şiirlerden aktarma yapılırken, metin, bir veya daha fazla satır, hatta sayfa atlanarak verilmek istenirse, atlanan yerler için sadece tek satır boşluk bırakılır ve bu satır noktalanarak (....................) gösterilir. 
+Bilgilerin aynen aktarılması durumunda, alıntı yapılan kaynaklardaki noktalama işaretleri ve çeviri hataları dahil olmak üzere harf, cümle, tarih, yer vb. yanlışlıklar da düzeltilmeden verilir. Ancak böyle durumlarda araştırmacı, söz konusu yanlışlığı düzeltmek için ilgili yere açıklama notu düşer.
+Tezi hazırlayan kişi, kaynak metindeki yanlışlıkları düzelterek vermek isterse, bu durumda, doğru bilgi yanlış bilgiden hemen sonra bir parantez içinde gösterilir.
+Alıntı, bir başka kaynaktan aynen aktarılmak istenen bir bölüm ise, alıntı ile metin arasında önce ve sonra 12 nokta (pt) boşluk bırakılır. Alıntının normal satırları her iki kenar boşluğundan 1.25 cm içeriden başlar. Paragraf başı yapılmayan bu tür alıntılar tek aralıkla yazılır ve alıntılarda normal metinden daha küçük bir punto kullanılır ve istenirse italik olarak düzenlenebilir.
+
+Kaynak Gösterme ve Dipnot Verme Kuralları
+Madde 23
+Kaynak gösterme ve dipnot verme, bilimsel bir çalışmanın vazgeçilmez öğeleridir. Kaynak göstermenin temel amacı, araştırmacının kendi tezlerini ya da kendi konumunu oluştururken dayandığı, eleştirdiği ya da tartıştığı vb. kaynakları göstermektir.
+ Kaynak göstermede:
+a)Çalışma sırasında bir başka çalışmanın belirli bir cümle, paragraf ya da kavramının, tartışma, eleştirme ya da vurgulama amacıyla ödünç alınması,
+b)Bir başka çalışmanın özel bir bölümü, cümlesi, kavramı vb. yerine, çalışmanın bütününden etkilenilmesi ya da o çalışmanın genel yarısının eleştirilmesi, değerlendirilmesi,
+c)Çalışma sırasında değerlendirilen, eleştirilen vb. çalışmaların belirli kısımlarının kullanıldığının gösterilmesi amacıyla yapılır. 
+     Kaynak göstermede iki farklı yöntem kullanılabilir: Bağlaç Yöntemiyle kaynak gösterme (metin içi kaynak gösterme) veya Dipnotla kaynak gösterme. 
+			Bu yöntemde metin içinde yazarın adı ve soyadı zorunlu belirtilmek gerekiyorsa; cümle içerisinde o kişinin özellik, kitabı, vb. çalışmalarıyla ilgili bilgilerle birlikte adı ve soyadının tamamı verilebilir ancak paragraf veya cümle sonuna kaynak gösterimi yapılır.
+
+1. Bağlaç yöntemi ile kaynak gösterme 
+Metin içi kaynak gösteriminde; yazar soyadı, tarih ve sayfa numarası belirtilir. Bunun için aşağıda verilen kaynak gösterim biçimleri uygulanır:
+a) Belirli bir cümle, kavram ya da paragrafı gösterme;
+........... (Konar, 2004:12)
+b) Bir makale veya kitabın bütününü gösterme;
+........... (Dinler, 2003) veya  Dinler (2003)’in belirttiği gibi ….....
+c) Yazar sayısı iki olan yayını gösterme;
+.......... (Paralı ve Parasız, 2001:30-37)
+d) Yazar sayısı ikiden fazla olan yayını gösterme; 
+.… (Demircan vd., 1991:29) veya Demircan vd. (1991:29)’ne göre ........
+e) Aynı kaynak ayrı yayınlara kaynak olarak gösterildiğinde ;
+........... (Taş, 2002:37-40; Örnek, 2003:29)
+f) Aynı yılda aynı yazarın iki yayını kaynak olarak gösterildiğinde; 
+........... (Bildirir, 2002a:24-30; b:120-130)
+g) Aynı yazarın iki ayrı yayınını kaynak olarak gösterme;
+........... (Demircan, 1999:12; 2000:38-40)
+h) Soyadları aynı olan iki yazarın yayını kaynak gösterildiğinde;
+........... (Türk ve Türk, 1998:251)
+ı) Yazarı belli olmayan yayın, kaynak gösterildiğinde yayın başlığı yazılarak kaynak gösterilir;
+........... (Yolsuzluk kuramı, 2004:12)
+i) Anonim yayını kaynak gösterme; 
+........... (Anonim, 1995:6)
+j) Görüşmeyi kaynak gösterme;
+.......... (O.Erkmen, görüşme. 15 Şubat, 2005)
+k) Gazetede yayınlanmış yazarsız makaleyi kaynak gösterme;
+.......... (İhracatımız geçen yıla oranla % 50 arttı, Hürriyet, 12.10.2004)
+l) Yazarı belli internet yayımlı makaleyi kaynak gösterme ;
+........... (Avşaroğlu, 1998)
+m) Kurumu kaynak gösterme; 
+........... (Devlet  Planlama Teşkilatı, 2002)
+n)  Kurum sitesini kaynak gösterme;
+………….. (www.die.gov.tr)
+o) Yayın tarihi belirsiz yayını kaynak gösterme;
+………. (Doğu, t.y.:25-30) 
+
+2. Dipnotla kaynak gösterme
+	Dipnotlu kaynak gösterme yönteminde önce metin içinde geçen ve herhangi bir kaynaktan alıntı ve aktarma sözden, bir isim, kavram veya konu sözcüğünden hemen sonra ya da cümle veya paragraf sonuna dipnot numarası üst simge şeklinde verilir. Dipnot numarası sayfanın sonuna bir çizgi çizilerek o sayfadaki dipnotlar sırayla bu çizginin altına yazılır. Dipnotları göstermek için kullanılan rakamlar, metinle ilgili kelimenin üzerine yazılır. Dipnotlar, bütün çalışma boyunca baştan sona sırayla numaralandırılır. Dipnot numarası dipnotta yazar adının ön üstüne (üst simge şeklinde) yazılarak verilir.
+	Bir kaynağa ilk kez başvurulduğunda onun dipnotta yazımı ile ikinci ve daha sonraki yazımları birbirinden farklıdır. Bir kaynağa ilk kez yapılan başvuruda, kaynakla ilgili tüm bilgiler verilir. İki veya daha fazla göndermeler için Tablo 3.1’de yer alan bibliyografik bilgiler kullanılır.
+Dipnotla kaynak gösterme ile ilgili örnekler aşağıda verilmiştir:
+a) Tek yazarlı kitap;
+Hikmet Y.Celkan. (1990). Ziya Gökalp’in Eğitim Sosyolojisi. MEB Yayınları, No: 871, Bilim ve Kültür Eserleri Dizisi, No: 141, MEB Basım Evi, İstanbul, ss.14-25.
+Muhsin Macit. (2001). Erzurumlu Zihni Divanı. 2.Baskı, Kültür Bakanlığı Yayın Evi, Ankara, s.217.
+b) İki yazarlı kitap;
+Muzaffer Sencer ve Yakut Sencer. (1978). Toplumsal Araştırmalarda Yönetim Bilim. TODAİE Yayınları, Ankara, s.63.
+c) İkiden çok yazarlı kitap;
+Mehmet Gönlübol vd. (1974). Olaylarla Türk Dış Politikası (1919-1973). SBF Yayınları, Ankara, ss.45-60.
+ç) Bir kurumun kitabı;
+Devlet İstatistik Enstitüsü. (2004). Rakamlarla Türkiye Ekonomisi 2003. DİE Yayınları, Ankara, ss.20-31.
+d) Çeviri kitap;
+James M.Albertini. (1990). Ekonomik Sistemler: Uygulamada Kapitalizm ve Sosyalizm. Cafer U. (Çev), Uludağ Üniversitesi Yayını, Bursa, s.7.
+William, H.McNeeill. (2003). Dünya Tarihi. Alâeddin Ş. (Çev), 7.Baskı, İmge Kitap Evi Yayınları, Ankara, ss.677-694.
+e) Kitapta bölüm;
+Fulay Turantaş ve Adnan Ünlütürk. (1998). Tehlike Analizi ve Kritik Kontrol Noktaları. Gıda Mikrobiyoljisi, Ünlütürk, A. ve Turantaş, F. (Ed.), 1.Baskı, Mengi Tan Basım Evi, İzmir, ss.517-549.
+İbrahim Örnek ve Muhittin Kaplan. (2004). Dış Ticaret ve Kalkınma. Kalkınma Ekonomisi: Seçme Konular, Taban, S. ve Kar, M. (Ed.). Ekin Kitap Evi, Bursa, s.22.
+f) Derleyen, hazırlayan;
+Metin Berk vd. (1966). İktisadi Kalkınma: Seçme Yazarlar. (Der.), ODTÜ Yayını, Ankara, ss.66-67.
+James Theberge. (1968). Economics of Trade and Devolopment. (Ed.) John Wiley, New York, p.119.
+g) Çok ciltli yayınlar;
+İsmail H.Uzunçarşılı. (1973). Osmanlı Tarihi. c.III, TTK, Ankara, s.126.
+Fahir Armaoğlu. (1991). 20. Yüzyıl Siyasi Tarihi (1919-1980). c.I, Türkiye İş Bankası Yayınları, Ankara, s.192.
+h) Seri yayınlar;
+Halil Seyidoğlu. (1982). Türkiye’de Sanayileşme ve Dış Ticaret Politikaları. Ekonomik ve Araştırmalar Serisi, No: 2, Turhan Kitap Evi, Ankara, s.15.
+ı) Yazar adı olmayan yazı;
+Avrupa’da dil öğrenimi. ( 2000). Avrupa Dergisi, s.15. 
+i) Dergiler;
+Tokay Gedikoğlu. (1995). Changing models of university government in Turkey. Minerva, 33(2):149-169.
+Metin Yıldırım. (2001). Para kurulu ve Türkiye Kasım 2000 krizi. Gaziantep Üniversitesi Sosyal Bilimler Dergisi, 4(2):18-24.
+j) Yıllıklar;
+Devlet İstatistik Enstitüsü. (1999). Türkiye İstatistik Yıllığı-1998. DİE Yayınları, Ankara, s.20.
+k) Aylık bültenler;
+Maliye Bakanlığı. (1997). Aylık ekonomik göstergeler. Eylül-Ekim, s.23.
+l) Gazeteler;
+Kârlar arttı, Milliyet, 26.06.2000, s.4.
+Okan Müderrisoğlu. Kriz Kapıda. Sabah, 20.10.2001, s.12.
+m) Ansiklopedi;
+Ömer C.Saraç. (1973). Milli gelir. Ak İktisat Ansiklopedisi, c.II, Ak Yayınları, İstanbul, s.20-30.
+n) Tezler;
+Rüstem Yanar. (2001). Finansal Globalleşme ve Ekonomik Krizler: 1999 Sonrası Türkiye Örneği. Yüksek Lisans Tezi, Gaziantep Üniversitesi Sosyal Bilimler Enstitüsü, Gaziantep, s.75.
+Fadime Yalçın. (2005). A Study of the Extend to Which Receptive Types of Vocabulary Tests Indicate Subjects’ Depth of Vocabulary Knowledge (a Case Study in a Scondary School Medium). Master’s of Art Thesis, Graduate School of Social Sciences, Gaziantep, pp.77-81.
+o) Aynı yayının farklı sayfasına gönderme;
+Yıldırım, a.g.m., s.20.
+Uzunçarşılı, a.g.e., ss.126-129.
+ö) Klasik eserler (Eserlerin cilt numarası küçük Romen rakamı ile belirtilir);
+Aristotales, Nikomakhos’a Etik, i ,10, s.23.
+p) Kutsal kitaplar;
+Kur’an, 39. Zümer Sûresi, Ayet 9
+ r) Ulusal bilimsel toplantı;
+Berrin Uçkun. (2000). Construction of a summarization score key through colleague conferencing. 6. METU International ELT Convention, 25-27 May, Ankara pp.114-118.
+Filiz Tılfarlıoğlu. (2000). Cumhuriyet dönemi öğretmen yetiştirilmesine tarihsel bir bakış. 2. Ulusal Öğretmen Yetiştirme  Sempozyumu, 10-12 Mayıs, Çanakkale, ss.50-62.
+s) Bildiri kitabı;
+Celal Pekdoğan. (1998). Meslek hayatının 25. yılında Prof. Dr. Abdülhalük Çay armağanı. Gaziantep İktisat Mıntıkası Kongresi, c.II, Ankara, s.777.
+ş) Aktarmalar;
+Vahit Türk. (2000). Türklük Bilgisine Giriş. (Akt.). Birleşik Yayıncılık, İstanbul, s.32
+t) Elektronik kaynak;
+John N.Berry. (2000) Educate library leaders. Library Journal, February 15, 1998, http://www.epnet.com/ehost, (30.03.2000)
+Jale Burak. (2003). Televizyonların tüketici üzerindeki etkisi. Tüketici Dergisi, 4:291-307, http://www.tuketici.org.tr/tuketici/xap(22.10.1998).44291,html. (10.02.2003).
+Türk Kadınlar Derneği. (2004). Kadınlar yeni kanun tasarısı için ayakta. Ankara, http://www.tkd.com/ktk/basin.html. (22.10.2004)
+Hill, Fiona.fionah@ksgrsch.harvard.edu. “War report”.
+Mert Gök’e kişisel e-posta, mert@iibf.bim.gazi.edu.tr. (08.04.2004)
+Pine Guest. Kişisel görüşme. Telnet://word.sensemedia.net (25.07.2004).
+
+Madde 24
+ Açıklama Dipnotları
+Kaynak dipnotlarından başka bir de açıklama dipnotları vardır. Metinde verilmesi akıcılığı bozacak, fakat konuya açıklık getirecek her türlü ek bilgi ve yorum açıklama notu biçiminde yazılabilir. Ancak bu notların kullanılmasında dikkatli olunmalıdır. Doğrudan metinde verilmesi gereken bilgiler, açıklama dipnotunda sunulmamalı; önemsiz ve ilgisiz bilgilere de yer verilmemelidir. Açıklama dipnotları kaynak dipnotlarıyla birlikte numaralandırılarak sayfa altında yer alır; ancak bunların sayısı çok az ise, yıldız (*) gibi özel işaretler kullanılarak yazılabilir. Dipnotta verilemeyecek kadar geniş açıklamalar ekler bölümünde yer alır. (Bkz. Madde 27)
+Sonuç 
+Madde 25
+Metin kısmının son bölümü, “Sonuç”, “Sonuç ve Öneriler”, “Sonuç ve Değerlendirmeler”  veya gerek duyulursa bunların yerini tutabilecek bir başka başlığı taşır. 
+Bu bölümde, girişte açıklanan amaç ve/veya hipotezden başlayarak tezin yöntemi, tekniği, sınırlılıkları çerçevesinde ulaşılan çözüm, çeşitli bölümlerinde varılan sonuçlardan da yararlanılarak açıklanır. 
+Bu açıklamalar, gerektiğinde daha sonraki çalışmalara ışık tutacak çeşitli önerilerle de desteklenir. 
+Ayrıca, yapılan araştırmada çözümlenemeyen sorunlar varsa, bunların gelecekte hangi tür veya konudaki araştırmalarla çözümlenebileceğine ilişkin bilgiler de verilebilir.
+Çalışmada ulaşılan genel sonuçlar mümkün olduğu kadar öz, fakat açık olarak belli bir sıra, düzen ve mantık çerçevesinde yazılır; ilgili konuda yapılan diğer çalışmalarla karşılaştırılarak tartışıldıktan sonra, varılan sonuçların geçerliliği ve uygulanabilirliği belirtilir.
+Sonuç bölümü genel kompozisyon biçiminde yazılabileceği gibi, varılan sonuçlar ve ortaya konulan öneriler bu kompozisyonu bozmayacak şekilde maddeler halinde de ifade edilebilir.
+
+KAYNAKLAR VE SON SAYFALAR
+
+Kaynaklar
+Madde 26
+“Kaynaklar” başlığı tümüyle büyük harflerle, sayfa üst kenarında 5 cm aşağıya ve sayfanın sol kenar boşluğundan başlayarak yazılır. Başlıktan sonra 2.5 aralık boşluk bırakılır.
+Tezde kullanılan bütün kaynaklara burada mutlaka yer verilir. Tez metni içinde adı geçmeyen literatür, kaynaklar listesine dahil edilmez. Kaynaklar listesi kitaplar, makaleler, Türkçe/ yabancı dildeki yayımlar, yerli/ yabancı kaynaklar gibi alt başlıklara ayrılmaz. Ancak sözlü ve yazılı görüşlerin sahipleri ile arşiv belgeleri gerektiğinde “Diğer Kaynaklar” başlığı altında gösterilebilir. 
+Kaynaklar listesi sayfanın sol kenar boşluğu hizasından başlanarak yazılmalıdır. İlk satırdan sonraki satırlar ilkinden 2 cm sağdan başlar. Kaynaklar arasında 1 aralık boşluk bulunur.
+Kaynaklar yazar soyadına göre alfabetik sıralanır ve sıra numarası kullanılmaz. Soyadları aynı olan farklı yazarlara ait kaynakların sıralanması ilk adların baş harflerine göre yapılır. Aynı yazarın farklı eserleri eski tarihliden başlayarak, aynı tarihli eserler tek yazarlıdan başlayarak sıralanmalıdır. Birden çok yazarı bulunan eserlerin sıralanmasında birinci yazarın soyadı esas alınır.
+Kaynak isimleri yayımlandığı orijinal dilinde yazılır. İstenirse eser adının Türkçe çevirisi hemen yanında parantez içinde verilebilir. 
+Kaynaklarda yer alan kitapların sayfa sayısı belirtilmez. Ancak, makalelerde, yayımın hangi sayfalar arasında yer aldığı “ss.” kısaltmasıyla verilir (ss. 12-45 gibi).
+Tezde kaynaklar, yazar adı ve yayım tarihi bilgilerinin sol başta olduğu bir alfabetik sıralama ile düzenlenir. 
+Elektronik bir dergi kaynaklar dizinine kağıda basılı bir dergi için belirlenen formatta yazılmalıdır. Ancak, dergi adından sonra [Electronic Journal] notu yer almalı, en sonda ise internet adresi bulunmalıdır. Sayfa numaraları genellikle belirli olmayan elektronik dergilerde, derginin sayısı ve/veya hangi aya ait olduğu da belirtilmelidir.
+Kaynaklar aşağıdaki örneklere göre yazılmalı ve düzenlenmelidir:
+a) Kitap;
+Benton, L., Castells, M. ve Portes, A. (1989). İnformal Economy. The John Hopkins University Press, Baltimore, pp.47-59.
+Halis, M.  (2000). Uygulamadan Paradigmaya: TKY ve 150 9000 Kalite Güvence Sistemleri. Beta Yayınları, İstanbul, ss.20-40.
+Bayat, F. (2003). Köroğlu: Şamandan Aşıka, Alpten Erene. Akçağ, Ankara, ss.47-53.
+Macit, M., İsen, M., Horata, O., Kılıç, F. ve Aksoyak, İ.H. (2003). Eski Türk Edebiyatı El Kitabı. 2.Baskı, Grafikler Yayınları, No: 10, Ankara, ss.67-73.
+b) Dergide, bültende makale;
+Özsabuncuoğlu, İ.H. (1995). Economic analysis of flat plate collectors of solar energy. Energy Policy, 23(9):755-763.
+Doğu, A. (2001). “Umumi Harp”in ve “Mütareke”nin kıskacında yozlaşan İstanbul ve bir roman. Gaziantep Üniversitesi Sosyal Bilimler Dergisi, 4(2):231-243.
+c) Derleme;
+Letheridge, S. ve Cannon, C.R. (1980). Bilingual Education: Teaching English as a Second  Language. (Der.), Praeger, New York, pp.49-59.
+Güzel, A. (1988). Türk ekonomisinde son gelişmeler. (Der.). Türk Ekonomisi. Güleryılmaz, A. (Ed.), Türkiye Halk Bankası Kültür Yayınları Serisi, No: 12, Ankara, ss.146-182.
+d) Çeviri;
+Smith, A.D. (1996). Toplumsal Değişme Anlayışı. Oksay, Ü. (Çev.), Gündoğan Yayınları, İstanbul, 2.Baskı, ss.33-40.
+e) Yazar adı olmadığında;
+College, bound seniors. (1979). Princeton. N.J. College Board Publications, New York, pp.28-35.
+Körfez savaşı sendromu. (1994). Aktüel. Haziran 1999, ss.143-146.
+f) Gazeteler;
+Avro'ya geçen ülkelerde işsizlik azalmadı. Milliyet. (15 Mart, 2005).
+g) Ansiklopedi içinde makale;
+Firdevs, C.J. (1994). Psikometri. R.L. Kornuk (Ed.), Psikoloji Ansiklopedisi, Remzi Kitap Evi, 2.Baskı, c.III, İstanbul, ss.234-247. 
+h) Tezler;
+Bağçeci, B. (2002). Orta Öğretim Kurumlarında İngilizce Öğretimine, İlişkin                                    Toplumsal Tutumlar (Gaziantep İli Örneği). Doktora Tezi, Gaziantep Üniversitesi Sosyal Bilimler Enstitüsü, Gaziantep, ss.123-145.
+ı) Aynı yazarın aynı yılda iki ayrı eseri; 
+Erkmen, O. (2001a). Antimicrobial effect of pressurized carbon dioxide on Yersinia enterocolitica in broth and foods. Food Science and Technology International, 7(3):245-250.
+Erkmen, O. (2001b). Effects of high pressure carbon dioxide on Escherichia coli in nutrient broth and milk. International Journal of Food Microbiology, 65(1-2):133-137.
+i) Yayımlanmış görüşme;
+Alsu, E. (Ocak 2004). Süreyya Serdengeçti ile görüşme. Merkez Bankası Başkanı.
+Kapital, 210:39.
+j) Sempozyum/kurultay bildiri kitapları;
+Chaddock, T.E., Carlson, G.M. ve Hamilton, C.L. (1974). Gastric emptying of a nutritionally balanced diet in the rhesus monkey. Proceedings of the Fourth International Symposium on Gastrointestional Motility, Daniel, E.E. (Ed.), Mitchell Press, New York, s.8-12.
+Pekdoğan, C. (2003). Antep’de Türk-Ermeni ilişkileri: 1895-1922. Avrasya Statejik Araştırmaları, Ermeni Araştırmaları Enstitüsü Yayını, Ermeni Araştırmaları 1. Türkiye Kongresi Bildirileri, c.III, Ankara, ss.143-462.
+k) Baskıdaki yayın;
+Ersel. A. (in press). The Turkish pendulum between globalization and security: from the late Ottoman era to the 1930s. Middle Eastern Studies.
+Önler, Z. (basımda). Ünsüz ötümlüleşmesi. Mersin Üniversitesi Güzel Sanatlar Dergisi.
+l) Kanunlardan alıntı yapma;
+Lisansüstü Yükseköğretim Kanunu, (1996), Md.50. 
+m) Elektronik kaynak;
+Hiro, D. (1998). Politics Lebanon: Lebanese voting again. IPS World News, 17-25, http://www.oneworld.org/ips2 (20.02.2000).
+Akal, C.B. (Ocak 2003). Hukuka karşı haklar. http://www.dogubati.com.tr, (10.06.2003).
+Aktan, C.C. Homepage: http://www.canaktan.org/ (10.06.2003).
+
+Ekler
+Madde 27
+Tez metni içinde yer alması halinde konuyu dağıtıcı ve okumada sürekliliği engelleyici nitelikteki ve dipnot olarak verilemeyecek kadar uzun açıklamalar, geniş kapsamlı ve ayrıntılı deney sonuçları, örnek hesaplamalar, fotoğraflar, haritalar, tablolar, formlar, anket sorularının listeleri, kolay bulunamayacak belgelerin kopyaları vb. bu bölümde verilebilir. 
+Bu tür tek bir malzeme için sadece bir ek, birden çok malzeme için de, gerekli görülürse, birden çok ek yer alır. 
+Ekler, birbirinden ayırt edilmesi gerekecek sayıda ise ya büyük Romen rakamlarıyla (Ek. I, Ek. II, ...) ya da normal rakamlarla (Ek. 1, Ek. 2, ...) birbirini izleyecek biçimde numaralanır; her numaranın karşısına içeriğini belirten bir başlık konur ve her bir ek ayrı sayfadan başlayacak şekilde sunulur.
+
+Özgeçmiş
+Madde 28
+Tezi hazırlayan Yüksek Lisans veya Doktora öğrencisi ÖZGEÇMİŞ başlığı altında öğrenim gördüğü ve çalıştığı kurumlar ile varsa yaptığı bilimsel faaliyetleri içeren kısa özgeçmişini bir sayfayı aşmayacak şekilde ekteki forma göre yazar. (Bkz. EK:	10)
+
+IV. BÖLÜM
+ÇEŞİTLİ HÜKÜMLER
+
+Diğer Hususlar
+Madde 29
+Bu yönergede belirtilmeyen hususlarda Yönetim Kurulu’nun kararına uyulur.
+
+Yürürlülük
+Madde 30
+Bu yönerge, Kırgızistan-Türkiye Manas Üniversitesi Senatosu tarafından, kabul edildiği tarihten itibaren yürürlüğe girer.
+
+Yürütme 
+Madde 31
+Bu yönerge Enstitü Müdürü tarafından yürütülür.
+IV.	EKLER
+Ek. 1:	TEZİN KISIMLARI ÖRNEĞİ
+ 	Kısımlar	Sayfa	Numaralanması	Numara	Rakam Türü
+
+Ön kısım	DIŞ KAPAK	-	Numaralandırılmaz	-	-
+	BOŞ SAYFA	-	Numaralandırılmaz	-	-
+	İÇ KAPAK	i	Numaralandırılır	nu. gösterilmez	Romen rakamı
+	TEZ ONAY SAYFASI
+(KIRGIZCA-TÜRKÇE )	ii	Numaralandırılır	nu. gösterilmez	Romen rakamı
+	ÖZ
+(KIRGIZCA-TÜRKÇE-RUSÇA - İNGİLİZCE )
+ANAHTAR KELİMELER	iv	Numaralandırılır	İlk sayfasında nu. gösterilmez	Romen rakamı
+	ÖNSÖZ 	….	Numaralandırılır	İlk sayfasında nu. gösterilmez	Romen rakamı
+	İÇİNDEKİLER	….	Numaralandırılır	“	Romen rakamı
+	KISALTMALAR	….	Numaralandırılır	“	Romen rakamı
+	TABLOLAR LİSTESİ	….	Numaralandırılır	“	Romen rakamı
+	ŞEKİLLER LİSTESİ	….	Numaralandırılır	“	Romen rakamı
+	SEMBOLLER LİSTESİ	….	Numaralandırılır	“	Romen rakamı
+
+Metin kısmı	GİRİŞ 	1	Numaralandırılır	“	 Arap rakamı
+	BÖLÜMLER	….	Numaralandırılır	nu. gösterilir	 Arap rakamı
+	SONUÇ	….	Numaralandırılır	“	 Arap rakamı
+	ÖZET	….	Numaralandırılır	“	 Arap rakamı
+Kaynaklar 
+ve
+son sayfalar	KAYNAKLAR	….	Numaralandırılır	“	 Arap rakamı
+	EKLER 	….	Numaralandırılır	“	 Arap rakamı
+	ÖZGEÇMİŞ	….	Numaralandırılır	“	 Arap rakamı
+	BOŞ SAYFA	-	Numaralandırılmaz	-	-
+	DIŞ KAPAK	-	Numaralandırılmaz	-	-
+Ek. 2a:	DIŞ KAPAK ÖRNEĞİ
+KIRGIZİSTAN-TÜRKİYE MANAS ÜNİVERSİTESİ
+SOSYAL BİLİMLER ENSTİTÜSÜ
+TARİH ANABİLİM DALI
+ (14 punto BÜYÜK HARF ve bold)
+
+
+
+
+
+
+
+
+
+DOĞU TÜRKİSTAN’DA HOCALAR DÖNEMİ
+ (16-18 punto, BÜYÜK HARF ve bold)
+
+
+
+
+
+
+(YÜKSEK LİSANS TEZİ)
+(12 punto, BÜYÜK HARF ve bold)
+ 
+
+
+
+
+
+
+
+Kadir TUĞ
+(12 punto, SOYADI BÜYÜK HARF ve bold)
+
+
+
+
+BİŞKEK 2004
+(12 punto, BÜYÜK HARF ve bold)
+
+
+
+
+Ek. 2b:	DIŞ KAPAK ÖRNEĞİ (Sırt Kısmı İle Birlikte)
+KTMÜ.S.B.E.
+TARİH
+ ANABİLİM DALI
+	KIRGIZİSTAN-TÜRKİYE MANAS ÜNİVERSİTESİ
+SOSYAL BİLİMLER ENSTİTÜSÜ
+TARİH ANABİLİM DALI
+(14 punto BÜYÜK HARF ve bold)
+
+
+
+
+
+
+DOĞU TÜRKİSTAN’DA HOCALAR DÖNEMİ
+ (16-18 punto, BÜYÜK HARF ve bold)
+
+
+(YÜKSEK LİSANS TEZİ)
+(12 punto, BÜYÜK HARF ve bold)
+
+
+
+
+
+Kadir TUĞ
+(12 punto, SOYADI BÜYÜK HARF ve bold)
+
+
+
+
+
+
+
+
+
+BİŞKEK 2004
+(12 punto, BÜYÜK HARF ve bold)
+DOĞU TÜRKİSTAN’DA HOCALAR DÖNEMİ
+(YÜKSEK LİSANS TEZİ)	
+Kadir TUĞ
+	
+BİŞKEK
+2007	
+Ek. 3:	İÇ KAPAK ÖRNEĞİ
+
+KIRGIZİSTAN-TÜRKİYE MANAS ÜNİVERSİTESİ
+SOSYAL BİLİMLER ENSTİTÜSÜ
+TARİH ANABİLİM DALI
+(14 punto BÜYÜK HARF ve bold)
+
+
+
+
+
+
+
+
+DOĞU TÜRKİSTAN’DA HOCALAR DÖNEMİ
+ (16-18 punto, BÜYÜK HARF ve bold)
+
+
+
+
+
+
+(YÜKSEK LİSANS TEZİ)
+(12 punto, BÜYÜK HARF ve bold)
+
+
+
+
+
+Kadir TUĞ
+ (12 punto, SOYADI BÜYÜK HARF ve bold)
+
+
+
+
+
+
+Danışman
+Prof. Dr. Anvar MOKEYEV
+(12 punto, SOYADI BÜYÜK HARF ve bold)
+
+
+
+
+
+
+
+BİŞKEK 2004
+(12 punto, BÜYÜK HARF ve bold)
+Ek. 4:	TEZ ONAY SAYFASI ÖRNEĞİ
+KIRGIZİSTAN TÜRKİYE
+MANAS ÜNİVERSİTESİ
+SOSYAL BİLİMLER ENSTİTÜSÜ MÜDÜRLÜĞÜNE
+
+........................................................................................................ Anabilim/Anasanat Dalı, ............................................................................ Bilim Dalı’nda ...............................numaralı …………………….................. ..........................................’nın hazırladığı “.......................................... ...................................................................................................................................................” konulu ................................................. (Yüksek Lisans/Doktora/Sanatta Yeterlik Tezi/Çalışması) ile ilgili tez savunma sınavı, ...../...../ 20.... günü ……… - ………..saatleri arasında yapılmış, sorulan sorulara alınan cevaplar sonunda adayın tezinin/çalışmasının ……………………………..(başarılı/başarısız) olduğuna …………………………(oybirliği/oy çokluğu) ile karar verilmiştir.
+	
+	
+	
+Üye (Tez Danışmanı) 
+Akademik Unvanı, Adı Soyadı
+Üniversitesi	Üye
+Akademik Unvanı, Adı Soyadı
+Üniversitesi
+
+	
+	
+Üye 
+Akademik Unvanı, Adı Soyadı
+Üniversitesi	Üye 
+Akademik Unvanı, Adı Soyadı
+Üniversitesi
+	
+
+
+Üye 
+Akademik Unvanı, Adı Soyadı
+Üniversitesi	
+	....../......./ 20.....
+	
+	
+Ek. 5: TEZ ONAY SAYFASI ÖRNEĞİ
+
+ЧЕЧИМ
+
+Кыргыз-Т³рк Манас университетинин Коомдук Илимдер Институтунун экзамендик инструкциясынын ...- жобосуна ылайык,................ № жыйында уюшулган комиссия, педагогика б¼л³м³н³н магистранты...................................... темасында жазган дипломдук проектин анализдеп, -ж. саат .........д¼ жактоого кабыл алды. 
+Магистрант .... минута убакыт ичинде дипломдук проектин жактап, комиссия к¼пч³л³к добуш менен/бир добуштан Кабыл алынбайт/Кабыл алынсын/Кайра о¾долсун деген чечим чыгарды. 
+
+
+
+
+
+
+
+
+
+
+
+
+Жюри т¼рагасы
+
+
+
+
+
+
+Жюри м³ч¼с³ 										Жюри м³ч¼с³
+
+
+
+
+
+Жюри м³ч¼с³ 										Жюри м³ч¼с³
+
+
+
+
+
+
+
+....../......./ 20.....
+
+Ek. 6:	ÖZ ÖRNEĞİ
+
+ÖZ (ABSTRACT / КЫСКАЧА МАЗМУНУ/ АБСТРАКТ)
+
+Yazar/Даярдаган                    	: 
+Üniversite /Университет             	: Kırgızistan Türkiye Manas Üniversitesi
+Anabilim Dalı/ 	: 
+Bilim Dalı /  Багыты	: 
+Tezin Niteliği /Иштин  сыпаты         	: Yüksek Lisans Tezi
+Sayfa Sayısı / Беттердин саны           	: VIII + 152
+Mezuniyet Tarihi / Бутуру датасы     	: ….  /…. / 2002
+Tez Danışman(lar)ı / Илими Жетекчи    	: 
+
+TEZ BAŞLIĞI/ ДИССЕРТАЦИЯНЫН ТЕМАСЫ
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+				
+Anahtar Sözcükler/ Key Words	
+				
+				
+ 	
+
+
+	
+	
+				
+				
+
+Ek. 7:	İÇİNDEKİLER ÖRNEĞİ 
+Sayfa
+TEZ ONAY SAYFASI.....................................................................................................	II
+ÖZ............................................................................................................................			IV
+КЫСКАЧА МАЗМУНУ......................................................................................................	V
+АБСТРАКТ............................................................................................................................	VI
+ABSTRACT....................................................................................................................	VII
+ÖNSÖZ ........................................................................................................................		VIII
+İÇİNDEKİLER................................................................................................................	IX
+KISALTMALAR.............................................................................................................	X
+TABLOLAR LİSTESİ..........................................................................................	XI
+ŞEKİLLER LİSTESİ.....................................................................................................		XII
+SEMBOLLER..................................................................................................................	XIII
+GİRİŞ ..........................................................................................................................	 	1
+BİRİNCİ BÖLÜM	
+(BÖLÜM BAŞLIĞI)	
+1. XXXX XXXX XXXX ................................................................................................	15
+    1.1. Xxxx Xxxx Xxxx .................................................................................................	xx
+           1.1.1. Xxxx xxxx xxxx ........................................................................................		xx
+                     1.1.1.1. Xxxx xxxx xxxx ...........................................................................		xx
+                                 1.1.1.1.1. Xxxx xxxx xxxx ............................................................		xx
+                                 1.1.1.1.2. Xxxx xxxx xxxx ............................................................	xx
+                     1.1.1.2. Xxxx xxxx xxxx ...........................................................................		xx
+           1.1.2. Xxxx xxxx xxxx ........................................................................................		xx
+    1.2. Xxxx Xxxx Xxxx .................................................................................................		xx
+2. XXXX XXXX XXXX............................................................................................		xx
+İKİNCİ BÖLÜM	
+(BÖLÜM BAŞLIĞI)	
+1. XXXX XXXX XXXX ..................................................................................................		65
+    1.1. Xxxx Xxxx Xxxx ..................................................................................................		xx
+    1.2. Xxxx Xxxx Xxxx .................................................................................................		xx
+2. XXXX XXXX XXXX ...................................................................................................		xx
+ÜÇÜNCÜ BÖLÜM	
+(BÖLÜM BAŞLIĞI)	
+1. XXXX XXXX XXXX .................................................................................................		98
+    1.1. Xxxx Xxxx Xxxx ..................................................................................................		xx
+    1.2. Xxxx Xxxx Xxxx .................................................................................................		xx
+2. XXXX XXXX XXXX..............................................................................................		xx
+SONUÇ.........................................................................................................................		155
+ÖZET.........................................................................................................................		165
+KAYNAKLAR..................................................................................................................	187
+EKLER..........................................................................................................................		193
+ÖZGEÇMİŞ....................................................................................................................		197
+
+
+
+
+
+Ek. 8:	KISALTMALAR ÖRNEĞİ
+ Kısaltma	Bibliyografik Bilgi
+a.e.	Aynı eser
+a.g.e.	Adı Geçen Eser
+a.g.m.	Adı Geçen Makale
+a.g.md.	Adı Geçen Madde
+a.g.tb.	Adı Geçen Tebliğ
+a.g.tz.	Adı Geçen Tez
+a.y.	Aynı yer
+b.a.	Eserin bütününe atıf
+Bkz.	Bakınız
+bkz. aş.	Eserin kendi içinde aşağıya atıf
+bkz. yuk.	Eserin kendi içinde yukarıya atıf
+c. 	Cilt
+çev.	Çeviren
+der.	Derleyen
+ed.	Editör
+h.	Hicrî
+haz.	Hazırlayan
+k.g.	Karşı görüş
+karş.	Karşılaştırınız
+m.	Miladî
+mad.	Madde
+nu.	Numara
+p.	Page
+s.	Sayfa
+ss.	Sayfadan sayfaya
+sy.	Sayı
+ts.	Basım tarihi yok
+v.dğr.	Ve diğerleri
+vb.	Ve benzeri
+vd.	Ve devamı
+vol.	Volume
+vr.	Varak
+vs.	Vesaire
+y.y.	Basım yeri yok
+Ek:9 Tablo, Şekil ve Resimlerin Gösterilmesi
+Tablo 2.1. Yönetici ve liderin karşılaştırılması (Şafak, 2004:28)
+Yönetici 	Lider
+Gücünü pozisyonundan alır	Gücünü etkilemeden ve kişisel ilişkilerden alır.
+Yeri genellikle örgütün üst kademeleridir.	Örgütte her kademede yer alabilir.
+Kendisinin tayin ettiği astları vardır.	Grubunda yer almak isteyen üyeleri vardır.
+Başarısı sisteme bağlıdır.	Başarısı üyelere bağlıdır.
+Denetime güvenir.	İnsanlara güvenir.
+Örgütün belirlediği hedeflere ulaşmaya çalışır.	Kendi tasarladığı hedeflerle örgütü daha iyi duruma götürür.
+Örgütteki mevcut statükoyu korumaya çalışır.	İhtiyaçlara göre değiştirmeye ve geliştirmeye çalışır.
+Dikkatli hareket eder ve kesin olmayandan korkar.	Değişiklik yapmak ve riske atılmak eğilimindedir.
+Kuralları izler ve uygular.	Sonuçlar için çalışır ve yenilik getirir.
+Kısa vadede ulaşılacak hedef ve amaçlara odaklanır.	Uzun vadede örgütün neyi başarabileceği hayalini kurar.
+Başkalarının koyduğu hedefleri gerçekleştirmeye hizmet eder.	Kendi amaçlarını kendisi koyar.
+Başkaları tarafından yönetime getirilir.	İçinde bulunduğu grup tarafından seçilir.
+Biçimsel olanı temsil eder.	Doğal olanı temsil eder.
+
+
+Şekil 2.1. Liderlik teorilerinin zaman çizelgesi (Şafak, 2004:28)
+
+	
+
+Resim 2.1. Türkiye Cumhuriyeti Devleti’nin kurucusu Mustafa Kemal Paşa’nın Çanakkale ve Kurtuluş Savaşları sırasında cephede savaşı izleme ve gözetme çalışmaları
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    Ek. 10:ÖZGEÇMİŞ ÖRNEĞİ
+ÖZGEÇMİŞ
+(12 punto- bold )
+Doğum Yeri ve Yılı              :		
+Öğr.Gördüğü Kurumlar     :	Başlama Yılı	Bitirme Yılı	Kurum Adı
+Lise                                        :			
+Lisans                                    :			
+Yüksek Lisans                      :			
+Doktora                                 :			
+Medeni Durum                     :	
+Bildiği Yabancı Diller ve Düzeyi:	:	
+Çalıştığı Kurum (lar)            :	Başlama     ve     Ayrılma Tarihleri	Çalışılan Kurumun Adı
+                                       1.			
+			
+Yurtdışı Görevleri             :	
+Kullandığı Burslar            :	
+Aldığı Ödüller                   :	
+Üye Olduğu Bilimsel ve Mesleki Topluluklar        :	
+Editör veya Yayın Kurulu Üyelikleri        :	
+Yurt İçi ve Yurt Dışında katıldığı Projeler              :	
+Katıldığı Yurt İçi ve Yurt Dışı Bilimsel Toplantılar:	
+Yayımlanan Çalışmalar                            :	
+Diğer                                  :	
+	
+Tarih-İmza
+Adı Soyadı
+
+
+
+
+
+
+EK-11:  TEZ PROJESİ HAZIRLAMA  KILAVUZU
+
+1- TEZİN ADI
+2- KONUSU
+3- AMACI
+4- ÖNEMİ
+5- YÖNTEMİ
+5.1- Kavramsal Çerçeve
+5.2- Varsayımlar
+5.3- Kapsam ve Sınırlılıklar
+5.4- Veri Toplama Tekniği
+6- ZAMANLAMASI
+7- KAYNAKÇASI
+8- ÇALIŞMA PLÂNI
+9- EKLERİ
+
+
+1-TEZİN ADI: Tezin adı, tezin konusunu açıkça belirten bir ad olmalıdır. Çok uzun, anlaşılması güç ve çok genel tez adlarından kaçınılmalı, gerekirse alt başlık konulmalıdır. Araştırma ilerledikçe, tezin adında, esası değiştirmeyecek şekilde geliştirmeler yapılabilir.
+2-KONUSU:  Burada, hangi konunun araştırılacağı  açıkça  belirtilir.  Tez konusunun tek bir cümle ile yansıtılması uygun olur. Bundan sonra, gerekli görülürse, tez konusunu daha anlaşılır duruma getirmek için ek açıklamalar yapılabilir. Tez konusu orijinal olmalıdır. Tez konusu, daha önce yapılan tez çalışmalarıyla benzerlik göstermemelidir.
+3-AMACI: Burada, tezin niçin, hangi amaçla yapılmak istenildiği açık bir biçimde ifade edilir. Tezin birden fazla amacı olması halinde, her bir amacın ayrı ayrı açıklaması gerekir.
+4-ÖNEMİ: Burada, neden başka bir konunun değil de bu konunun seçildiğinin gerekçeli olarak açıklanır. Bu kısımda, tezin konusu ve amacı ile doğrudan ilgili çalışmalardan bahsedilerek,  bunların önerilen tez konusunu hangi boyutları ile ele aldığı ya da  almadığı belirtilir.  Ayrıca, tezin  sonuçlarının teori  ve uygulamaya sağlayacağı katkılar ya da getireceği yeniliklere de bu kısımda yer verilir.
+5- YÖNTEMİ: Burada, tezin nasıl bir yol izlenerek hazırlanacağı hakkında bilgiler verilir.
+5.1- Kavramsal Çerçeve: Burada, hangi yaklaşım ile hangi teori veya modele göre tez konusunun ele alınacağı belirtilir. Seçilen yaklaşım ile teori veya modelin hangi gerekçelerle tercih edildiği açıklanır. Diğer bölümlere göre daha uzun ve içerik olarak daha yoğun olan bu bölüm, tezin herhangi bir araştırma/inceleme değil fakat bilimsel bir araştırma/inceleme olduğunun da adeta kanıtlandığı yerdir. Kavramsal çerçevede, araştırmacının yaratıcılığı sergilenir.
+Burada gerekirse tezin temel kavramlarının kendine özgü tanımlarına da yer verilebilir. Özellikle,  tartışmalı  kavramlar  için  gerekçe  ve  kaynak gösterilmesi gerekir.
+5.2- Varsayımlar: Bu kısımda, tezin kavramsal çerçevesinin oturtulduğu varsayım(lar) verilir. Bilindiği gibi varsayım bir olayı ya da bir takım olayları açıklayabilmek için önceden kabul edilen ilkedir. Bir başka ifade ile deneyle kanıtlanmamış ancak kanıtlanabileceği umulan teorik düşüncedir. Bu sebeple varsayım(lar)ın açık ve net olarak belirtilmesi gerekir.
+5.3- Kapsam ve Sınırlılıklar: Tezin kapsamında, araştırılacak konunun neleri kapsayacağı (konu, yer ve zaman) belirtilir. Araştırma uygulamalı ise evren ve örneklem hakkında bilgi verilir.
+Tezin Sınırlılıkları: Tez konusu ile ilgili olmakla birlikte tezin içinde ele alınmayacak konular gerekçeli olarak, veri, kaynak, güçlük, zaman, varsa maliyet sınırlamaları vb. durumlar belirtilerek, açıklığa kavuşturulur.
+5.4- Veri Toplama Tekniği: Burada, hangi veri toplama tekniklerinden yarar­lanılacağı hakkında bilgi verilir; yapılacak literatür taraması anlatılır. Uygulamalı tezlerde gözlem, görüşme, örnek olay incelemesi, vb. tekniklerden hangisinin  neden  seçildiği  gerekçeli  olarak  yazılır. Toplanan  verilere uygulanacak istatistiksel işlemler hakkında bilgi verilir.
+6- ZAMANLAMASI: Burada, tezin hazırlanması için gereken zaman, safhalar itibarıyla, ayrıntılı olarak gösterilir. Yani kaynak araştırması, veri toplama, uygulama, değerlendirme ve yazmaya ne kadar zaman ayrılacağı ve bunlara ait tahmini tarihler yazılır. Zamanlamada Enstitünün "Lisansüstü Eğitim-Öğretim ve Sınav Yönergesi"nde tanınmış olan normal süre esas alınır.
+7-KAYNAKÇASI: Burada, tez önerisinin kaynakçası, tez yazım yönergesinde açıklanan usule göre yazılır.
+8-ÇALIŞMA PLÂNI: Bu başlık altında, tez için öngörülen "taslak plân" verilir. Taslak plân araştırma boyunca gelişerek değişecek olan plandır.
+Taslak planda, konu ile ilgili genel bilgilerin verildiği girişin ardından, teorik ve kavram çerçevesi, verilerin değerlendirilmesine ilişkin bilgiler ve varılan sonuçlar ayrı bölümler ve başlıklar altında düzenlenmelidir.
+9- EKLERİ: Çizelge, fotoğraf, harita-kroki, anket, kavram açıklamaları gibi gerekli görülen bilgi ve belgeler projenin Ekleri olarak sunulabilir.
+
+
+
