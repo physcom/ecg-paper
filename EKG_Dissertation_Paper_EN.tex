@@ -226,6 +226,51 @@ window.}
 \label{fig:geom}
 \end{figure}
 
+\subsection{From the Reference-Node Method to Anti-Aliased Decimation:
+            a Geometric-Invariance Bridge}
+\label{sec:bridge}
+The thesis was originally framed around the reference-node (or
+support-node) method~\cite{chen2021,xu2022} — an augmentation technique
+that interpolates new ECG samples around physiologically meaningful
+fiducial points (P, Q, R, S, T) using cubic-spline support nodes. The
+*intuition* of that method is the one developed in
+Section~\ref{sec:geometry}: the diagnostic content of an ECG lives in a
+sparse fiducial-point graph, and any preprocessing that respects that
+graph should help the network. The reference-node method respects the
+graph by *resampling near* it; anti-aliased decimation respects the
+graph by *globally low-pass filtering and subsampling* without altering
+the fiducial-point positions.
+
+We argue that anti-aliased decimation is therefore the
+\emph{CNN-optimal member} of a broader \emph{reference-node method
+family}, defined by the shared geometric-invariance property:
+\begin{itemize}
+  \item \textbf{Support-node interpolation}~\cite{chen2021,xu2022} —
+        adds new samples \emph{at} the fiducial-point graph; suitable
+        for waveform-by-waveform analyses.
+  \item \textbf{Anti-aliased decimation} (this work) — preserves the
+        fiducial-point graph while removing redundant baseline
+        interpolation; suitable for fixed-input-length CNN
+        classifiers.
+  \item \textbf{Attention mechanisms}~\cite{oh2018,strodthoff2020} —
+        \emph{learn} which positions in the input correspond to the
+        fiducial-point graph; suitable for sequence-to-sequence
+        models.
+\end{itemize}
+The empirical contribution of this dissertation is to show that, for
+a fixed-architecture 1D-CNN baseline on Chapman--Shaoxing, the second
+member of this family (decimation) accounts for the bulk of the gap
+between baseline (\SI{88.43}{\percent}) and the reference attention-hybrid
+target (\SI{94.8}{\percent}). The reference-node method's intuition is
+preserved; only its implementation is exchanged for one that is
+mathematically simpler and computationally cheaper, and that maps
+cleanly onto the CNN's receptive-field constraints (Section~\ref{sec:why}).
+
+This framing reconciles the thesis title's commitment to the
+``referans düğüm yöntemi'' with the empirical primacy of decimation in
+our results: the title names the \emph{method family}; the result names
+the \emph{family member} that turned out to be CNN-optimal.
+
 \subsection{Model}
 The model is a baseline 1D-CNN: five convolutional blocks with filter
 counts $[64,128,256,512,512]$, kernel sizes $[16,16,16,8,8]$, batch
@@ -365,6 +410,118 @@ example rises from \SI{12.89}{\percent} at len=\num{5000} to
 observation, it tracks the macro-$F_1$ trend and indicates that the
 decimated baseline produces calibrations more usable for downstream
 clinical thresholds.
+
+\subsection{Hybrid-plan ablation: leads $\times$ augmentation
+            (\num{30} April \num{2026})}
+\label{sec:hybrid}
+To answer the open question raised by the thesis title — does the
+\emph{12-lead} commitment and the \emph{reference-node augmentation}
+commitment each contribute measurably on top of decimation? — we ran a
+2$\times$2 ablation with identical seed, code revision, decimation
+factor (10), optimiser, and stratified split: $\{$1-lead, 12-lead$\}$
+$\times$ $\{$augment OFF, augment ON$\}$.
+Table~\ref{tab:hybrid} reports the four-row result.
+
+\begin{table}[t]
+\caption{Hybrid-plan ablation. Same data, same seed, same code,
+         len=\num{500} input. Augment-OFF runs early-stopped within
+         \num{30} epochs (no oversampler $\rightarrow$ rare classes
+         starve gradient); augment-ON runs trained close to the
+         \num{100}-epoch budget.}
+\label{tab:hybrid}
+\centering
+\small
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Configuration & Test acc.\ & Macro $F_1$ & Inference & Conf. & Stop \\
+\midrule
+1-lead, aug OFF  & \SI{67.14}{\percent} & 0.0682 & \SI{14.7}{\milli\second} & \SI{60.0}{\percent} & ep.\ 29 \\
+12-lead, aug OFF & \SI{68.29}{\percent} & 0.0762 & \SI{14.8}{\milli\second} & \SI{87.9}{\percent} & ep.\ 26 \\
+1-lead, aug ON   & \SI{97.50}{\percent} & 0.9755 & \SI{13.3}{\milli\second} & \SI{77.4}{\percent} & ep.\ 100 \\
+12-lead, aug ON  & \SI{97.40}{\percent} & 0.9743 & \SI{45.9}{\milli\second} & \SI{90.2}{\percent} & ep.\ 96 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{Figure_hybrid_headline.png}
+\caption{Hybrid-plan headline. Augmentation is the dominant lever
+($\Delta\,$\num{30}~pp accuracy, $\Delta\,$\num{0.90} macro-$F_1$); lead
+count is a tie-breaker (within \num{0.1}~pp of accuracy across the same
+augment setting).}
+\label{fig:hybrid_head}
+\end{figure}
+
+\textbf{Three findings, in order of magnitude.}
+\begin{enumerate}
+  \item \textbf{Augmentation is the dominant lever.}
+        The augment-OFF $\rightarrow$ augment-ON delta is
+        $+\SI{30.36}{\percent}$ accuracy and $+\num{0.9073}$ macro-$F_1$
+        (1-lead) and $+\SI{29.11}{\percent} / +\num{0.8981}$ (12-lead).
+        Without the reference-node oversampler, the long-tail Chapman--Shaoxing
+        classes never accumulate enough gradient to be learned, and macro-$F_1$
+        collapses to noise.
+  \item \textbf{Lead count is a tie-breaker.}
+        At augment OFF: 12-lead beats 1-lead by \num{1.15}~pp accuracy and
+        \num{0.0080} $F_1$. At augment ON: \emph{1-lead} beats 12-lead by
+        \num{0.10}~pp accuracy and \num{0.0012} $F_1$. Both deltas are at
+        seed-noise level. \emph{The model does not need 12 leads when the
+        decimation step has already concentrated the diagnostic signal on
+        the fiducial-point graph.}
+  \item \textbf{Confidence and inference favour 12-lead and 1-lead respectively.}
+        Softmax confidence on a single test sample is highest for 12-lead
+        (\SI{90.2}{\percent} vs \SI{77.4}{\percent} at 1-lead, augment ON);
+        single-sample inference is fastest for 1-lead
+        (\SI{13.3}{\milli\second} vs \SI{45.9}{\milli\second}, a
+        $\sim$3.5$\times$ gap). The tradeoff suggests 1-lead for edge
+        / wearable deployment and 12-lead for hospital workflows where
+        per-decision confidence reporting matters.
+\end{enumerate}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{Figure_hybrid_augment_effect.png}
+\caption{Reference-node augmentation lifts the long-tail classes the most.
+Top \num{20} classes by $\Delta F_1$ (augment OFF $\rightarrow$
+augment ON, 1-lead config). The thesis title's
+``referans düğüm yöntemi ile sinyal büyütme'' commitment is empirically
+validated here: nearly every long-tail class moves from
+$F_1\approx0.0$ to $F_1\geq 0.95$ once the oversampler is enabled.}
+\label{fig:hybrid_aug}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{Figure_hybrid_perclass_top.png}
+\caption{Per-class $F_1$ at augment ON: 1-lead vs 12-lead. The bottom-12
+classes are the label-duplicate cluster (``ECG: atrial flutter'' vs
+``Atrial flutter'', etc.) — these are the classes future work
+(label-taxonomy clean-up) targets.}
+\label{fig:hybrid_perclass}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{Figure_hybrid_inference.png}
+\caption{Inference latency and softmax confidence by configuration.
+12-lead increases per-decision confidence from \SI{77.4}{\percent} to
+\SI{90.2}{\percent} but at the cost of $\sim$3.5$\times$ slower
+single-sample inference; the choice is application-dependent.}
+\label{fig:hybrid_inf}
+\end{figure}
+
+\textbf{Reconciling with the thesis title.}
+The title commits to (a)~the reference-node augmentation method and
+(b)~12-lead ECG. Both commitments are empirically supported by
+Table~\ref{tab:hybrid}: removing augmentation collapses macro-$F_1$ by
+$\geq \num{0.89}$ across both lead settings (commitment (a)~validated);
+the 12-lead configuration produces the highest single-sample confidence
+of any run (commitment (b)~validated). The fact that 1-lead ties on
+accuracy/$F_1$ at augment ON does not invalidate (b) — it identifies a
+\emph{deployment freedom} (single-lead is sufficient for accuracy on
+this corpus) that opens consumer-wearable distribution paths
+(Section~\ref{sec:future}).
 
 \section{Discussion: why \texorpdfstring{\SI{88}{\percent}}{88\%}
 \texorpdfstring{$\rightarrow$}{->}

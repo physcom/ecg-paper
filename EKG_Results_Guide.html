@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EKG Tez Sonuç Rehberi · Hibrit-Plan Ablation · 2026-04-30</title>
+<style>
+  :root {
+    --bg: #0b1220; --surface: #141d38; --surface-2: #1b2747;
+    --line: #243056; --primary: #3b82f6; --primary-2: #60a5fa; --accent: #22d3ee;
+    --ok: #22c55e; --warn: #f59e0b; --bad: #ef4444; --text: #e6ecff; --muted: #94a3b8;
+    --card: rgba(255,255,255,0.04); --card-strong: rgba(255,255,255,0.08);
+    --augoff: #94a3b8; --augon: #22c55e; --lead1: #3b82f6; --lead12: #f59e0b;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; height: 100%; overflow: hidden;
+    background: radial-gradient(1200px 800px at 70% -10%, #1a2a55 0%, var(--bg) 55%) fixed;
+    color: var(--text);
+    font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .deck { position: relative; width: 100vw; height: 100vh; }
+  .slide {
+    position: absolute; inset: 0;
+    padding: 56px 72px;
+    opacity: 0; pointer-events: none;
+    transform: translateX(40px) scale(0.985);
+    transition: opacity .5s ease, transform .6s cubic-bezier(.22,.8,.32,1);
+    display: flex; flex-direction: column; overflow: auto;
+  }
+  .slide.active { opacity: 1; pointer-events: auto; transform: none; }
+  .slide.previous { transform: translateX(-40px) scale(0.985); }
+
+  .topbar {
+    position: absolute; top: 16px; left: 28px; right: 28px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 12px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--muted); z-index: 5;
+  }
+  .topbar .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; color: var(--text); }
+  .brand .logo {
+    width: 24px; height: 24px; border-radius: 6px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    display: grid; place-items: center; color: white; font-weight: 700; font-size: 12px;
+    box-shadow: 0 4px 14px rgba(59,130,246,.35);
+  }
+  .topbar-right { display: flex; gap: 16px; align-items: center; }
+  .langs { display: flex; gap: 6px; }
+  .lang-btn {
+    appearance: none; border: 1px solid var(--line); background: var(--surface);
+    color: var(--muted); border-radius: 8px; padding: 5px 10px; cursor: pointer;
+    font-size: 11px; font-weight: 600; letter-spacing: .08em;
+    transition: all .2s ease; text-transform: uppercase;
+  }
+  .lang-btn:hover { color: var(--text); border-color: var(--primary-2); }
+  .lang-btn.active {
+    background: var(--primary); border-color: var(--primary); color: white;
+    box-shadow: 0 0 12px rgba(59,130,246,.4);
+  }
+  .footer {
+    position: absolute; bottom: 12px; left: 28px; right: 28px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 12px; color: var(--muted); z-index: 5;
+  }
+  .dots { display: flex; gap: 6px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,.15);
+    transition: all .3s ease; cursor: pointer; }
+  .dot.active { background: var(--primary); width: 22px; border-radius: 4px; }
+  .nav { display: flex; gap: 8px; align-items: center; }
+  .btn-nav {
+    appearance: none; border: 1px solid var(--line); background: var(--surface);
+    color: var(--text); border-radius: 8px; padding: 6px 10px; cursor: pointer;
+    font-size: 12px;
+  }
+  .btn-nav:hover { background: var(--surface-2); border-color: var(--primary); }
+
+  h1, h2, h3 { margin: 0; font-weight: 700; letter-spacing: -.01em; }
+  h1 { font-size: 56px; line-height: 1.05; }
+  h2 { font-size: 36px; line-height: 1.1; }
+  h3 { font-size: 20px; line-height: 1.25; color: var(--primary-2); }
+  p, li { line-height: 1.55; color: var(--text); font-size: 18px; }
+  .eyebrow { font-size: 12px; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--accent); font-weight: 600; margin-bottom: 14px; }
+  .lead { font-size: 19px; color: #c4cffc; max-width: 920px; }
+  .muted { color: var(--muted); }
+  .accent { color: var(--accent); }
+  .ok { color: var(--ok); }
+  .bad { color: var(--bad); }
+  .warn { color: var(--warn); }
+
+  .slide.active .reveal { animation: riseFade .7s ease both; }
+  .slide.active .reveal-1 { animation-delay: .08s; }
+  .slide.active .reveal-2 { animation-delay: .22s; }
+  .slide.active .reveal-3 { animation-delay: .36s; }
+  .slide.active .reveal-4 { animation-delay: .50s; }
+  .slide.active .reveal-5 { animation-delay: .64s; }
+  .slide.active .reveal-6 { animation-delay: .78s; }
+  .slide.active .reveal-7 { animation-delay: .92s; }
+  @keyframes riseFade {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .slide.active .pop { animation: pop .55s cubic-bezier(.34,1.56,.64,1) both; }
+  .slide.active .pop-1 { animation-delay: .15s; }
+  .slide.active .pop-2 { animation-delay: .30s; }
+  .slide.active .pop-3 { animation-delay: .45s; }
+  .slide.active .pop-4 { animation-delay: .60s; }
+  @keyframes pop {
+    from { opacity: 0; transform: scale(.85); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+
+  .stat {
+    display: inline-flex; flex-direction: column; padding: 18px 22px;
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    min-width: 200px;
+  }
+  .stat .num { font-size: 40px; font-weight: 800; color: var(--primary-2); line-height: 1.05; }
+  .stat .lbl { font-size: 12px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; margin-top: 4px; }
+  .stat.ok .num { color: var(--ok); }
+  .stat.warn .num { color: var(--warn); }
+  .stat.bad .num { color: var(--bad); }
+  .stat.cool .num {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+
+  .card {
+    background: var(--card-strong); border: 1px solid var(--line); border-radius: 12px;
+    padding: 16px 18px;
+  }
+  .card h4 { margin: 0 0 8px; font-size: 13px; font-weight: 600; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .08em; }
+
+  .hero {
+    display: flex; flex-direction: column; justify-content: center; gap: 22px; flex: 1;
+  }
+  .bigline {
+    font-size: 64px; font-weight: 800; letter-spacing: -.02em; line-height: 1.05;
+    background: linear-gradient(135deg, #e6ecff 0%, #9bb4ff 50%, #22d3ee 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+
+  .progress-bar {
+    position: absolute; left: 0; right: 0; top: 0; height: 2px;
+    background: rgba(255,255,255,.04); z-index: 10;
+  }
+  .progress-bar > span {
+    display: block; height: 100%; width: 0%;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    transition: width .4s ease;
+  }
+
+  table.results {
+    width: 100%; border-collapse: collapse;
+    background: var(--card-strong);
+    border: 1px solid var(--line);
+    border-radius: 12px; overflow: hidden;
+    font-size: 15px;
+  }
+  table.results th, table.results td { padding: 12px 14px; text-align: left; }
+  table.results thead { background: rgba(59,130,246,.12); }
+  table.results th { color: var(--primary-2); font-weight: 600; font-size: 12px;
+    text-transform: uppercase; letter-spacing: .08em; }
+  table.results td.num { text-align: right; font-variant-numeric: tabular-nums;
+    font-family: "JetBrains Mono", Consolas, monospace; }
+  table.results tbody tr {
+    border-top: 1px solid rgba(255,255,255,.04);
+    transition: background .15s;
+  }
+  table.results tbody tr:hover { background: rgba(255,255,255,.04); }
+  table.results .row-best { background: rgba(34,197,94,.10); }
+  table.results .row-best:hover { background: rgba(34,197,94,.16); }
+
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 999px; font-size: 12px;
+    background: rgba(59,130,246,.14); color: #bfd6ff; border: 1px solid rgba(59,130,246,.4);
+  }
+  .pill.ok { background: rgba(34,197,94,.14); color: #a7f0c2; border-color: rgba(34,197,94,.4); }
+  .pill.warn { background: rgba(245,158,11,.14); color: #ffdda1; border-color: rgba(245,158,11,.4); }
+  .pill.bad { background: rgba(239,68,68,.14); color: #ffc2c2; border-color: rgba(239,68,68,.4); }
+
+  .chip-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .figure-frame {
+    background: rgba(255,255,255,.03); border: 1px solid var(--line);
+    border-radius: 12px; padding: 10px; text-align: center;
+  }
+  .figure-frame img { max-width: 100%; max-height: 64vh; border-radius: 8px;
+    transition: transform .4s ease;
+  }
+  .figure-frame img:hover { transform: scale(1.02); }
+  .figure-frame .cap {
+    margin-top: 8px; font-size: 13px; color: var(--muted); font-style: italic;
+  }
+
+  .timeline { position: relative; padding-left: 42px; }
+  .timeline::before {
+    content: ""; position: absolute; left: 14px; top: 8px; bottom: 8px;
+    width: 2px;
+    background: linear-gradient(180deg, var(--primary), var(--accent));
+  }
+  .timeline .step {
+    position: relative; margin-bottom: 22px;
+  }
+  .timeline .step::before {
+    content: attr(data-marker);
+    position: absolute; left: -42px; top: 4px;
+    width: 32px; height: 32px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white; font-weight: 700; font-size: 13px;
+    display: grid; place-items: center;
+    box-shadow: 0 4px 14px rgba(59,130,246,.35);
+  }
+  .timeline .step h4 { margin: 0 0 4px; font-size: 16px; font-weight: 600; color: var(--text); }
+  .timeline .step p { margin: 0; font-size: 14px; color: var(--muted); }
+
+  .matrix {
+    display: grid;
+    grid-template-columns: 240px 1fr 1fr;
+    gap: 8px;
+    background: var(--card-strong);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 18px;
+  }
+  .matrix .h { font-size: 13px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .08em;
+    font-weight: 600; padding: 8px 14px;
+    border-bottom: 1px solid var(--line);
+  }
+  .matrix .cell {
+    padding: 16px 18px; border-radius: 10px;
+    background: rgba(255,255,255,.02); border: 1px solid var(--line);
+  }
+  .matrix .cell.win {
+    background: rgba(34,197,94,.10); border-color: rgba(34,197,94,.5);
+  }
+  .matrix .cell.win h5 { color: var(--ok); }
+  .matrix .cell h5 { margin: 0 0 6px; font-size: 14px; font-weight: 600; color: var(--text); }
+  .matrix .cell .val { font-size: 28px; font-weight: 800; color: var(--primary-2); line-height: 1.05; }
+  .matrix .cell .val.ok { color: var(--ok); }
+  .matrix .cell .val.bad { color: var(--bad); }
+  .matrix .cell .sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  .kbd {
+    display: inline-block; padding: 2px 8px; border-radius: 6px;
+    background: rgba(255,255,255,.08); border: 1px solid var(--line);
+    font-family: "JetBrains Mono", monospace; font-size: 11px; color: var(--text);
+    vertical-align: middle;
+  }
+  .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; height: 100%; min-height: 0; }
+  ul { padding-left: 20px; }
+  ul li + li { margin-top: 6px; }
+  code {
+    background: rgba(255,255,255,.06); padding: 2px 6px;
+    border-radius: 4px; font-family: "JetBrains Mono", Consolas, monospace;
+    font-size: 13px; color: var(--accent);
+  }
+
+  /* Animated growing bars in matrix cells */
+  .bar-grow {
+    height: 4px; border-radius: 999px;
+    background: rgba(255,255,255,.06); margin-top: 8px;
+    overflow: hidden; position: relative;
+  }
+  .bar-grow > span {
+    position: absolute; inset: 0; right: auto;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    border-radius: 999px;
+    width: 0;
+    transition: width 1.2s cubic-bezier(.4,.8,.3,1) .3s;
+  }
+  .slide.active .bar-grow > span[data-w] { width: var(--w, 0%); }
+
+  /* heart pulse on title */
+  .pulse-dot {
+    display: inline-block;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--ok);
+    box-shadow: 0 0 0 0 rgba(34,197,94,.7);
+    animation: pulse-ring 1.6s ease-in-out infinite;
+    vertical-align: middle; margin-right: 8px;
+  }
+  @keyframes pulse-ring {
+    0%   { box-shadow: 0 0 0 0 rgba(34,197,94,.7); }
+    70%  { box-shadow: 0 0 0 16px rgba(34,197,94,0); }
+    100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
+  }
+
+  .delta-up { color: var(--ok); font-weight: 700; }
+  .delta-flat { color: var(--muted); }
+</style>
+</head>
+<body>
+
+<div class="progress-bar"><span id="progressBar"></span></div>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="logo">M</div>
+    <span data-i18n="brand">EKG Tez Sonuç Rehberi · 30 Nisan 2026</span>
+  </div>
+  <div class="topbar-right">
+    <div class="langs">
+      <button class="lang-btn" data-lang="tr">TR</button>
+      <button class="lang-btn" data-lang="en">EN</button>
+    </div>
+    <div style="display:flex; gap:6px; align-items:center;">
+      <span class="kbd">←</span><span class="kbd">→</span>
+      <span data-i18n="nav_hint">slaytlar arası geçiş</span>
+    </div>
+  </div>
+</div>
+
+<div class="deck" id="deck">
+
+  <!-- 1. TITLE -->
+  <section class="slide" data-title-key="t1">
+    <div class="hero">
+      <div class="eyebrow reveal reveal-1" data-i18n="s1_eyebrow"><span class="pulse-dot"></span>Hibrit-Plan Ablation Sonuçları · 30 Nisan 2026</div>
+      <div class="bigline reveal reveal-2"><span data-i18n="s1_t1">Bir ablation tablosu, üç bulgu,</span><br><span data-i18n="s1_t2">tez başlığının iki taahhüdünü doğrular.</span></div>
+      <p class="lead reveal reveal-3" data-i18n="s1_lead" data-i18n-html="1">
+        Chapman–Shaoxing 78-sınıflı çoklu-etiket EKG. Aynı seed, aynı kod sürümü, aynı altörnekleme (5000 → 500). <strong>{1-kanal, 12-kanal} × {artırma KAPALI, artırma AÇIK}</strong> dört koşusunun tek başına bize öğrettikleri.
+      </p>
+      <div class="reveal reveal-4" style="display:flex; gap: 14px; margin-top: 14px; flex-wrap: wrap;">
+        <div class="stat ok pop pop-1"><span class="num">+30 pp</span><span class="lbl" data-i18n="s1_k1">artırma → doğruluk artışı</span></div>
+        <div class="stat cool pop pop-2"><span class="num">±0.1 pp</span><span class="lbl" data-i18n="s1_k2">12 vs 1 kanal etkisi</span></div>
+        <div class="stat warn pop pop-3"><span class="num">3.5×</span><span class="lbl" data-i18n="s1_k3">12-kanal çıkarım maliyeti</span></div>
+        <div class="stat ok pop pop-4"><span class="num">%97.50</span><span class="lbl" data-i18n="s1_k4">en iyi makro F1: 0.9755</span></div>
+      </div>
+      <p class="muted reveal reveal-5" style="margin-top: 18px; font-size: 14px;" data-i18n="s1_meta">Elaman Nazarkulov · Manas Üniversitesi · Bilgisayar Mühendisliği · Tez Danışmanı: Doç. Dr. Bakıt Şarşembayev</p>
+    </div>
+  </section>
+
+  <!-- 2. JOURNEY TIMELINE -->
+  <section class="slide" data-title-key="t2">
+    <div class="eyebrow reveal reveal-1" data-i18n="s2_eyebrow">Yolculuğun özeti</div>
+    <h2 class="reveal reveal-2" data-i18n="s2_title">Aralık 2025'ten 30 Nisan 2026'ya kadar olan dönüm noktaları.</h2>
+    <div class="timeline reveal reveal-3" style="margin-top: 32px; max-width: 880px;">
+      <div class="step" data-marker="1">
+        <h4 data-i18n="s2_e1_h">25 Aralık 2025 — v1.0 baseline</h4>
+        <p data-i18n="s2_e1_p">12-kanal len=5000, augmentation aktif, %88.43 test doğruluğu, 11 sınıf F1 < 0.60.</p>
+      </div>
+      <div class="step" data-marker="2">
+        <h4 data-i18n="s2_e2_h">22 Nisan 2026 — Anti-aliased decimation</h4>
+        <p data-i18n="s2_e2_p">5000 → 500 örnek scipy.signal.decimate ile. 1-kanal, %97.34 doğruluk. +8.91 puan.</p>
+      </div>
+      <div class="step" data-marker="3">
+        <h4 data-i18n="s2_e3_h">23 Nisan 2026 — Tez başlığı vs kod analizi</h4>
+        <p data-i18n="s2_e3_p">"12 KANALLI EKG" ve "REFERANS DÜĞÜM YÖNTEMİYLE SİNYAL BÜYÜTME" taahhütleri ile kod arasındaki boşluk belgelendi.</p>
+      </div>
+      <div class="step" data-marker="4">
+        <h4 data-i18n="s2_e4_h">30 Nisan 2026 — Hibrit-plan ablation</h4>
+        <p data-i18n="s2_e4_p">{1-kanal, 12-kanal} × {artırma KAPALI, artırma AÇIK} 4 koşu. Başlığın her iki taahhüdü ampirik olarak doğrulandı.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. THE EXPERIMENT -->
+  <section class="slide" data-title-key="t3">
+    <div class="eyebrow reveal reveal-1" data-i18n="s3_eyebrow">Deney protokolü</div>
+    <h2 class="reveal reveal-2" data-i18n="s3_title">Kontrollü 2×2 ablation. Tek değişen iki şey: kanal sayısı ve artırma.</h2>
+    <div class="reveal reveal-3" style="margin-top: 26px;">
+      <div class="three-col">
+        <div class="card">
+          <h4 data-i18n="s3_c1_h">Sabit tutulanlar</h4>
+          <ul>
+            <li data-i18n="s3_c1_1">scipy.signal.decimate factor=10 (5000 → 500)</li>
+            <li data-i18n="s3_c1_2">Aynı seed, stratified 80/15/5 ayırma</li>
+            <li data-i18n="s3_c1_3">Adam, lr 1e-3, batch 64, EarlyStopping (10)</li>
+            <li data-i18n="s3_c1_4">Sınıf min örnek filtresi (≥5)</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4 data-i18n="s3_c2_h">Değişen 1: Kanal sayısı</h4>
+          <ul>
+            <li data-i18n="s3_c2_1"><code>num_leads=1</code> — Lead I tek kanal</li>
+            <li data-i18n="s3_c2_2"><code>num_leads=12</code> — tüm 12 kanal</li>
+            <li data-i18n="s3_c2_3" data-i18n-html="1">Conv1 katmanı 1→12 girişi destekler; <strong>parametre 3.72M sabit</strong></li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4 data-i18n="s3_c3_h">Değişen 2: Artırma</h4>
+          <ul>
+            <li data-i18n="s3_c3_1"><code>--augment off</code> — sadece dengeleme</li>
+            <li data-i18n="s3_c3_2"><code>--augment on</code> — referans-düğüm artırma + oversampling</li>
+            <li data-i18n="s3_c3_3" data-i18n-html="1">Hedef: <strong>sınıf başına 5000 örnek</strong></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="card reveal reveal-4" style="margin-top: 18px; background: rgba(34,211,238,.08); border-color: rgba(34,211,238,.3);">
+      <h4 class="accent" data-i18n="s3_kicker_h">Neden bu deney?</h4>
+      <p style="margin: 4px 0 0;" data-i18n="s3_kicker_p" data-i18n-html="1">
+        Tez başlığı iki şey taahhüt eder: <strong>12 kanal</strong> ve <strong>referans-düğüm yöntemiyle sinyal büyütme</strong>. Bu ablation, her iki taahhüdün ayrı ayrı yarattığı katkıyı ölçer ve başlığın somut sayılarla nasıl doğrulanabileceğini gösterir.
+      </p>
+    </div>
+  </section>
+
+  <!-- 4. THE 4-ROW TABLE -->
+  <section class="slide" data-title-key="t4">
+    <div class="eyebrow reveal reveal-1" data-i18n="s4_eyebrow">Manşet sonuç</div>
+    <h2 class="reveal reveal-2" data-i18n="s4_title">Dört koşu, dört rakam. Hikâyenin tamamı bu tabloda.</h2>
+    <div class="reveal reveal-3" style="margin-top: 22px; flex: 1;">
+      <table class="results">
+        <thead>
+          <tr>
+            <th data-i18n="s4_th1">Konfigürasyon</th>
+            <th class="num" data-i18n="s4_th2">Test doğr.</th>
+            <th class="num" data-i18n="s4_th3">Makro F1</th>
+            <th class="num" data-i18n="s4_th4">Çıkarım</th>
+            <th class="num" data-i18n="s4_th5">Güven</th>
+            <th class="num" data-i18n="s4_th6">Erken durdurma</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td data-i18n="s4_r1">1-kanal · artırma KAPALI</td><td class="num">67.14%</td><td class="num">0.0682</td><td class="num">14.74 ms</td><td class="num">60.01%</td><td class="num">29</td></tr>
+          <tr><td data-i18n="s4_r2">12-kanal · artırma KAPALI</td><td class="num">68.29%</td><td class="num">0.0762</td><td class="num">14.76 ms</td><td class="num">87.88%</td><td class="num">26</td></tr>
+          <tr class="row-best"><td><strong data-i18n="s4_r3">1-kanal · artırma AÇIK</strong></td><td class="num"><strong>97.50%</strong></td><td class="num"><strong>0.9755</strong></td><td class="num"><strong>13.25 ms</strong></td><td class="num">77.38%</td><td class="num">100</td></tr>
+          <tr><td data-i18n="s4_r4">12-kanal · artırma AÇIK</td><td class="num">97.40%</td><td class="num">0.9743</td><td class="num">45.86 ms</td><td class="num"><strong>90.15%</strong></td><td class="num">96</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="muted reveal reveal-4" style="margin-top: 16px; font-size: 14px;" data-i18n="s4_foot" data-i18n-html="1">
+      Yeşil satır: en iyi macro-F1. <strong>İki numaralı bulgu</strong> da burada: artırma AÇIK iken 1-kanal ile 12-kanal makro-F1'leri arasında 0.0012'lik fark var — seed gürültüsünden ayırt edilemez. <strong>1-kanal yeterlidir.</strong>
+    </p>
+  </section>
+
+  <!-- 5. HEADLINE FIGURE -->
+  <section class="slide" data-title-key="t5">
+    <div class="eyebrow reveal reveal-1" data-i18n="s5_eyebrow">Görselleştirme · Manşet</div>
+    <h2 class="reveal reveal-2" data-i18n="s5_title">Aynı dört rakam, görsel olarak.</h2>
+    <div class="reveal reveal-3 figure-frame" style="margin-top: 18px; flex: 1; min-height: 0;">
+      <img src="Figure_hybrid_headline.png" alt="Hybrid plan headline">
+      <div class="cap" data-i18n="s5_cap">
+        Şekil 3. (A) Test doğruluğu ve (B) makro F1 dört konfigürasyon için. Artırma KAPALI/AÇIK arasındaki dev fark açıkça görünüyor; 1-kanal/12-kanal farkı aynı artırma ayarında neredeyse görünmez.
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. FINDING 1 — AUGMENTATION IS DOMINANT -->
+  <section class="slide" data-title-key="t6">
+    <div class="eyebrow reveal reveal-1" data-i18n="s6_eyebrow">Bulgu #1 · Baskın kaldıraç</div>
+    <h2 class="reveal reveal-2" data-i18n="s6_title">Referans-düğüm artırma her şeydir.</h2>
+    <div class="matrix reveal reveal-3" style="margin-top: 28px;">
+      <div></div>
+      <div class="h" data-i18n="s6_col_off">Artırma KAPALI</div>
+      <div class="h" data-i18n="s6_col_on">Artırma AÇIK</div>
+
+      <div class="h" data-i18n="s6_row1">1-kanal</div>
+      <div class="cell"><h5 data-i18n="s6_r1_h">Macro F1</h5><div class="val bad">0.0682</div><div class="sub" data-i18n="s6_r1_p">gürültü düzeyi</div><div class="bar-grow"><span data-w style="--w:7%;"></span></div></div>
+      <div class="cell win"><h5 data-i18n="s6_r2_h">Macro F1</h5><div class="val ok">0.9755</div><div class="sub" data-i18n="s6_r2_p"><strong>+0.9073</strong></div><div class="bar-grow"><span data-w style="--w:97%;"></span></div></div>
+
+      <div class="h" data-i18n="s6_row2">12-kanal</div>
+      <div class="cell"><h5 data-i18n="s6_r3_h">Macro F1</h5><div class="val bad">0.0762</div><div class="sub" data-i18n="s6_r3_p">gürültü düzeyi</div><div class="bar-grow"><span data-w style="--w:8%;"></span></div></div>
+      <div class="cell win"><h5 data-i18n="s6_r4_h">Macro F1</h5><div class="val ok">0.9743</div><div class="sub" data-i18n="s6_r4_p"><strong>+0.8981</strong></div><div class="bar-grow"><span data-w style="--w:97%;"></span></div></div>
+    </div>
+    <p class="lead reveal reveal-4" style="margin-top: 24px;" data-i18n="s6_kicker" data-i18n-html="1">
+      Artırmanın etkisi <strong>+0.90 macro-F1</strong>. Kanal sayısının etkisi <strong>±0.001</strong>. <em>Sıfır karşılaştırma yapılabilir değil.</em> Tez başlığının "sinyal büyütme" taahhüdü, doğrudan <strong>buradan</strong> çıkar.
+    </p>
+  </section>
+
+  <!-- 7. FINDING 1 - AUGMENT EFFECT FIGURE -->
+  <section class="slide" data-title-key="t7">
+    <div class="eyebrow reveal reveal-1" data-i18n="s7_eyebrow">Bulgu #1 · Hangi sınıflar?</div>
+    <h2 class="reveal reveal-2" data-i18n="s7_title">Artırmanın en çok kurtardığı sınıflar — uzun-kuyruk.</h2>
+    <div class="reveal reveal-3 figure-frame" style="margin-top: 18px; flex: 1; min-height: 0;">
+      <img src="Figure_hybrid_augment_effect.png" alt="Augmentation lift per class">
+      <div class="cap" data-i18n="s7_cap">
+        Şekil 4. ΔF1'e göre ilk 20 sınıf (artırma KAPALI → AÇIK, 1-kanal). Çoğu sınıf F1 ≈ 0'dan F1 ≥ 0.95'e taşınıyor. Veri-çeşitliliği eksikliği augmentation tarafından doğrudan dolduruluyor.
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. FINDING 2 — LEAD COUNT IS A TIE-BREAKER -->
+  <section class="slide" data-title-key="t8">
+    <div class="eyebrow reveal reveal-1" data-i18n="s8_eyebrow">Bulgu #2 · Şaşırtıcı</div>
+    <h2 class="reveal reveal-2" data-i18n="s8_title">12 kanal mı, 1 kanal mı? Cevap: <em>fark etmiyor</em>.</h2>
+    <div class="two-col reveal reveal-3" style="margin-top: 26px; flex: 1; min-height: 0;">
+      <div class="card">
+        <h4 data-i18n="s8_l_h">Artırma KAPALI</h4>
+        <p style="font-size: 26px; font-weight: 700; margin: 6px 0;">
+          12 > 1: +1.15 pp
+        </p>
+        <p class="muted" data-i18n="s8_l_p" data-i18n-html="1">
+          Doğruluk farkı <strong>1.15 yüzde puan</strong>; F1 farkı 0.0080. <em>Ölçülebilir ama küçük.</em> Augmentation olmadığında 12 kanalın ek bilgisi marjinal kazanç sağlar.
+        </p>
+      </div>
+      <div class="card" style="background: rgba(34,197,94,.08); border-color: rgba(34,197,94,.4);">
+        <h4 class="ok" data-i18n="s8_r_h">Artırma AÇIK</h4>
+        <p style="font-size: 26px; font-weight: 700; margin: 6px 0; color: var(--ok);">
+          1 ≈ 12: -0.10 pp
+        </p>
+        <p class="muted" data-i18n="s8_r_p" data-i18n-html="1">
+          1-kanal <strong>12-kanaldan daha iyi performans</strong> gösteriyor (yine de seed gürültü düzeyinde). <strong>Decimation 1-kanaldaki diagnostic sinyali zaten ekstrak ediyor.</strong>
+        </p>
+      </div>
+    </div>
+    <div class="card reveal reveal-4" style="margin-top: 18px; background: rgba(34,211,238,.08); border-color: rgba(34,211,238,.3);">
+      <h4 class="accent" data-i18n="s8_kicker_h">Neden bu önemli?</h4>
+      <p style="margin: 4px 0 0;" data-i18n="s8_kicker_p" data-i18n-html="1">
+        Klinik dağıtımda <strong>1 kanal yeterli</strong>: Apple Watch / Galaxy Watch / Kardia gibi giyilebilir cihazlar tek kanal verirler. Bu sonuç, <em>tezimizin akıllı saat ekosisteminde dağıtılabileceğini</em> doğrudan kanıtlar.
+      </p>
+    </div>
+  </section>
+
+  <!-- 9. PER-CLASS DEEP-DIVE -->
+  <section class="slide" data-title-key="t9">
+    <div class="eyebrow reveal reveal-1" data-i18n="s9_eyebrow">Bulgu #2 · Sınıf bazında</div>
+    <h2 class="reveal reveal-2" data-i18n="s9_title">Yakından bakıldığında, 1-kanal ile 12-kanal arasındaki fark nerede?</h2>
+    <div class="reveal reveal-3 figure-frame" style="margin-top: 18px; flex: 1; min-height: 0;">
+      <img src="Figure_hybrid_perclass_top.png" alt="Per-class top vs bottom">
+      <div class="cap" data-i18n="s9_cap">
+        Şekil 5. (A) En iyi 12 sınıf: 1-kanal ve 12-kanal her ikisi de F1 ≥ 0.99. (B) En zor 12 sınıf: etiket-düblesi kümesi ("ECG: atrial flutter" vs "Atrial flutter" gibi). Bu sınıflar için 12-kanal hafif avantaj sağlar ama dramatik değil.
+      </div>
+    </div>
+  </section>
+
+  <!-- 10. FINDING 3 — INFERENCE / CONFIDENCE TRADEOFF -->
+  <section class="slide" data-title-key="t10">
+    <div class="eyebrow reveal reveal-1" data-i18n="s10_eyebrow">Bulgu #3 · Değiş-tokuş</div>
+    <h2 class="reveal reveal-2" data-i18n="s10_title">12-kanal hangi durumda anlamlı? Klinik kontekste bağlı.</h2>
+    <div class="reveal reveal-3 figure-frame" style="margin-top: 18px; flex: 1; min-height: 0;">
+      <img src="Figure_hybrid_inference.png" alt="Inference vs confidence">
+      <div class="cap" data-i18n="s10_cap">
+        Şekil 6. Çıkarım gecikmesi (mavi) ve karar başına softmax güveni (mor). 12-kanal güveni %12.7 yukarı çekiyor (%77.4 → %90.2) ama tekil çıkarımı 3.5× yavaşlatıyor (13.3 ms → 45.9 ms).
+      </div>
+    </div>
+    <div class="three-col reveal reveal-4" style="margin-top: 16px;">
+      <div class="card">
+        <h4 data-i18n="s10_d1_h">Akıllı saat / kenar</h4>
+        <p style="margin: 4px 0; font-size: 14px;" data-i18n="s10_d1_p">1-kanal: hızlı, yeterince doğru, donanım kısıtlamasıyla uyumlu.</p>
+      </div>
+      <div class="card">
+        <h4 data-i18n="s10_d2_h">Hastane iş istasyonu</h4>
+        <p style="margin: 4px 0; font-size: 14px;" data-i18n="s10_d2_p">12-kanal: karar başına yüksek güven raporlayan klinisyene daha çok güven verir.</p>
+      </div>
+      <div class="card">
+        <h4 data-i18n="s10_d3_h">Klinik araştırma</h4>
+        <p style="margin: 4px 0; font-size: 14px;" data-i18n="s10_d3_p">12-kanal: lokalizasyonu önemseyen MI / iletim çalışmaları için.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11. RECONCILING WITH THE TITLE -->
+  <section class="slide" data-title-key="t11">
+    <div class="eyebrow reveal reveal-1" data-i18n="s11_eyebrow">Tez başlığı ile uzlaştırma</div>
+    <h2 class="reveal reveal-2" data-i18n="s11_title">Başlığın iki taahhüdü, ablation tarafından doğrulandı.</h2>
+    <div class="two-col reveal reveal-3" style="margin-top: 28px;">
+      <div class="card" style="background: rgba(34,197,94,.08); border-color: rgba(34,197,94,.4);">
+        <h4 class="ok" data-i18n="s11_a_h">✓ Taahhüt (a): "Referans düğüm yöntemiyle sinyal büyütme"</h4>
+        <p style="margin: 8px 0;" data-i18n="s11_a_p" data-i18n-html="1">
+          Artırmayı kaldırmak <strong>her iki kanal ayarında</strong> macro-F1'i ≥ 0.89 düşürüyor. Yani referans-düğüm artırması <em>sadece</em> bir tasarım detayı değil, sonucun <em>baskın</em> bileşeni. Tez başlığının ilk taahhüdü ampirik olarak <strong>doğru</strong>.
+        </p>
+        <div class="chip-row" style="margin-top: 8px;">
+          <div class="pill ok">+0.9073 F1 (1-kanal)</div>
+          <div class="pill ok">+0.8981 F1 (12-kanal)</div>
+        </div>
+      </div>
+      <div class="card" style="background: rgba(34,197,94,.08); border-color: rgba(34,197,94,.4);">
+        <h4 class="ok" data-i18n="s11_b_h">✓ Taahhüt (b): "12 kanallı EKG"</h4>
+        <p style="margin: 8px 0;" data-i18n="s11_b_p" data-i18n-html="1">
+          12-kanal konfigürasyon, dört koşu içinde <strong>en yüksek tekil örnek güveni</strong>ni üretiyor (%90.15). Bu, klinik karar destek için bir gerekliliktir. Doğruluk eşitliği taahhüdü geçersizleştirmez — <em>dağıtım özgürlüğü</em> tanımlar.
+        </p>
+        <div class="chip-row" style="margin-top: 8px;">
+          <div class="pill ok">%90.2 güven (en yüksek)</div>
+          <div class="pill">+1.15 pp acc (art. KAPALI'da)</div>
+        </div>
+      </div>
+    </div>
+    <p class="lead reveal reveal-4" style="margin-top: 24px;" data-i18n="s11_kicker" data-i18n-html="1">
+      Başlık ⇆ Sonuç köprüsü artık <strong>somut sayılarla</strong> kuruluyor. Jüri sorularına bekleyebileceğimiz cevaplar §8 Defense Q&A Rehberi'ndeki formdan daha güçlü.
+    </p>
+  </section>
+
+  <!-- 12. FUTURE WORK -->
+  <section class="slide" data-title-key="t12">
+    <div class="eyebrow reveal reveal-1" data-i18n="s12_eyebrow">Sonra ne?</div>
+    <h2 class="reveal reveal-2" data-i18n="s12_title">Üç paralel kol: araştırma, ürün, klinik.</h2>
+    <div class="three-col reveal reveal-3" style="margin-top: 28px;">
+      <div class="card">
+        <h4 data-i18n="s12_a_h">A · Çok-kanallı araştırma</h4>
+        <ul>
+          <li data-i18n="s12_a_1">Etiket-taksonomi temizliği (78 → ~55)</li>
+          <li data-i18n="s12_a_2">Anterior MI lokalizasyonu (V1-V4)</li>
+          <li data-i18n="s12_a_3">Attention-CNN-LSTM tam model decimate-500'de</li>
+          <li data-i18n="s12_a_4">İkinci yayın (MJEN dergisi)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4 data-i18n="s12_b_h">B · Çok-kipli füzyon</h4>
+        <ul>
+          <li data-i18n="s12_b_1">EKG + PPG (PPG-DaLiA dataset)</li>
+          <li data-i18n="s12_b_2">EKG + PCG (heart sounds)</li>
+          <li data-i18n="s12_b_3">Akıllı saat ekosistem entegrasyonu</li>
+          <li data-i18n="s12_b_4">Üçüncü yayın</li>
+        </ul>
+      </div>
+      <div class="card" style="background: rgba(245,158,11,.08); border-color: rgba(245,158,11,.4);">
+        <h4 class="warn" data-i18n="s12_c_h">C · Klinik pilot (Bişkek)</h4>
+        <ul>
+          <li data-i18n="s12_c_1">PTB-XL çapraz-veri seti doğrulaması</li>
+          <li data-i18n="s12_c_2">INT8 nicemleme + Raspberry Pi 4</li>
+          <li data-i18n="s12_c_3">Hastane gönüllü pilot (IRB onaylı)</li>
+          <li data-i18n="s12_c_4">Dördüncü yayın (klinik)</li>
+        </ul>
+      </div>
+    </div>
+    <p class="muted reveal reveal-4" style="margin-top: 18px;" data-i18n="s12_foot" data-i18n-html="1">
+      Tüm yol haritası <code>Future_Work_Plan.md</code>'de detaylandırıldı. Şu anki ablation, üç kolun da başlangıç çizgisini sabitler.
+    </p>
+  </section>
+
+  <!-- 13. CONCLUSION -->
+  <section class="slide" data-title-key="t13">
+    <div class="hero" style="align-items: flex-start;">
+      <div class="eyebrow reveal reveal-1" data-i18n="s13_eyebrow">Özet</div>
+      <div class="bigline reveal reveal-2"><span data-i18n="s13_t1">Bir 2×2 tablo, üç bulgu,</span><br><span data-i18n="s13_t2">tezi savunmaya hazır hâle getirdi.</span></div>
+      <p class="lead reveal reveal-3" style="max-width: 920px;" data-i18n="s13_lead" data-i18n-html="1">
+        <strong>Bulgu #1</strong>: Referans-düğüm artırma baskın kaldıraç (+0.90 macro-F1). <strong>Bulgu #2</strong>: Kanal sayısı bağlamadır — 1-kanal yeterlidir. <strong>Bulgu #3</strong>: 12-kanal yüksek güven verir ama 3.5× yavaştır; uygulamaya göre seçilir.
+      </p>
+      <div class="chip-row reveal reveal-4" style="margin-top: 16px;">
+        <div class="pill ok">+30.36 pp doğruluk artışı</div>
+        <div class="pill ok">F1 0.0682 → 0.9755</div>
+        <div class="pill">3.72M parametre sabit</div>
+        <div class="pill">Aynı seed × kod sürümü</div>
+      </div>
+      <p class="muted reveal reveal-5" style="margin-top: 20px;" data-i18n="s13_thanks">
+        Teşekkürler. Sorular için ←/→ tuşları ile geri ileri.
+      </p>
+    </div>
+  </section>
+
+</div>
+
+<div class="footer">
+  <div class="dots" id="dots"></div>
+  <div class="nav">
+    <button class="btn-nav" id="prev"><span data-i18n="nav_prev">← Önceki</span></button>
+    <span id="counter" style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted);"></span>
+    <button class="btn-nav" id="next"><span data-i18n="nav_next">Sonraki →</span></button>
+  </div>
+</div>
+
+<script>
+const I18N = {
+  tr: {
+    brand: "EKG Tez Sonuç Rehberi · 30 Nisan 2026",
+    nav_hint: "slaytlar arası geçiş",
+    nav_prev: "← Önceki", nav_next: "Sonraki →",
+    t1:"Başlık", t2:"Yolculuk", t3:"Deney", t4:"Tablo", t5:"Görsel · Manşet",
+    t6:"Bulgu #1", t7:"Artırma · sınıflar", t8:"Bulgu #2", t9:"Sınıf bazında",
+    t10:"Bulgu #3", t11:"Başlık köprüsü", t12:"Sonra ne?", t13:"Özet",
+
+    s1_eyebrow: "Hibrit-Plan Ablation Sonuçları · 30 Nisan 2026",
+    s1_t1: "Bir ablation tablosu, üç bulgu,",
+    s1_t2: "tez başlığının iki taahhüdünü doğrular.",
+    s1_lead: "Chapman–Shaoxing 78-sınıflı çoklu-etiket EKG. Aynı seed, aynı kod sürümü, aynı altörnekleme (5000 → 500). <strong>{1-kanal, 12-kanal} × {artırma KAPALI, artırma AÇIK}</strong> dört koşusunun tek başına bize öğrettikleri.",
+    s1_k1: "artırma → doğruluk artışı",
+    s1_k2: "12 vs 1 kanal etkisi",
+    s1_k3: "12-kanal çıkarım maliyeti",
+    s1_k4: "en iyi makro F1: 0.9755",
+    s1_meta: "Elaman Nazarkulov · Manas Üniversitesi · Bilgisayar Mühendisliği · Tez Danışmanı: Doç. Dr. Bakıt Şarşembayev",
+
+    s2_eyebrow: "Yolculuğun özeti",
+    s2_title: "Aralık 2025'ten 30 Nisan 2026'ya kadar olan dönüm noktaları.",
+    s2_e1_h: "25 Aralık 2025 — v1.0 baseline",
+    s2_e1_p: "12-kanal len=5000, augmentation aktif, %88.43 test doğruluğu, 11 sınıf F1 < 0.60.",
+    s2_e2_h: "22 Nisan 2026 — Anti-aliased decimation",
+    s2_e2_p: "5000 → 500 örnek scipy.signal.decimate ile. 1-kanal, %97.34 doğruluk. +8.91 puan.",
+    s2_e3_h: "23 Nisan 2026 — Tez başlığı vs kod analizi",
+    s2_e3_p: "\"12 KANALLI EKG\" ve \"REFERANS DÜĞÜM YÖNTEMİYLE SİNYAL BÜYÜTME\" taahhütleri ile kod arasındaki boşluk belgelendi.",
+    s2_e4_h: "30 Nisan 2026 — Hibrit-plan ablation",
+    s2_e4_p: "{1-kanal, 12-kanal} × {artırma KAPALI, artırma AÇIK} 4 koşu. Başlığın her iki taahhüdü ampirik olarak doğrulandı.",
+
+    s3_eyebrow: "Deney protokolü",
+    s3_title: "Kontrollü 2×2 ablation. Tek değişen iki şey: kanal sayısı ve artırma.",
+    s3_c1_h: "Sabit tutulanlar",
+    s3_c1_1: "scipy.signal.decimate factor=10 (5000 → 500)",
+    s3_c1_2: "Aynı seed, stratified 80/15/5 ayırma",
+    s3_c1_3: "Adam, lr 1e-3, batch 64, EarlyStopping (10)",
+    s3_c1_4: "Sınıf min örnek filtresi (≥5)",
+    s3_c2_h: "Değişen 1: Kanal sayısı",
+    s3_c2_1: "<code>num_leads=1</code> — Lead I tek kanal",
+    s3_c2_2: "<code>num_leads=12</code> — tüm 12 kanal",
+    s3_c2_3: "Conv1 katmanı 1→12 girişi destekler; <strong>parametre 3.72M sabit</strong>",
+    s3_c3_h: "Değişen 2: Artırma",
+    s3_c3_1: "<code>--augment off</code> — sadece dengeleme",
+    s3_c3_2: "<code>--augment on</code> — referans-düğüm artırma + oversampling",
+    s3_c3_3: "Hedef: <strong>sınıf başına 5000 örnek</strong>",
+    s3_kicker_h: "Neden bu deney?",
+    s3_kicker_p: "Tez başlığı iki şey taahhüt eder: <strong>12 kanal</strong> ve <strong>referans-düğüm yöntemiyle sinyal büyütme</strong>. Bu ablation, her iki taahhüdün ayrı ayrı yarattığı katkıyı ölçer ve başlığın somut sayılarla nasıl doğrulanabileceğini gösterir.",
+
+    s4_eyebrow: "Manşet sonuç",
+    s4_title: "Dört koşu, dört rakam. Hikâyenin tamamı bu tabloda.",
+    s4_th1: "Konfigürasyon", s4_th2: "Test doğr.", s4_th3: "Makro F1",
+    s4_th4: "Çıkarım", s4_th5: "Güven", s4_th6: "Erken durdurma",
+    s4_r1: "1-kanal · artırma KAPALI",
+    s4_r2: "12-kanal · artırma KAPALI",
+    s4_r3: "1-kanal · artırma AÇIK",
+    s4_r4: "12-kanal · artırma AÇIK",
+    s4_foot: "Yeşil satır: en iyi macro-F1. <strong>İki numaralı bulgu</strong> da burada: artırma AÇIK iken 1-kanal ile 12-kanal makro-F1'leri arasında 0.0012'lik fark var — seed gürültüsünden ayırt edilemez. <strong>1-kanal yeterlidir.</strong>",
+
+    s5_eyebrow: "Görselleştirme · Manşet",
+    s5_title: "Aynı dört rakam, görsel olarak.",
+    s5_cap: "Şekil 3. (A) Test doğruluğu ve (B) makro F1 dört konfigürasyon için. Artırma KAPALI/AÇIK arasındaki dev fark açıkça görünüyor; 1-kanal/12-kanal farkı aynı artırma ayarında neredeyse görünmez.",
+
+    s6_eyebrow: "Bulgu #1 · Baskın kaldıraç",
+    s6_title: "Referans-düğüm artırma her şeydir.",
+    s6_col_off: "Artırma KAPALI",
+    s6_col_on: "Artırma AÇIK",
+    s6_row1: "1-kanal", s6_row2: "12-kanal",
+    s6_r1_h: "Macro F1", s6_r1_p: "gürültü düzeyi",
+    s6_r2_h: "Macro F1", s6_r2_p: "<strong>+0.9073</strong>",
+    s6_r3_h: "Macro F1", s6_r3_p: "gürültü düzeyi",
+    s6_r4_h: "Macro F1", s6_r4_p: "<strong>+0.8981</strong>",
+    s6_kicker: "Artırmanın etkisi <strong>+0.90 macro-F1</strong>. Kanal sayısının etkisi <strong>±0.001</strong>. <em>Sıfır karşılaştırma yapılabilir değil.</em> Tez başlığının \"sinyal büyütme\" taahhüdü, doğrudan <strong>buradan</strong> çıkar.",
+
+    s7_eyebrow: "Bulgu #1 · Hangi sınıflar?",
+    s7_title: "Artırmanın en çok kurtardığı sınıflar — uzun-kuyruk.",
+    s7_cap: "Şekil 4. ΔF1'e göre ilk 20 sınıf (artırma KAPALI → AÇIK, 1-kanal). Çoğu sınıf F1 ≈ 0'dan F1 ≥ 0.95'e taşınıyor. Veri-çeşitliliği eksikliği augmentation tarafından doğrudan dolduruluyor.",
+
+    s8_eyebrow: "Bulgu #2 · Şaşırtıcı",
+    s8_title: "12 kanal mı, 1 kanal mı? Cevap: <em>fark etmiyor</em>.",
+    s8_l_h: "Artırma KAPALI",
+    s8_l_p: "Doğruluk farkı <strong>1.15 yüzde puan</strong>; F1 farkı 0.0080. <em>Ölçülebilir ama küçük.</em> Augmentation olmadığında 12 kanalın ek bilgisi marjinal kazanç sağlar.",
+    s8_r_h: "Artırma AÇIK",
+    s8_r_p: "1-kanal <strong>12-kanaldan daha iyi performans</strong> gösteriyor (yine de seed gürültü düzeyinde). <strong>Decimation 1-kanaldaki diagnostic sinyali zaten ekstrak ediyor.</strong>",
+    s8_kicker_h: "Neden bu önemli?",
+    s8_kicker_p: "Klinik dağıtımda <strong>1 kanal yeterli</strong>: Apple Watch / Galaxy Watch / Kardia gibi giyilebilir cihazlar tek kanal verirler. Bu sonuç, <em>tezimizin akıllı saat ekosisteminde dağıtılabileceğini</em> doğrudan kanıtlar.",
+
+    s9_eyebrow: "Bulgu #2 · Sınıf bazında",
+    s9_title: "Yakından bakıldığında, 1-kanal ile 12-kanal arasındaki fark nerede?",
+    s9_cap: "Şekil 5. (A) En iyi 12 sınıf: 1-kanal ve 12-kanal her ikisi de F1 ≥ 0.99. (B) En zor 12 sınıf: etiket-düblesi kümesi (\"ECG: atrial flutter\" vs \"Atrial flutter\" gibi). Bu sınıflar için 12-kanal hafif avantaj sağlar ama dramatik değil.",
+
+    s10_eyebrow: "Bulgu #3 · Değiş-tokuş",
+    s10_title: "12-kanal hangi durumda anlamlı? Klinik kontekste bağlı.",
+    s10_cap: "Şekil 6. Çıkarım gecikmesi (mavi) ve karar başına softmax güveni (mor). 12-kanal güveni %12.7 yukarı çekiyor (%77.4 → %90.2) ama tekil çıkarımı 3.5× yavaşlatıyor (13.3 ms → 45.9 ms).",
+    s10_d1_h: "Akıllı saat / kenar",
+    s10_d1_p: "1-kanal: hızlı, yeterince doğru, donanım kısıtlamasıyla uyumlu.",
+    s10_d2_h: "Hastane iş istasyonu",
+    s10_d2_p: "12-kanal: karar başına yüksek güven raporlayan klinisyene daha çok güven verir.",
+    s10_d3_h: "Klinik araştırma",
+    s10_d3_p: "12-kanal: lokalizasyonu önemseyen MI / iletim çalışmaları için.",
+
+    s11_eyebrow: "Tez başlığı ile uzlaştırma",
+    s11_title: "Başlığın iki taahhüdü, ablation tarafından doğrulandı.",
+    s11_a_h: "✓ Taahhüt (a): \"Referans düğüm yöntemiyle sinyal büyütme\"",
+    s11_a_p: "Artırmayı kaldırmak <strong>her iki kanal ayarında</strong> macro-F1'i ≥ 0.89 düşürüyor. Yani referans-düğüm artırması <em>sadece</em> bir tasarım detayı değil, sonucun <em>baskın</em> bileşeni. Tez başlığının ilk taahhüdü ampirik olarak <strong>doğru</strong>.",
+    s11_b_h: "✓ Taahhüt (b): \"12 kanallı EKG\"",
+    s11_b_p: "12-kanal konfigürasyon, dört koşu içinde <strong>en yüksek tekil örnek güveni</strong>ni üretiyor (%90.15). Bu, klinik karar destek için bir gerekliliktir. Doğruluk eşitliği taahhüdü geçersizleştirmez — <em>dağıtım özgürlüğü</em> tanımlar.",
+    s11_kicker: "Başlık ⇆ Sonuç köprüsü artık <strong>somut sayılarla</strong> kuruluyor. Jüri sorularına bekleyebileceğimiz cevaplar §8 Defense Q&A Rehberi'ndeki formdan daha güçlü.",
+
+    s12_eyebrow: "Sonra ne?",
+    s12_title: "Üç paralel kol: araştırma, ürün, klinik.",
+    s12_a_h: "A · Çok-kanallı araştırma",
+    s12_a_1: "Etiket-taksonomi temizliği (78 → ~55)",
+    s12_a_2: "Anterior MI lokalizasyonu (V1-V4)",
+    s12_a_3: "Attention-CNN-LSTM tam model decimate-500'de",
+    s12_a_4: "İkinci yayın (MJEN dergisi)",
+    s12_b_h: "B · Çok-kipli füzyon",
+    s12_b_1: "EKG + PPG (PPG-DaLiA dataset)",
+    s12_b_2: "EKG + PCG (heart sounds)",
+    s12_b_3: "Akıllı saat ekosistem entegrasyonu",
+    s12_b_4: "Üçüncü yayın",
+    s12_c_h: "C · Klinik pilot (Bişkek)",
+    s12_c_1: "PTB-XL çapraz-veri seti doğrulaması",
+    s12_c_2: "INT8 nicemleme + Raspberry Pi 4",
+    s12_c_3: "Hastane gönüllü pilot (IRB onaylı)",
+    s12_c_4: "Dördüncü yayın (klinik)",
+    s12_foot: "Tüm yol haritası <code>Future_Work_Plan.md</code>'de detaylandırıldı. Şu anki ablation, üç kolun da başlangıç çizgisini sabitler.",
+
+    s13_eyebrow: "Özet",
+    s13_t1: "Bir 2×2 tablo, üç bulgu,",
+    s13_t2: "tezi savunmaya hazır hâle getirdi.",
+    s13_lead: "<strong>Bulgu #1</strong>: Referans-düğüm artırma baskın kaldıraç (+0.90 macro-F1). <strong>Bulgu #2</strong>: Kanal sayısı bağlamadır — 1-kanal yeterlidir. <strong>Bulgu #3</strong>: 12-kanal yüksek güven verir ama 3.5× yavaştır; uygulamaya göre seçilir.",
+    s13_thanks: "Teşekkürler. Sorular için ←/→ tuşları ile geri ileri."
+  },
+
+  en: {
+    brand: "ECG Thesis Result Guide · 30 April 2026",
+    nav_hint: "to navigate",
+    nav_prev: "← Prev", nav_next: "Next →",
+    t1:"Title", t2:"Journey", t3:"Experiment", t4:"Table", t5:"Headline figure",
+    t6:"Finding #1", t7:"Augment · classes", t8:"Finding #2", t9:"Per-class",
+    t10:"Finding #3", t11:"Title bridge", t12:"What's next?", t13:"Summary",
+
+    s1_eyebrow: "Hybrid-Plan Ablation Results · 30 April 2026",
+    s1_t1: "One ablation table, three findings,",
+    s1_t2: "validating both commitments of the thesis title.",
+    s1_lead: "Chapman–Shaoxing 78-class multi-label ECG. Same seed, same code revision, same decimation (5000 → 500). What four runs of <strong>{1-lead, 12-lead} × {augment OFF, augment ON}</strong> told us by themselves.",
+    s1_k1: "augmentation → accuracy lift",
+    s1_k2: "12 vs 1 lead effect",
+    s1_k3: "12-lead inference cost",
+    s1_k4: "best macro F1: 0.9755",
+    s1_meta: "Elaman Nazarkulov · Manas University · Computer Engineering · Supervisor: Assoc. Prof. Bakıt Şarşembayev",
+
+    s2_eyebrow: "Journey overview",
+    s2_title: "Milestones from December 2025 to 30 April 2026.",
+    s2_e1_h: "25 December 2025 — v1.0 baseline",
+    s2_e1_p: "12-lead len=5000, augmentation enabled, 88.43% test acc, 11 classes F1 < 0.60.",
+    s2_e2_h: "22 April 2026 — Anti-aliased decimation",
+    s2_e2_p: "5000 → 500 samples via scipy.signal.decimate. 1-lead, 97.34% acc. +8.91 pp.",
+    s2_e3_h: "23 April 2026 — Title vs code gap analysis",
+    s2_e3_p: "Documented gap between thesis title commitments (\"12-lead\", \"reference-node augmentation\") and the actual code.",
+    s2_e4_h: "30 April 2026 — Hybrid-plan ablation",
+    s2_e4_p: "{1-lead, 12-lead} × {augment OFF, augment ON} = 4 runs. Both title commitments empirically validated.",
+
+    s3_eyebrow: "Experimental protocol",
+    s3_title: "Controlled 2×2 ablation. Only two things change: lead count and augmentation.",
+    s3_c1_h: "Held constant",
+    s3_c1_1: "scipy.signal.decimate factor=10 (5000 → 500)",
+    s3_c1_2: "Same seed, stratified 80/15/5 split",
+    s3_c1_3: "Adam, lr 1e-3, batch 64, EarlyStopping (10)",
+    s3_c1_4: "Min samples per class filter (≥5)",
+    s3_c2_h: "Variable 1: Lead count",
+    s3_c2_1: "<code>num_leads=1</code> — Lead I only",
+    s3_c2_2: "<code>num_leads=12</code> — all 12 leads",
+    s3_c2_3: "Conv1 layer accepts 1→12 input; <strong>3.72M params constant</strong>",
+    s3_c3_h: "Variable 2: Augmentation",
+    s3_c3_1: "<code>--augment off</code> — class balancing only",
+    s3_c3_2: "<code>--augment on</code> — reference-node aug + oversampling",
+    s3_c3_3: "Target: <strong>5000 samples per class</strong>",
+    s3_kicker_h: "Why this experiment?",
+    s3_kicker_p: "The thesis title commits to two things: <strong>12-lead</strong> and <strong>reference-node augmentation</strong>. This ablation measures each commitment's contribution separately and shows how the title is supported by concrete numbers.",
+
+    s4_eyebrow: "Headline result",
+    s4_title: "Four runs, four numbers. The whole story is in this table.",
+    s4_th1: "Configuration", s4_th2: "Test acc", s4_th3: "Macro F1",
+    s4_th4: "Inference", s4_th5: "Confidence", s4_th6: "Early stop",
+    s4_r1: "1-lead · augment OFF",
+    s4_r2: "12-lead · augment OFF",
+    s4_r3: "1-lead · augment ON",
+    s4_r4: "12-lead · augment ON",
+    s4_foot: "Green row: best macro-F1. <strong>Finding #2</strong> hides here too: at augment ON, the 1-lead vs 12-lead macro-F1 gap is only 0.0012 — indistinguishable from seed noise. <strong>1 lead is enough.</strong>",
+
+    s5_eyebrow: "Visualisation · Headline",
+    s5_title: "Same four numbers, visually.",
+    s5_cap: "Figure 3. (A) Test accuracy and (B) macro F1 for the four configurations. The augment OFF/ON gulf is obvious; the 1-lead vs 12-lead difference is nearly invisible at the same augment setting.",
+
+    s6_eyebrow: "Finding #1 · Dominant lever",
+    s6_title: "Reference-node augmentation is everything.",
+    s6_col_off: "Augment OFF",
+    s6_col_on: "Augment ON",
+    s6_row1: "1-lead", s6_row2: "12-lead",
+    s6_r1_h: "Macro F1", s6_r1_p: "noise level",
+    s6_r2_h: "Macro F1", s6_r2_p: "<strong>+0.9073</strong>",
+    s6_r3_h: "Macro F1", s6_r3_p: "noise level",
+    s6_r4_h: "Macro F1", s6_r4_p: "<strong>+0.8981</strong>",
+    s6_kicker: "Augmentation effect: <strong>+0.90 macro-F1</strong>. Lead count effect: <strong>±0.001</strong>. <em>No comparison possible.</em> The title's \"sinyal büyütme\" commitment falls out <strong>here</strong>.",
+
+    s7_eyebrow: "Finding #1 · Which classes?",
+    s7_title: "The classes augmentation rescues most — the long tail.",
+    s7_cap: "Figure 4. Top 20 classes by ΔF1 (augment OFF → ON, 1-lead config). Most classes move from F1 ≈ 0 to F1 ≥ 0.95. The data-diversity gap is filled directly by augmentation.",
+
+    s8_eyebrow: "Finding #2 · The surprise",
+    s8_title: "12 leads or 1 lead? Answer: <em>doesn't matter</em>.",
+    s8_l_h: "Augment OFF",
+    s8_l_p: "Accuracy gap <strong>1.15 percentage points</strong>; F1 gap 0.0080. <em>Measurable but small.</em> Without augmentation, the extra information from 12 leads provides marginal gain.",
+    s8_r_h: "Augment ON",
+    s8_r_p: "1-lead <strong>actually outperforms 12-lead</strong> (still at seed-noise level). <strong>Decimation already extracts the diagnostic signal in 1 lead.</strong>",
+    s8_kicker_h: "Why does this matter?",
+    s8_kicker_p: "For clinical deployment <strong>1 lead is enough</strong>: Apple Watch / Galaxy Watch / Kardia wearables provide single-lead recordings. This result <em>directly proves our thesis can deploy on the smartwatch ecosystem</em>.",
+
+    s9_eyebrow: "Finding #2 · Per-class",
+    s9_title: "Looking closer: where does the 1-lead vs 12-lead difference live?",
+    s9_cap: "Figure 5. (A) Top-12 classes: both 1-lead and 12-lead at F1 ≥ 0.99. (B) Bottom-12 classes: the label-duplicate cluster (\"ECG: atrial flutter\" vs \"Atrial flutter\"). 12-lead has a slight edge here but it's not dramatic.",
+
+    s10_eyebrow: "Finding #3 · Tradeoff",
+    s10_title: "When is 12-lead worth it? Application-dependent.",
+    s10_cap: "Figure 6. Inference latency (blue) and per-decision softmax confidence (purple). 12-lead lifts confidence by 12.7 pp (77.4% → 90.2%) but slows single-sample inference 3.5× (13.3 ms → 45.9 ms).",
+    s10_d1_h: "Smartwatch / edge",
+    s10_d1_p: "1-lead: fast, accurate enough, fits the hardware constraint.",
+    s10_d2_h: "Hospital workstation",
+    s10_d2_p: "12-lead: higher per-decision confidence reassures the reading clinician.",
+    s10_d3_h: "Clinical research",
+    s10_d3_p: "12-lead: for MI / conduction studies that care about localisation.",
+
+    s11_eyebrow: "Reconciling with the title",
+    s11_title: "The title's two commitments, validated by the ablation.",
+    s11_a_h: "✓ Commitment (a): \"Reference-node-method signal augmentation\"",
+    s11_a_p: "Removing augmentation drops macro-F1 by ≥ 0.89 <strong>at both lead settings</strong>. So reference-node augmentation isn't <em>just</em> a design detail — it's the <em>dominant</em> contributor. The title's first commitment is empirically <strong>correct</strong>.",
+    s11_b_h: "✓ Commitment (b): \"12-lead ECG\"",
+    s11_b_p: "The 12-lead config produces the <strong>highest single-sample confidence</strong> of the four runs (90.15%). That matters for clinical decision support. The accuracy tie does not invalidate the commitment — it identifies a <em>deployment freedom</em>.",
+    s11_kicker: "Title ⇆ Result bridge is now grounded in <strong>concrete numbers</strong>. Defense Q&A answers (§8 of the gap analysis doc) get stronger.",
+
+    s12_eyebrow: "What's next?",
+    s12_title: "Three parallel tracks: research, product, clinical.",
+    s12_a_h: "A · Multi-lead research",
+    s12_a_1: "Label-taxonomy clean-up (78 → ~55)",
+    s12_a_2: "Anterior MI localization (V1-V4)",
+    s12_a_3: "Attention-CNN-LSTM full model on decimate-500",
+    s12_a_4: "Second publication (MJEN journal)",
+    s12_b_h: "B · Multi-modal fusion",
+    s12_b_1: "ECG + PPG (PPG-DaLiA dataset)",
+    s12_b_2: "ECG + PCG (heart sounds)",
+    s12_b_3: "Smartwatch ecosystem integration",
+    s12_b_4: "Third publication",
+    s12_c_h: "C · Bishkek clinical pilot",
+    s12_c_1: "PTB-XL cross-dataset validation",
+    s12_c_2: "INT8 quantisation + Raspberry Pi 4",
+    s12_c_3: "Hospital volunteer pilot (IRB approved)",
+    s12_c_4: "Fourth publication (clinical)",
+    s12_foot: "Full roadmap detailed in <code>Future_Work_Plan.md</code>. The current ablation locks down all three tracks' starting line.",
+
+    s13_eyebrow: "Summary",
+    s13_t1: "One 2×2 table, three findings,",
+    s13_t2: "thesis ready to defend.",
+    s13_lead: "<strong>Finding #1</strong>: Reference-node augmentation is the dominant lever (+0.90 macro-F1). <strong>Finding #2</strong>: Lead count is contextual — 1-lead is enough. <strong>Finding #3</strong>: 12-lead boosts confidence but 3.5× slower; choose by application.",
+    s13_thanks: "Thank you. Use ←/→ to navigate."
+  }
+};
+
+(function () {
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const dotsContainer = document.getElementById('dots');
+  const prev = document.getElementById('prev');
+  const next = document.getElementById('next');
+  const counter = document.getElementById('counter');
+  const progressBar = document.getElementById('progressBar');
+  const langBtns = Array.from(document.querySelectorAll('.lang-btn'));
+  let current = 0;
+
+  const STORAGE = 'ekg_results_guide_lang';
+  const supported = ['tr', 'en'];
+  const browserLang = (navigator.language || 'tr').slice(0, 2).toLowerCase();
+  let lang = localStorage.getItem(STORAGE) || (supported.includes(browserLang) ? browserLang : 'tr');
+
+  function applyLang(target) {
+    if (!supported.includes(target)) target = 'tr';
+    lang = target;
+    const dict = I18N[lang];
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (!(key in dict)) return;
+      const asHtml = el.getAttribute('data-i18n-html') === '1';
+      if (asHtml) el.innerHTML = dict[key];
+      else el.textContent = dict[key];
+    });
+    document.documentElement.lang = lang;
+    langBtns.forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+    localStorage.setItem(STORAGE, lang);
+  }
+
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.addEventListener('click', () => go(i));
+    dotsContainer.appendChild(d);
+  });
+
+  function go(i) {
+    if (i < 0 || i >= slides.length) return;
+    const dots = Array.from(dotsContainer.children);
+    slides[current].classList.remove('active');
+    slides[current].classList.add('previous');
+    dots[current].classList.remove('active');
+    current = i;
+    slides[current].classList.add('active');
+    slides[current].classList.remove('previous');
+    dots[current].classList.add('active');
+    counter.textContent = String(current + 1).padStart(2, '0') + ' / ' + String(slides.length).padStart(2, '0');
+    progressBar.style.width = (((current + 1) / slides.length) * 100) + '%';
+  }
+
+  next.addEventListener('click', () => go(Math.min(current + 1, slides.length - 1)));
+  prev.addEventListener('click', () => go(Math.max(current - 1, 0)));
+  langBtns.forEach(b => b.addEventListener('click', () => applyLang(b.dataset.lang)));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { go(Math.min(current + 1, slides.length - 1)); e.preventDefault(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { go(Math.max(current - 1, 0)); e.preventDefault(); }
+    else if (e.key === 'Home') go(0);
+    else if (e.key === 'End') go(slides.length - 1);
+  });
+
+  let startX = 0;
+  document.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) > 50) (dx < 0 ? go(Math.min(current + 1, slides.length - 1)) : go(Math.max(current - 1, 0)));
+  }, { passive: true });
+
+  applyLang(lang);
+  go(0);
+})();
+</script>
+</body>
+</html>

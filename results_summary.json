@@ -1,0 +1,1934 @@
+{
+  "summary": {
+    "lead1_augoff": {
+      "test_acc": 0.6714,
+      "macro_p": 0.0671,
+      "macro_r": 0.0758,
+      "macro_f1": 0.0682,
+      "confidence": 0.6001,
+      "inference_ms": 14.74,
+      "early_stop_epoch": 29,
+      "final_epoch": 29,
+      "final_train_acc": 0.671,
+      "final_val_acc": 0.6677
+    },
+    "lead1_augon": {
+      "test_acc": 0.975,
+      "macro_p": 0.9752,
+      "macro_r": 0.9764,
+      "macro_f1": 0.9755,
+      "confidence": 0.7737999999999999,
+      "inference_ms": 13.25,
+      "early_stop_epoch": null,
+      "final_epoch": 100,
+      "final_train_acc": 0.9791,
+      "final_val_acc": 0.9734
+    },
+    "lead12_augoff": {
+      "test_acc": 0.6829,
+      "macro_p": 0.0918,
+      "macro_r": 0.0816,
+      "macro_f1": 0.0762,
+      "confidence": 0.8787999999999999,
+      "inference_ms": 14.76,
+      "early_stop_epoch": 26,
+      "final_epoch": 26,
+      "final_train_acc": 0.6904,
+      "final_val_acc": 0.6764
+    },
+    "lead12_augon": {
+      "test_acc": 0.974,
+      "macro_p": 0.9737,
+      "macro_r": 0.9753,
+      "macro_f1": 0.9743,
+      "confidence": 0.9015000000000001,
+      "inference_ms": 45.86,
+      "early_stop_epoch": 96,
+      "final_epoch": 96,
+      "final_train_acc": 0.9841,
+      "final_val_acc": 0.9737
+    }
+  },
+  "per_class": {
+    "lead1_augoff": {
+      "ECG: Complete right bundle branch block": {
+        "precision": 0.3429,
+        "recall": 0.2667,
+        "f1": 0.3,
+        "support": 45
+      },
+      "2nd degree AV block": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 0
+      },
+      "3rd degree AV block": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 1
+      },
+      "AV nodal re-entry tachycardia": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 3
+      },
+      "Abnormal Q wave": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 6
+      },
+      "Accelerated idioventricular rhythm": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 2
+      },
+      "Acute myocardial infarction": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 0
+      },
+      "Acute myocardial infarction of anterior wall": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 4
+      },
+      "Atrial arrhythmia": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 1
+      },
+      "Atrial escape complex": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 0
+      },
+      "Atrial flutter": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 18
+      },
+      "Atrial rhythm": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 22
+      },
+      "Atrioventricular block": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 55
+      },
+      "Atrioventricular dissociation": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 6
+      },
+      "Axis left shift": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 5
+      },
+      "Axis right shift": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 60
+      },
+      "Blocked premature atrial contraction": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 0
+      },
+      "Brugada syndrome": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 0
+      },
+      "Bundle branch block": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 24
+      },
+      "Counterclockwise vectorcardiographic loop": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 20
+      },
+      "ECG: Complete left bundle branch block": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 1
+      },
+      "ECG: Junctional escape beat": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 4
+      },
+      "ECG: Left bundle branch block / bundle branch block finding": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 2
+      },
+      "ECG: Left posterior fascicular block": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 0
+      },
+      "ECG: Premature atrial contraction (PAC)": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 8
+      },
+      "ECG: R wave": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 22
+      },
+      "ECG: Right atrial abnormality / right atrial enlargement": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 2
+      },
+      "ECG: Right bundle branch block": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 0
+      },
+      "ECG: ST segment changes": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 66
+      },
+      "ECG: U wave Change": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 7
+      },
+      "ECG: accelerated junctional rhythm": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 2
+      },
+      "ECG: atrial fibrillation": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 356
+      },
+      "ECG: atrial flutter": {
+        "precision": 0.496,
+        "recall": 0.925,
+        "f1": 0.6457,
+        "support": 1000
+      },
+      "ECG: atrial tachycardia": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 42
+      },
+      "ECG: bradycardia": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 0
+      },
+      "ECG: junctional tachycardia": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 1
+      },
+      "ECG: left ventricle hypertrophy": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 9
+      },
+      "ECG: myocardial infarction": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 6
+      },
+      "ECG: paroxysmal ventricular tachycardia": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 11
+      },
+      "ECG: sinus arrhythmia": {
+        "precision": 0.773,
+        "recall": 0.4208,
+        "f1": 0.545,
+        "support": 259
+      },
+      "ECG: sinus bradycardia": {
+        "precision": 0.8287,
+        "recall": 0.987,
+        "f1": 0.901,
+        "support": 1000
+      },
+      "ECG: sinus rhythm": {
+        "precision": 0.8061,
+        "recall": 0.919,
+        "f1": 0.8589,
+        "support": 1000
+      },
+      "ECG: sinus tachycardia": {
+        "precision": 0.7094,
+        "recall": 0.969,
+        "f1": 0.8191,
+        "support": 1000
+      },
+      "ECG: supraventricular tachycardia": {
+        "precision": 0.5493,
+        "recall": 0.8797,
+        "f1": 0.6763,
+        "support": 133
+      },
+      "ECG: ventricular fibrillation": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 11
+      },
+      "Ectopic atrial tachycardia": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 0
+      },
+      "Ectopic rhythm": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 9
+      },
+      "Electrocardiogram: Q wave abnormal": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 80
+      },
+      "Electrocardiogram: ST segment abnormal": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 179
+      },
+      "Electrocardiogram: T wave abnormal": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 0
+      },
+      "First degree atrioventricular block": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 47
+      },
+      "Incomplete left bundle branch block": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 1
+      },
+      "Interior differences conduction, Intraventricular block": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 73
+      },
+      "Junctional premature beat": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 0
+      },
+      "Left Ventricular Hypertrophy (LVH)": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 78
+      },
+      "Left bundle branch block": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 18
+      },
+      "Myocardial infarction": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 11
+      },
+      "Premature atrial contraction": {
+        "precision": 0.4,
+        "recall": 0.1436,
+        "f1": 0.2113,
+        "support": 195
+      },
+      "Prolonged PR interval": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 7
+      },
+      "Re-entrant atrioventricular tachycardia": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 5
+      },
+      "Rhythm from artificial pacing": {
+        "precision": 0.3284,
+        "recall": 0.4,
+        "f1": 0.3607,
+        "support": 55
+      },
+      "Right atrial enlargement": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 0
+      },
+      "Right bundle branch block": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 9
+      },
+      "Shortened PR interval": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 0
+      },
+      "Shortened QT interval": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 0
+      },
+      "Sinoatrial block": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 0
+      },
+      "Sinus arrest": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 1
+      },
+      "Sinus rhythm": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 15
+      },
+      "Supraventricular premature beats": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 1
+      },
+      "Supraventricular tachycardia": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 22
+      },
+      "T wave inversion": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 24
+      },
+      "Tall P wave": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 8
+      },
+      "Ventricular Fusion wave": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 3
+      },
+      "Ventricular escape beat": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 5
+      },
+      "Ventricular escape rhythm": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 17
+      },
+      "Ventricular fibrillation": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 9
+      },
+      "Ventricular flutter": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 1
+      },
+      "Wolff-Parkinson-White pattern": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 2
+      }
+    },
+    "lead1_augon": {
+      "ECG: Complete right bundle branch block": {
+        "precision": 0.9772,
+        "recall": 1.0,
+        "f1": 0.9885,
+        "support": 900
+      },
+      "2nd degree AV block": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "3rd degree AV block": {
+        "precision": 0.9989,
+        "recall": 1.0,
+        "f1": 0.9994,
+        "support": 900
+      },
+      "AV nodal re-entry tachycardia": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Abnormal Q wave": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Accelerated idioventricular rhythm": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Acute myocardial infarction": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Acute myocardial infarction of anterior wall": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Atrial arrhythmia": {
+        "precision": 0.9989,
+        "recall": 1.0,
+        "f1": 0.9994,
+        "support": 900
+      },
+      "Atrial escape complex": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Atrial flutter": {
+        "precision": 0.9923,
+        "recall": 1.0,
+        "f1": 0.9961,
+        "support": 900
+      },
+      "Atrial rhythm": {
+        "precision": 0.9912,
+        "recall": 1.0,
+        "f1": 0.9956,
+        "support": 900
+      },
+      "Atrioventricular block": {
+        "precision": 0.9751,
+        "recall": 1.0,
+        "f1": 0.9874,
+        "support": 900
+      },
+      "Atrioventricular dissociation": {
+        "precision": 0.9989,
+        "recall": 1.0,
+        "f1": 0.9994,
+        "support": 900
+      },
+      "Axis left shift": {
+        "precision": 0.9989,
+        "recall": 1.0,
+        "f1": 0.9994,
+        "support": 900
+      },
+      "Axis right shift": {
+        "precision": 0.9584,
+        "recall": 0.9989,
+        "f1": 0.9782,
+        "support": 900
+      },
+      "Blocked premature atrial contraction": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Brugada syndrome": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Bundle branch block": {
+        "precision": 0.9945,
+        "recall": 1.0,
+        "f1": 0.9972,
+        "support": 900
+      },
+      "Counterclockwise vectorcardiographic loop": {
+        "precision": 0.9967,
+        "recall": 1.0,
+        "f1": 0.9983,
+        "support": 900
+      },
+      "ECG: Complete left bundle branch block": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "ECG: Junctional escape beat": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "ECG: Left bundle branch block / bundle branch block finding": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "ECG: Left posterior fascicular block": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "ECG: Premature atrial contraction (PAC)": {
+        "precision": 0.9967,
+        "recall": 1.0,
+        "f1": 0.9983,
+        "support": 900
+      },
+      "ECG: R wave": {
+        "precision": 0.9989,
+        "recall": 1.0,
+        "f1": 0.9994,
+        "support": 900
+      },
+      "ECG: Right atrial abnormality / right atrial enlargement": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "ECG: Right bundle branch block": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "ECG: ST segment changes": {
+        "precision": 0.9825,
+        "recall": 0.9989,
+        "f1": 0.9906,
+        "support": 900
+      },
+      "ECG: U wave Change": {
+        "precision": 0.9989,
+        "recall": 1.0,
+        "f1": 0.9994,
+        "support": 900
+      },
+      "ECG: accelerated junctional rhythm": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "ECG: atrial fibrillation": {
+        "precision": 0.6138,
+        "recall": 0.7133,
+        "f1": 0.6598,
+        "support": 900
+      },
+      "ECG: atrial flutter": {
+        "precision": 0.5846,
+        "recall": 0.463,
+        "f1": 0.5167,
+        "support": 1000
+      },
+      "ECG: atrial tachycardia": {
+        "precision": 0.9945,
+        "recall": 1.0,
+        "f1": 0.9972,
+        "support": 900
+      },
+      "ECG: bradycardia": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "ECG: junctional tachycardia": {
+        "precision": 0.9989,
+        "recall": 1.0,
+        "f1": 0.9994,
+        "support": 900
+      },
+      "ECG: left ventricle hypertrophy": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "ECG: myocardial infarction": {
+        "precision": 0.9956,
+        "recall": 1.0,
+        "f1": 0.9978,
+        "support": 900
+      },
+      "ECG: paroxysmal ventricular tachycardia": {
+        "precision": 0.9825,
+        "recall": 1.0,
+        "f1": 0.9912,
+        "support": 900
+      },
+      "ECG: sinus arrhythmia": {
+        "precision": 0.8473,
+        "recall": 0.7889,
+        "f1": 0.817,
+        "support": 900
+      },
+      "ECG: sinus bradycardia": {
+        "precision": 0.9453,
+        "recall": 0.882,
+        "f1": 0.9126,
+        "support": 1000
+      },
+      "ECG: sinus rhythm": {
+        "precision": 0.8065,
+        "recall": 0.771,
+        "f1": 0.7883,
+        "support": 1000
+      },
+      "ECG: sinus tachycardia": {
+        "precision": 0.9123,
+        "recall": 0.759,
+        "f1": 0.8286,
+        "support": 1000
+      },
+      "ECG: supraventricular tachycardia": {
+        "precision": 0.9679,
+        "recall": 0.9711,
+        "f1": 0.9695,
+        "support": 900
+      },
+      "ECG: ventricular fibrillation": {
+        "precision": 0.9989,
+        "recall": 1.0,
+        "f1": 0.9994,
+        "support": 900
+      },
+      "Ectopic atrial tachycardia": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Ectopic rhythm": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Electrocardiogram: Q wave abnormal": {
+        "precision": 0.9803,
+        "recall": 0.9933,
+        "f1": 0.9868,
+        "support": 900
+      },
+      "Electrocardiogram: ST segment abnormal": {
+        "precision": 0.8679,
+        "recall": 0.9056,
+        "f1": 0.8864,
+        "support": 900
+      },
+      "Electrocardiogram: T wave abnormal": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "First degree atrioventricular block": {
+        "precision": 0.9793,
+        "recall": 1.0,
+        "f1": 0.9896,
+        "support": 900
+      },
+      "Incomplete left bundle branch block": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Interior differences conduction, Intraventricular block": {
+        "precision": 0.9815,
+        "recall": 1.0,
+        "f1": 0.9906,
+        "support": 900
+      },
+      "Junctional premature beat": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Left Ventricular Hypertrophy (LVH)": {
+        "precision": 0.9562,
+        "recall": 0.9944,
+        "f1": 0.9749,
+        "support": 900
+      },
+      "Left bundle branch block": {
+        "precision": 0.9978,
+        "recall": 1.0,
+        "f1": 0.9989,
+        "support": 900
+      },
+      "Myocardial infarction": {
+        "precision": 0.9967,
+        "recall": 1.0,
+        "f1": 0.9983,
+        "support": 900
+      },
+      "Premature atrial contraction": {
+        "precision": 0.8708,
+        "recall": 0.9211,
+        "f1": 0.8952,
+        "support": 900
+      },
+      "Prolonged PR interval": {
+        "precision": 0.9901,
+        "recall": 1.0,
+        "f1": 0.995,
+        "support": 900
+      },
+      "Re-entrant atrioventricular tachycardia": {
+        "precision": 0.9978,
+        "recall": 1.0,
+        "f1": 0.9989,
+        "support": 900
+      },
+      "Rhythm from artificial pacing": {
+        "precision": 0.9772,
+        "recall": 1.0,
+        "f1": 0.9885,
+        "support": 900
+      },
+      "Right atrial enlargement": {
+        "precision": 0.9978,
+        "recall": 1.0,
+        "f1": 0.9989,
+        "support": 900
+      },
+      "Right bundle branch block": {
+        "precision": 0.9978,
+        "recall": 1.0,
+        "f1": 0.9989,
+        "support": 900
+      },
+      "Shortened PR interval": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Shortened QT interval": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Sinoatrial block": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Sinus arrest": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Sinus rhythm": {
+        "precision": 0.9923,
+        "recall": 1.0,
+        "f1": 0.9961,
+        "support": 900
+      },
+      "Supraventricular premature beats": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Supraventricular tachycardia": {
+        "precision": 0.9945,
+        "recall": 1.0,
+        "f1": 0.9972,
+        "support": 900
+      },
+      "T wave inversion": {
+        "precision": 0.9956,
+        "recall": 1.0,
+        "f1": 0.9978,
+        "support": 900
+      },
+      "Tall P wave": {
+        "precision": 0.9934,
+        "recall": 1.0,
+        "f1": 0.9967,
+        "support": 900
+      },
+      "Ventricular Fusion wave": {
+        "precision": 0.9945,
+        "recall": 1.0,
+        "f1": 0.9972,
+        "support": 900
+      },
+      "Ventricular escape beat": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Ventricular escape rhythm": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Ventricular fibrillation": {
+        "precision": 0.9989,
+        "recall": 1.0,
+        "f1": 0.9994,
+        "support": 900
+      },
+      "Ventricular flutter": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Wolff-Parkinson-White pattern": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      }
+    },
+    "lead12_augoff": {
+      "ECG: Complete right bundle branch block": {
+        "precision": 0.4615,
+        "recall": 0.2667,
+        "f1": 0.338,
+        "support": 45
+      },
+      "2nd degree AV block": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 0
+      },
+      "3rd degree AV block": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 1
+      },
+      "AV nodal re-entry tachycardia": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 3
+      },
+      "Abnormal Q wave": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 6
+      },
+      "Accelerated idioventricular rhythm": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 2
+      },
+      "Acute myocardial infarction": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 0
+      },
+      "Acute myocardial infarction of anterior wall": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 4
+      },
+      "Atrial arrhythmia": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 1
+      },
+      "Atrial escape complex": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 0
+      },
+      "Atrial flutter": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 18
+      },
+      "Atrial rhythm": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 22
+      },
+      "Atrioventricular block": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 55
+      },
+      "Atrioventricular dissociation": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 6
+      },
+      "Axis left shift": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 5
+      },
+      "Axis right shift": {
+        "precision": 0.1176,
+        "recall": 0.0333,
+        "f1": 0.0519,
+        "support": 60
+      },
+      "Blocked premature atrial contraction": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 0
+      },
+      "Brugada syndrome": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 0
+      },
+      "Bundle branch block": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 24
+      },
+      "Counterclockwise vectorcardiographic loop": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 20
+      },
+      "ECG: Complete left bundle branch block": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 1
+      },
+      "ECG: Junctional escape beat": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 4
+      },
+      "ECG: Left bundle branch block / bundle branch block finding": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 2
+      },
+      "ECG: Left posterior fascicular block": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 0
+      },
+      "ECG: Premature atrial contraction (PAC)": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 8
+      },
+      "ECG: R wave": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 22
+      },
+      "ECG: Right atrial abnormality / right atrial enlargement": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 2
+      },
+      "ECG: Right bundle branch block": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 0
+      },
+      "ECG: ST segment changes": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 66
+      },
+      "ECG: U wave Change": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 7
+      },
+      "ECG: accelerated junctional rhythm": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 2
+      },
+      "ECG: atrial fibrillation": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 356
+      },
+      "ECG: atrial flutter": {
+        "precision": 0.5029,
+        "recall": 0.965,
+        "f1": 0.6612,
+        "support": 1000
+      },
+      "ECG: atrial tachycardia": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 42
+      },
+      "ECG: bradycardia": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 0
+      },
+      "ECG: junctional tachycardia": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 1
+      },
+      "ECG: left ventricle hypertrophy": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 9
+      },
+      "ECG: myocardial infarction": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 6
+      },
+      "ECG: paroxysmal ventricular tachycardia": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 11
+      },
+      "ECG: sinus arrhythmia": {
+        "precision": 0.7083,
+        "recall": 0.5251,
+        "f1": 0.6031,
+        "support": 259
+      },
+      "ECG: sinus bradycardia": {
+        "precision": 0.8527,
+        "recall": 0.99,
+        "f1": 0.9162,
+        "support": 1000
+      },
+      "ECG: sinus rhythm": {
+        "precision": 0.822,
+        "recall": 0.91,
+        "f1": 0.8638,
+        "support": 1000
+      },
+      "ECG: sinus tachycardia": {
+        "precision": 0.7264,
+        "recall": 0.969,
+        "f1": 0.8303,
+        "support": 1000
+      },
+      "ECG: supraventricular tachycardia": {
+        "precision": 0.6033,
+        "recall": 0.8346,
+        "f1": 0.7003,
+        "support": 133
+      },
+      "ECG: ventricular fibrillation": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 11
+      },
+      "Ectopic atrial tachycardia": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 0
+      },
+      "Ectopic rhythm": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 9
+      },
+      "Electrocardiogram: Q wave abnormal": {
+        "precision": 0.2917,
+        "recall": 0.0875,
+        "f1": 0.1346,
+        "support": 80
+      },
+      "Electrocardiogram: ST segment abnormal": {
+        "precision": 0.1667,
+        "recall": 0.0056,
+        "f1": 0.0108,
+        "support": 179
+      },
+      "Electrocardiogram: T wave abnormal": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 0
+      },
+      "First degree atrioventricular block": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 47
+      },
+      "Incomplete left bundle branch block": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 1
+      },
+      "Interior differences conduction, Intraventricular block": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 73
+      },
+      "Junctional premature beat": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 0
+      },
+      "Left Ventricular Hypertrophy (LVH)": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 78
+      },
+      "Left bundle branch block": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 18
+      },
+      "Myocardial infarction": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 11
+      },
+      "Premature atrial contraction": {
+        "precision": 0.4592,
+        "recall": 0.2308,
+        "f1": 0.3072,
+        "support": 195
+      },
+      "Prolonged PR interval": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 7
+      },
+      "Re-entrant atrioventricular tachycardia": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 5
+      },
+      "Rhythm from artificial pacing": {
+        "precision": 1.0,
+        "recall": 0.0182,
+        "f1": 0.0357,
+        "support": 55
+      },
+      "Right atrial enlargement": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 0
+      },
+      "Right bundle branch block": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 9
+      },
+      "Shortened PR interval": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 0
+      },
+      "Shortened QT interval": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 0
+      },
+      "Sinoatrial block": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 0
+      },
+      "Sinus arrest": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 1
+      },
+      "Sinus rhythm": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 15
+      },
+      "Supraventricular premature beats": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 1
+      },
+      "Supraventricular tachycardia": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 22
+      },
+      "T wave inversion": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 24
+      },
+      "Tall P wave": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 8
+      },
+      "Ventricular Fusion wave": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 3
+      },
+      "Ventricular escape beat": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 5
+      },
+      "Ventricular escape rhythm": {
+        "precision": 0.45,
+        "recall": 0.5294,
+        "f1": 0.4865,
+        "support": 17
+      },
+      "Ventricular fibrillation": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 9
+      },
+      "Ventricular flutter": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 1
+      },
+      "Wolff-Parkinson-White pattern": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 2
+      }
+    },
+    "lead12_augon": {
+      "ECG: Complete right bundle branch block": {
+        "precision": 0.9655,
+        "recall": 0.9944,
+        "f1": 0.9797,
+        "support": 900
+      },
+      "2nd degree AV block": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "3rd degree AV block": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "AV nodal re-entry tachycardia": {
+        "precision": 0.9978,
+        "recall": 1.0,
+        "f1": 0.9989,
+        "support": 900
+      },
+      "Abnormal Q wave": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Accelerated idioventricular rhythm": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Acute myocardial infarction": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Acute myocardial infarction of anterior wall": {
+        "precision": 0.9978,
+        "recall": 1.0,
+        "f1": 0.9989,
+        "support": 900
+      },
+      "Atrial arrhythmia": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Atrial escape complex": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Atrial flutter": {
+        "precision": 0.9934,
+        "recall": 1.0,
+        "f1": 0.9967,
+        "support": 900
+      },
+      "Atrial rhythm": {
+        "precision": 0.9804,
+        "recall": 1.0,
+        "f1": 0.9901,
+        "support": 900
+      },
+      "Atrioventricular block": {
+        "precision": 0.9512,
+        "recall": 0.9756,
+        "f1": 0.9632,
+        "support": 900
+      },
+      "Atrioventricular dissociation": {
+        "precision": 0.9967,
+        "recall": 1.0,
+        "f1": 0.9983,
+        "support": 900
+      },
+      "Axis left shift": {
+        "precision": 0.9912,
+        "recall": 1.0,
+        "f1": 0.9956,
+        "support": 900
+      },
+      "Axis right shift": {
+        "precision": 0.948,
+        "recall": 0.9922,
+        "f1": 0.9696,
+        "support": 900
+      },
+      "Blocked premature atrial contraction": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Brugada syndrome": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Bundle branch block": {
+        "precision": 0.989,
+        "recall": 0.9956,
+        "f1": 0.9922,
+        "support": 900
+      },
+      "Counterclockwise vectorcardiographic loop": {
+        "precision": 0.9857,
+        "recall": 0.9989,
+        "f1": 0.9923,
+        "support": 900
+      },
+      "ECG: Complete left bundle branch block": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "ECG: Junctional escape beat": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "ECG: Left bundle branch block / bundle branch block finding": {
+        "precision": 0.9978,
+        "recall": 1.0,
+        "f1": 0.9989,
+        "support": 900
+      },
+      "ECG: Left posterior fascicular block": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "ECG: Premature atrial contraction (PAC)": {
+        "precision": 0.9978,
+        "recall": 1.0,
+        "f1": 0.9989,
+        "support": 900
+      },
+      "ECG: R wave": {
+        "precision": 0.9781,
+        "recall": 0.9933,
+        "f1": 0.9857,
+        "support": 900
+      },
+      "ECG: Right atrial abnormality / right atrial enlargement": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "ECG: Right bundle branch block": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "ECG: ST segment changes": {
+        "precision": 0.9696,
+        "recall": 0.9578,
+        "f1": 0.9637,
+        "support": 900
+      },
+      "ECG: U wave Change": {
+        "precision": 0.9967,
+        "recall": 1.0,
+        "f1": 0.9983,
+        "support": 900
+      },
+      "ECG: accelerated junctional rhythm": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "ECG: atrial fibrillation": {
+        "precision": 0.6005,
+        "recall": 0.5578,
+        "f1": 0.5783,
+        "support": 900
+      },
+      "ECG: atrial flutter": {
+        "precision": 0.5269,
+        "recall": 0.461,
+        "f1": 0.4917,
+        "support": 1000
+      },
+      "ECG: atrial tachycardia": {
+        "precision": 0.9866,
+        "recall": 0.9833,
+        "f1": 0.985,
+        "support": 900
+      },
+      "ECG: bradycardia": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "ECG: junctional tachycardia": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "ECG: left ventricle hypertrophy": {
+        "precision": 0.9945,
+        "recall": 1.0,
+        "f1": 0.9972,
+        "support": 900
+      },
+      "ECG: myocardial infarction": {
+        "precision": 0.9934,
+        "recall": 1.0,
+        "f1": 0.9967,
+        "support": 900
+      },
+      "ECG: paroxysmal ventricular tachycardia": {
+        "precision": 0.9657,
+        "recall": 1.0,
+        "f1": 0.9825,
+        "support": 900
+      },
+      "ECG: sinus arrhythmia": {
+        "precision": 0.882,
+        "recall": 0.88,
+        "f1": 0.881,
+        "support": 900
+      },
+      "ECG: sinus bradycardia": {
+        "precision": 0.9568,
+        "recall": 0.907,
+        "f1": 0.9312,
+        "support": 1000
+      },
+      "ECG: sinus rhythm": {
+        "precision": 0.8834,
+        "recall": 0.826,
+        "f1": 0.8537,
+        "support": 1000
+      },
+      "ECG: sinus tachycardia": {
+        "precision": 0.9397,
+        "recall": 0.811,
+        "f1": 0.8706,
+        "support": 1000
+      },
+      "ECG: supraventricular tachycardia": {
+        "precision": 0.9514,
+        "recall": 0.9578,
+        "f1": 0.9546,
+        "support": 900
+      },
+      "ECG: ventricular fibrillation": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Ectopic atrial tachycardia": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Ectopic rhythm": {
+        "precision": 0.9956,
+        "recall": 1.0,
+        "f1": 0.9978,
+        "support": 900
+      },
+      "Electrocardiogram: Q wave abnormal": {
+        "precision": 0.9686,
+        "recall": 0.9589,
+        "f1": 0.9637,
+        "support": 900
+      },
+      "Electrocardiogram: ST segment abnormal": {
+        "precision": 0.9098,
+        "recall": 0.9756,
+        "f1": 0.9416,
+        "support": 900
+      },
+      "Electrocardiogram: T wave abnormal": {
+        "precision": 0.9989,
+        "recall": 1.0,
+        "f1": 0.9994,
+        "support": 900
+      },
+      "First degree atrioventricular block": {
+        "precision": 0.9833,
+        "recall": 0.9833,
+        "f1": 0.9833,
+        "support": 900
+      },
+      "Incomplete left bundle branch block": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Interior differences conduction, Intraventricular block": {
+        "precision": 0.9229,
+        "recall": 0.9844,
+        "f1": 0.9527,
+        "support": 900
+      },
+      "Junctional premature beat": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Left Ventricular Hypertrophy (LVH)": {
+        "precision": 0.9561,
+        "recall": 0.9678,
+        "f1": 0.9619,
+        "support": 900
+      },
+      "Left bundle branch block": {
+        "precision": 0.9901,
+        "recall": 0.9956,
+        "f1": 0.9928,
+        "support": 900
+      },
+      "Myocardial infarction": {
+        "precision": 0.9901,
+        "recall": 1.0,
+        "f1": 0.995,
+        "support": 900
+      },
+      "Premature atrial contraction": {
+        "precision": 0.9105,
+        "recall": 0.95,
+        "f1": 0.9299,
+        "support": 900
+      },
+      "Prolonged PR interval": {
+        "precision": 0.9967,
+        "recall": 1.0,
+        "f1": 0.9983,
+        "support": 900
+      },
+      "Re-entrant atrioventricular tachycardia": {
+        "precision": 0.9934,
+        "recall": 1.0,
+        "f1": 0.9967,
+        "support": 900
+      },
+      "Rhythm from artificial pacing": {
+        "precision": 0.9736,
+        "recall": 0.9833,
+        "f1": 0.9784,
+        "support": 900
+      },
+      "Right atrial enlargement": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Right bundle branch block": {
+        "precision": 0.9945,
+        "recall": 1.0,
+        "f1": 0.9972,
+        "support": 900
+      },
+      "Shortened PR interval": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Shortened QT interval": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Sinoatrial block": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Sinus arrest": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Sinus rhythm": {
+        "precision": 0.9923,
+        "recall": 1.0,
+        "f1": 0.9961,
+        "support": 900
+      },
+      "Supraventricular premature beats": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Supraventricular tachycardia": {
+        "precision": 0.9889,
+        "recall": 0.9911,
+        "f1": 0.99,
+        "support": 900
+      },
+      "T wave inversion": {
+        "precision": 0.9868,
+        "recall": 0.9956,
+        "f1": 0.9912,
+        "support": 900
+      },
+      "Tall P wave": {
+        "precision": 0.9945,
+        "recall": 0.9989,
+        "f1": 0.9967,
+        "support": 900
+      },
+      "Ventricular Fusion wave": {
+        "precision": 0.9901,
+        "recall": 1.0,
+        "f1": 0.995,
+        "support": 900
+      },
+      "Ventricular escape beat": {
+        "precision": 0.9967,
+        "recall": 1.0,
+        "f1": 0.9983,
+        "support": 900
+      },
+      "Ventricular escape rhythm": {
+        "precision": 0.9978,
+        "recall": 0.9944,
+        "f1": 0.9961,
+        "support": 900
+      },
+      "Ventricular fibrillation": {
+        "precision": 0.9978,
+        "recall": 1.0,
+        "f1": 0.9989,
+        "support": 900
+      },
+      "Ventricular flutter": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      },
+      "Wolff-Parkinson-White pattern": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 900
+      }
+    }
+  }
+}

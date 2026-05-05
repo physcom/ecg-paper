@@ -245,6 +245,53 @@ pencereyi kapsar.}
 \label{fig:geom}
 \end{figure}
 
+\subsection{Referans-D\"{u}\u{g}\"{u}m Y\"{o}nteminden Anti-Aliasing'li
+            Alt\"{o}rneklemeye: Geometrik De\u{g}i\c{s}mezlik K\"{o}pr\"{u}s\"{u}}
+\label{sec:bridge}
+Tez ba\c{s}lang\i \c{c}ta referans-d\"{u}\u{g}\"{u}m (destek-d\"{u}\u{g}\"{u}m)
+y\"{o}ntemi~\cite{chen2021,xu2022} \c{c}er\c{c}evesinde kurgulanm\i \c{s}t\i r:
+bu y\"{o}ntem, fizyolojik olarak anlaml\i\ referans noktalar\i\ (P, Q, R, S, T)
+\c{c}evresinde cubic-spline destek d\"{u}\u{g}\"{u}mleri kullanarak yeni EKG
+\"{o}rnekleri ekler. Y\"{o}ntemin \emph{sezgisi}, B\"{o}l\"{u}m~\ref{sec:geom}'de
+geli\c{s}tirilen ile ayn\i d\i r: EKG'nin tan\i sal i\c{c}eri\u{g}i seyrek
+bir referans-nokta graf\i nda ya\c{s}ar ve bu grafa sayg\i\ duyan herhangi
+bir \"{o}n-i\c{s}leme ad\i m\i\ a\u{g}a fayda sa\u{g}lamal\i d\i r.
+Referans-d\"{u}\u{g}\"{u}m y\"{o}ntemi grafa \emph{yak\i n yerlerde yeniden
+\"{o}rnekleme} yaparak sayg\i\ duyar; anti-aliasing'li alt\"{o}rnekleme ise
+referans-nokta konumlar\i n\i\ de\u{g}i\c{s}tirmeden \emph{k\"{u}resel
+alt-ge\c{c}iren filtreleme ve alt-\"{o}rnekleme} yaparak sayg\i\ duyar.
+
+Bu nedenle anti-aliasing'li alt\"{o}rneklemenin, ortak geometrik-de\u{g}i\c{s}mezlik
+\"{o}zelli\u{g}iyle tan\i mlanan daha geni\c{s} bir
+\emph{referans-d\"{u}\u{g}\"{u}m y\"{o}ntem ailesinin} \emph{CNN i\c{c}in optimal
+\"{u}yesi} oldu\u{g}unu \"{o}ne s\"{u}r\"{u}yoruz:
+\begin{itemize}
+  \item \textbf{Destek-d\"{u}\u{g}\"{u}m interpolasyonu}~\cite{chen2021,xu2022}
+        — referans-nokta graf\i nda yeni \"{o}rnekler ekler; dalga-baz\i nda
+        analizler i\c{c}in uygundur.
+  \item \textbf{Anti-aliasing'li alt\"{o}rnekleme} (bu \c{c}al\i \c{s}ma) —
+        referans-nokta graf\i n\i\ korurken gereksiz taban interpolasyonunu
+        kald\i r\i r; sabit-giri\c{s}-uzunluklu CNN s\i n\i fland\i r\i c\i lar\i\
+        i\c{c}in uygundur.
+  \item \textbf{Attention mekanizmalar\i }~\cite{oh2018,strodthoff2020} —
+        giri\c{s}in hangi konumlar\i n\i n referans-nokta graf\i na kar\c{s}\i l\i k
+        geldi\u{g}ini \emph{\"{o}\u{g}renir}; dizi-dizi modelleri i\c{c}in uygundur.
+\end{itemize}
+Bu tezin ampirik katk\i s\i\ \c{s}udur: Chapman--Shaoxing \"{u}zerinde sabit
+mimarili 1D-CNN baseline'\i\ i\c{c}in bu ailenin ikinci \"{u}yesi
+(alt\"{o}rnekleme), baseline (\SI{88,43}{\percent}) ile referans
+attention-hibrit hedefi (\SI{94,8}{\percent}) aras\i ndaki bo\c{s}lu\u{g}un
+b\"{u}y\"{u}k k\i sm\i n\i\ tek ba\c{s}\i na kapat\i r. Referans-d\"{u}\u{g}\"{u}m
+y\"{o}nteminin sezgisi korunmu\c{s}tur; yaln\i zca uygulamas\i, matematiksel
+olarak daha basit, hesaplama a\c{c}\i s\i ndan daha ucuz ve CNN'in al\i c\i\
+alan k\i s\i tlar\i na temiz bi\c{c}imde haritalanan bir \"{u}yeyle de\u{g}i\c{s}tirilmi\c{s}tir
+(B\"{o}l\"{u}m~\ref{sec:why}).
+
+Bu \c{c}er\c{c}eveleme, tez ba\c{s}l\i \u{g}\i n\i n ``referans d\"{u}\u{g}\"{u}m
+y\"{o}ntemi'' taahh\"{u}d\"{u}n\"{u} sonu\c{c}lardaki ampirik alt\"{o}rnekleme
+\"{o}nceli\u{g}i ile uzla\c{s}t\i r\i r: ba\c{s}l\i k \emph{y\"{o}ntem ailesini},
+sonu\c{c} \emph{o ailenin CNN i\c{c}in optimal \"{u}yesini} adland\i r\i r.
+
 \subsection{Model}
 Model, temel bir 1D-CNN'dir: filtre say\i lar\i\ $[64,128,256,512,512]$,
 \c{c}ekirdek boyutlar\i\ $[16,16,16,8,8]$ olan be\c{s} evri\c{s}im blo\u{g}u,
@@ -368,6 +415,116 @@ $\sim\SI{20}{\second}$'ye ($\sim$9,8$\times$) iner.
 Yan etki olarak, ayr\i lan bir tan\i\ \"{o}rne\u{g}i \"{u}zerindeki softmax
 g\"{u}veni len=\num{5000}'de \SI{12,89}{\percent}'den len=\num{500}'de
 \SI{76,23}{\percent}'e \c{c}\i kar.
+
+\subsection{Hibrit-plan ablation: kanal $\times$ artırma
+            (\num{30} Nisan \num{2026})}
+\label{sec:hybrid}
+Tez ba\c{s}l\i \u{g}\i n\i n a\c{c}t\i\u{g}\i\ iki taahh\"{u}d\"{u} —
+\emph{12 kanal} ve \emph{referans-d\"{u}\u{g}\"{u}m artırma} — ayr\i\ ayr\i\
+\"{o}l\c{c}mek i\c{c}in $\{$1-kanal, 12-kanal$\}$ $\times$ $\{$artırma KAPALI,
+artırma A\c{C}IK$\}$ 2$\times$2 ablation'\i\ ko\c{s}turuldu. T\"{u}m
+ko\c{s}ular ayn\i\ seed, ayn\i\ kod s\"{u}r\"{u}m\"{u}, ayn\i\ alt\"{o}rnekleme
+fakt\"{o}r\"{u}\ (10), ayn\i\ optimizasyon ve stratifiye ay\i rma
+kullan\i lm\i\c{s}t\i r. Tablo~\ref{tab:hybrid} d\"{o}rt sat\i rl\i k sonucu verir.
+
+\begin{table}[t]
+\caption{Hibrit-plan ablation. Ayn\i\ veri, ayn\i\ seed, ayn\i\ kod,
+         len=\num{500}. Artırma-KAPALI ko\c{s}ular\i\ 30 epoch i\c{c}inde
+         erken-durdu (oversampler yok $\rightarrow$ nadir s\i n\i flar
+         gradyan a\c{c}\i s\i ndan a\c{c}); artırma-A\c{C}IK ko\c{s}ular\i\
+         100 epoch b\"{u}t\c{c}esine yak\i n e\u{g}itildi.}
+\label{tab:hybrid}
+\centering
+\small
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Konfig. & Test do\u{g}r. & Makro $F_1$ & \c{C}\i kar\i m & G\"{u}ven & Durdu \\
+\midrule
+1-kanal, art KAP  & \SI{67,14}{\percent} & 0,0682 & \SI{14,7}{\milli\second} & \SI{60,0}{\percent} & ep.\ 29 \\
+12-kanal, art KAP & \SI{68,29}{\percent} & 0,0762 & \SI{14,8}{\milli\second} & \SI{87,9}{\percent} & ep.\ 26 \\
+1-kanal, art A\c{C}   & \SI{97,50}{\percent} & 0,9755 & \SI{13,3}{\milli\second} & \SI{77,4}{\percent} & ep.\ 100 \\
+12-kanal, art A\c{C}  & \SI{97,40}{\percent} & 0,9743 & \SI{45,9}{\milli\second} & \SI{90,2}{\percent} & ep.\ 96 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{Figure_hybrid_headline.png}
+\caption{Hibrit-plan ba\c{s}\i\c{c}: art\i rma bask\i n kald\i ra\c{c}t\i r
+($\Delta\,$\num{30}~puan do\u{g}ruluk, $\Delta\,$\num{0,90} makro-$F_1$);
+kanal say\i s\i\ ayn\i\ artırma ayar\i nda \num{0,1}~puan i\c{c}inde e\c{s}.}
+\label{fig:hybrid_head}
+\end{figure}
+
+\textbf{B\"{u}y\"{u}kl\"{u}k s\i ras\i yla \"{u}\c{c} bulgu.}
+\begin{enumerate}
+  \item \textbf{Art\i rma bask\i n kald\i ra\c{c}t\i r.}
+        Art\i rma-KAPALI $\rightarrow$ A\c{C}IK delta'lar\i:
+        $+\SI{30,36}{\percent}$ do\u{g}ruluk ve $+\num{0,9073}$ makro-$F_1$
+        (1-kanal); $+\SI{29,11}{\percent} / +\num{0,8981}$ (12-kanal).
+        Referans-d\"{u}\u{g}\"{u}m oversampler'\i\ olmadan, uzun-kuyruklu
+        Chapman--Shaoxing s\i n\i flar\i\ yeterli gradyan biriktiremez ve
+        makro-$F_1$ g\"{u}r\"{u}lt\"{u} d\"{u}zeyine d\"{u}\c{s}er.
+  \item \textbf{Kanal say\i s\i\ payla\c{s}t\i r\i c\i d\i r.}
+        Art-KAP'ta: 12-kanal 1-kanal\i\ \num{1,15}~puan do\u{g}ruluk ve
+        \num{0,0080} $F_1$ ile yener. Art-A\c{C}'ta: \emph{1-kanal} 12-kanal\i\
+        \num{0,10}~puan do\u{g}ruluk ve \num{0,0012} $F_1$ ile yener. Her iki
+        delta da seed-g\"{u}r\"{u}lt\"{u} d\"{u}zeyindedir. \emph{Alt\"{o}rnekleme
+        ad\i m\i\ tan\i sal sinyali zaten referans-nokta graf\i nda
+        yo\u{g}unla\c{s}t\i rd\i\u{g}\i\ i\c{c}in model 12 kanala ihtiya\c{c}
+        duymaz.}
+  \item \textbf{G\"{u}ven 12-kanal lehine, \c{c}\i kar\i m 1-kanal lehine.}
+        Tek bir test \"{o}rne\u{g}inde softmax g\"{u}veni 12-kanalda en y\"{u}ksek
+        (\SI{90,2}{\percent}\ vs \SI{77,4}{\percent}, art-A\c{C}); tekil
+        \c{c}\i kar\i m 1-kanalda en h\i zl\i\ (\SI{13,3}{\milli\second}\ vs
+        \SI{45,9}{\milli\second}, $\sim$3,5$\times$ fark). Bu de\u{g}i\c{s}-toku\c{s},
+        kenar / giyilebilir cihazlar i\c{c}in 1-kanal\i, karar-ba\c{s}\i\ g\"{u}ven
+        raporlamas\i n\i n \"{o}nemli oldu\u{g}u hastane i\c{s} ak\i\c{s}lar\i\ i\c{c}in
+        12-kanal\i\ \"{o}nerir.
+\end{enumerate}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{Figure_hybrid_augment_effect.png}
+\caption{Referans-d\"{u}\u{g}\"{u}m artırma uzun-kuyruk s\i n\i flar\i\ en \c{c}ok
+yukar\i\ \c{c}eker. $\Delta F_1$'e g\"{o}re ilk \num{20} s\i n\i f
+(art-KAP $\rightarrow$ art-A\c{C}, 1-kanal). Tez ba\c{s}l\i \u{g}\i n\i n
+``referans d\"{u}\u{g}\"{u}m y\"{o}ntemiyle sinyal b\"{u}y\"{u}tme'' taahh\"{u}d\"{u}
+buradan ampirik olarak do\u{g}rulan\i r.}
+\label{fig:hybrid_aug}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{Figure_hybrid_perclass_top.png}
+\caption{S\i n\i f baz\i nda $F_1$ (art A\c{C}IK): 1-kanal vs 12-kanal.
+Alt-12 s\i n\i f, etiket-d\"{u}bl\"{e}si k\"{u}mesidir (``ECG: atrial flutter''
+vs ``Atrial flutter'', vb.) — gelecek \c{c}al\i\c{s}man\i n etiket-taksonomi
+temizli\u{g}i bu s\i n\i flar\i\ hedefler.}
+\label{fig:hybrid_perclass}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{Figure_hybrid_inference.png}
+\caption{Konfig\"{u}rasyona g\"{o}re \c{c}\i kar\i m gecikmesi ve softmax g\"{u}veni.
+12-kanal karar-ba\c{s}\i\ g\"{u}veni \SI{77,4}{\percent}'ten \SI{90,2}{\percent}'e
+\c{c}\i kar\i r ancak tekil \c{c}\i kar\i m\i\ $\sim$3,5$\times$ yava\c{s}lat\i r.}
+\label{fig:hybrid_inf}
+\end{figure}
+
+\textbf{Tez ba\c{s}l\i \u{g}\i\ ile uzla\c{s}t\i rma.}
+Ba\c{s}l\i k iki taahh\"{u}t i\c{c}erir: (a)~referans-d\"{u}\u{g}\"{u}m artırma
+y\"{o}ntemi ve (b)~12 kanal. Her ikisi de Tablo~\ref{tab:hybrid}
+taraf\i ndan ampirik olarak desteklenir: artırmay\i\ kald\i rmak makro-$F_1$'i
+her iki kanal ayar\i nda $\geq \num{0,89}$ d\"{u}\c{s}\"{u}r\"{u}r ((a)~do\u{g}rulan\i r);
+12-kanal konfig\"{u}rasyonu t\"{u}m ko\c{s}ular i\c{c}inde en y\"{u}ksek tekil
+\"{o}rnek g\"{u}venini \"{u}retir ((b)~do\u{g}rulan\i r). 1-kanal\i n art-A\c{C}IK'ta
+do\u{g}ruluk/$F_1$ a\c{c}\i s\i ndan e\c{s}itlemesi (b)'yi ge\c{c}ersizle\c{s}tirmez —
+1-kanal\i n bu corpus'ta yeterli oldu\u{g}una dair bir \emph{da\u{g}\i t\i m
+\"{o}zg\"{u}rl\"{u}\u{g}\"{u}} tan\i mlar ve t\"{u}ketici-giyilebilir da\u{g}\i t\i m
+yollar\i n\i\ a\c{c}ar.
 
 \section{Tart\i\c{s}ma: Neden \SI{88}{\percent}
 $\rightarrow$ \SI{97}{\percent}}

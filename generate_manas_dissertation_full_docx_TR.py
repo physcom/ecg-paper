@@ -457,17 +457,25 @@ def _set_cover_subtitle(doc: Document, new_subtitle: str):
 
 
 def setup_cover(doc: Document):
-    # Şablonun ara-rapor metinlerini tezin nihai metinleriyle değiştir.
+    # Şablonun ara-rapor metinlerini tezin nihai sürümüyle değiştir.
+    # Tez başlığı, KTMÜ Yüksek Lisans tez önerisinde onaylanmış özgün
+    # başlığa geri çevrilmiştir.
     _replace_paragraphs(doc, {
+        # 'YÜKSEK LİSANS TEZ ARA RAPORU' başlığı, tezin bu sürümünün
+        # ara rapor değil, nihai tez olduğunu belirtmek üzere değiştirilir.
         "YÜKSEK LİSANS TEZ ARA RAPORU": "YÜKSEK LİSANS TEZİ",
+        # Şablonun yer tutucu başlığını özgün master tezi başlığıyla
+        # değiştir (KTMÜ Madde 10: kapakta tezin tam adı yer alır).
         "12 Kanallı EKG Tabanlı Kardiyak Hastalık Teşhisi için Destek "
         "Düğüm Yöntemi Kullanarak Sinyal Zenginleştirmeli Sinir Ağı":
-        "12 KANALLI EKG SINIFLANDIRMASINDA BELİRLEYİCİ ADIM OLARAK "
-        "ANTİ-ALIASING'Lİ ALTÖRNEKLEME: TEMEL BİR 1B-CNN İLE "
-        "CHAPMAN-SHAOXING ÜZERİNDE %88,43'TEN %97,34'E",
+        "REFERANS DÜĞÜM YÖNTEMİYLE SİNYAL BÜYÜTMEYE DAYALI 12 KANALLI "
+        "ELEKTROKARDİYOGRAFİ (EKG) KULLANARAK KALP HASTALIKLARINI "
+        "TEŞHİS ETMEK İÇİN SİNİR AĞI",
         "LİSANSÜSTÜ EĞİTİM ENSTİTÜSÜ": "FEN BİLİMLERİ ENSTİTÜSÜ",
     })
-    _set_cover_subtitle(doc, "YÜKSEK LİSANS TEZİ")
+    # 'GÜZ DÖNEMİ' yer tutucusunu, dönem etiketine geri çevir; böylece
+    # 'YÜKSEK LİSANS TEZİ' ifadesi kapakta yalnızca bir kez görünür.
+    _set_cover_subtitle(doc, "BAHAR 2026")
     _replace_cover_year(doc, "2026")
 
     # Şablonun ara-rapor imza bloğunu sil (tez kapağında bu yer almaz;
@@ -490,18 +498,29 @@ def setup_cover(doc: Document):
     add_paragraph(cell, "")
     add_paragraph(cell,
                   "Bilgisayar Mühendisliği Anabilim Dalı yüksek lisans "
-                  "öğrencisinin, KTMÜ Yüksek Lisans Programı Uygulama "
-                  "Yönergesi gereksinimlerine uygun olarak hazırladığı "
-                  "yüksek lisans tezi aşağıda sunulmuştur. Tez, "
-                  "Chapman-Shaoxing veri seti üzerinde 12 kanallı EKG "
-                  "sınıflandırması için giriş uzunluğu tasarımının "
-                  "kontrollü ampirik bir incelemesini ve PyTorch "
-                  "referans uygulamasının tamamını içermektedir.",
+                  "öğrencisi Nazarkulov Elaman'ın (Öğrenci No: 2351y01005), "
+                  "02.09.2024 tarihli onaylanmış 'Referans düğüm "
+                  "yöntemiyle sinyal büyütmeye dayalı 12 kanallı "
+                  "elektrokardiyografi (EKG) kullanarak kalp "
+                  "hastalıklarını teşhis etmek için sinir ağı' başlıklı "
+                  "tez önerisi kapsamında, KTMÜ Yüksek Lisans Programı "
+                  "Uygulama Yönergesi gereksinimlerine uygun olarak "
+                  "hazırladığı yüksek lisans tezi aşağıda sunulmuştur. "
+                  "Tez; Chapman-Shaoxing 12 kanallı EKG külliyatı "
+                  "üzerinde giriş uzunluğu tasarımının kontrollü "
+                  "ampirik bir incelemesini, geometrik değişmezlik "
+                  "argümanını ve PyTorch referans uygulamasının "
+                  "tamamını içermektedir.",
                   align=WD_ALIGN_PARAGRAPH.JUSTIFY)
     add_paragraph(cell, "")
     add_paragraph(cell, "İmza", align=WD_ALIGN_PARAGRAPH.RIGHT)
     add_paragraph(cell, "Tez Danışmanı", align=WD_ALIGN_PARAGRAPH.RIGHT)
     add_paragraph(cell, "Doç. Dr. Bakıt ŞARŞEMBAEV",
+                  align=WD_ALIGN_PARAGRAPH.RIGHT)
+    add_paragraph(cell, "")
+    add_paragraph(cell, "İmza", align=WD_ALIGN_PARAGRAPH.RIGHT)
+    add_paragraph(cell, "Eş Danışman", align=WD_ALIGN_PARAGRAPH.RIGHT)
+    add_paragraph(cell, "Doç. Dr. Rayımbek SULTANOV",
                   align=WD_ALIGN_PARAGRAPH.RIGHT)
     add_paragraph(cell, "")
     add_paragraph(cell, "EK: Yüksek Lisans Tezi (Tam Metin)",
@@ -622,36 +641,68 @@ def write_front_matter(doc: Document):
 
 def write_abstract(doc: Document):
     """KTMÜ Madde 14: ÖZ — tek aralık, italik karakter veya formül
-    içermez. Madde 15: 4-8 kelimelik anahtar kelimeler özün altına."""
+    içermez; en az 2 sayfadır. Madde 15: 4-8 kelimelik anahtar
+    kelimeler özün altına."""
     add_heading1(doc, "ÖZ")
     add_single_body(doc,
-                    "Otomatik 12 kanallı elektrokardiyogram (EKG) "
-                    "sınıflandırması, derin evrişimli sinir ağları (CNN) "
-                    "ile geleneksel olarak kanal başına 5000 örneklemden "
-                    "oluşan ham 500 Hz × 10 sn sinyal üzerinde "
-                    "gerçekleştirilmektedir. Bu tezde, söz konusu "
-                    "varsayılan giriş uzunluğunun nötr bir tasarım "
-                    "tercihi olduğu varsayımı sorgulanmıştır. "
+                    "Kardiyovasküler hastalıklar, Dünya Sağlık Örgütü "
+                    "verilerine göre yıllık tahmini 17,9 milyon ölüme yol "
+                    "açmakta ve dünya genelinde başlıca ölüm nedeni "
+                    "olmayı sürdürmektedir. 12 kanallı elektrokardiyogram "
+                    "(EKG); aritmiler, ileti bozuklukları, iskemik "
+                    "olaylar ve yapısal kardiyak anormalliklerin "
+                    "saptanmasında temel non-invaziv tanı aracı olarak "
+                    "kabul edilmektedir. Otomatik EKG sınıflandırmasında "
+                    "derin evrişimli sinir ağları (CNN), geleneksel "
+                    "olarak kanal başına 5000 örneklemden oluşan ham "
+                    "500 Hz × 10 sn sinyal üzerinde uygulanmaktadır. Bu "
+                    "tezde, söz konusu varsayılan giriş uzunluğunun nötr "
+                    "bir tasarım tercihi olduğu varsayımı, kontrollü bir "
+                    "ablation çalışmasıyla sorgulanmıştır.")
+    add_single_body(doc,
                     "Chapman-Shaoxing 12 kanallı EKG külliyatı (45.152 "
-                    "kayıt, 78 çoklu-etiket tanı kategorisi) üzerinde, "
-                    "model, eniyileyici, kayıp fonksiyonu, veri artırma "
-                    "politikası, rastgele tohum ve eğitim/doğrulama/test "
-                    "ayrımı sabit tutularak {5000, 1000, 500} giriş "
-                    "uzunluklarının kontrollü bir karşılaştırması "
-                    "yapılmıştır.")
+                    "kayıt, 78 çoklu-etiket tanı kategorisi) üzerinde "
+                    "model mimarisi (3,72 milyon parametreli artıklı "
+                    "1B-CNN), Adam eniyileyici, odak kayıp ile etiket "
+                    "yumuşatmalı çapraz entropi, geleneksel veri "
+                    "artırma politikası, rastgele tohum (42) ve "
+                    "eğitim/doğrulama/test ayrımı sabit tutularak "
+                    "{5000, 1000, 500} giriş uzunluklarının kontrollü "
+                    "karşılaştırması yapılmıştır. Tüm sinyaller, 0,5–40 "
+                    "Hz Butterworth bant geçiren süzgeçten ve kanal "
+                    "başına z-skor normalleştirmesinden geçirildikten "
+                    "sonra altörnekleme katsayısı q ∈ {1, 5, 10} ile "
+                    "altörneklenmiştir.")
     add_single_body(doc,
                     "Temel bulgu olarak, girdinin SciPy'nin sekizinci "
-                    "dereceden Chebyshev tip-I süzgeci ile 500 örnekleme "
-                    "(etkin örnekleme hızı 50 Hz) anti-aliasing'li "
-                    "altörneklenmesinin, test doğruluğunu %88,43'ten "
-                    "%97,34'e ve makro-F1 değerini 0,8713'ten 0,9737'ye "
-                    "yükselttiği gözlemlenmiştir. Aynı koşullarda tek-"
-                    "örnek çıkarım gecikmesi tek bir NVIDIA RTX 5090 "
-                    "GPU üzerinde 89,88 ms'den 27,20 ms'ye indirilmiştir. "
-                    "Temel modelde başarısız olan on bir sınıf "
-                    "(F1 < 0,60; en kötü durum: Sol Ventriküler "
-                    "Hipertrofi, F1 = 0,022) tek tip biçimde F1 ≥ 0,95 "
-                    "düzeyine geri kazandırılmıştır.")
+                    "dereceden Chebyshev tip-I IIR süzgeci "
+                    "(scipy.signal.decimate, ileri-geri/sıfır-fazlı mod) "
+                    "kullanılarak 500 örnekleme (etkin örnekleme hızı "
+                    "50 Hz) anti-aliasing'li altörneklenmesinin, test "
+                    "doğruluğunu %88,43'ten %97,34'e ve makro-F1 "
+                    "değerini 0,8713'ten 0,9737'ye yükselttiği "
+                    "gözlemlenmiştir. Bu, mutlak 8,91 yüzde puanlık ve "
+                    "göreli %11,7 oranında bir iyileşmeye karşılık "
+                    "gelmektedir. Aynı koşullarda tek-örnek çıkarım "
+                    "gecikmesi tek bir NVIDIA RTX 5090 GPU üzerinde "
+                    "89,88 ms'den 27,20 ms'ye (3,3× hızlanma) "
+                    "indirilmiş; epoch süresi ~195 sn'den ~20 sn'ye "
+                    "(9,8× hızlanma) düşürülmüştür. Tam eğitim, "
+                    "len=500 + 4 DataLoader işçisi konfigürasyonunda on "
+                    "dakikanın altına sığmıştır.")
+    add_single_body(doc,
+                    "Sınıf bazında çözümleme, temel modelde başarısız "
+                    "olan on bir sınıfın (F1 < 0,60; en kötü durum: "
+                    "Sol Ventriküler Hipertrofi, F1 = 0,022) tek tip "
+                    "biçimde F1 ≥ 0,95 düzeyine geri kazandırıldığını "
+                    "ortaya koymuştur. Anormal Q dalgası, Atriyal "
+                    "flatter ve İç ileti farklılıkları gibi morfolojik "
+                    "imzaya sahip sınıflar F1 ≥ 0,99 düzeyine "
+                    "ulaşmıştır. Geri kazanım profili, ritime dayalı "
+                    "sınıflar (Atriyal fibrilasyon, AV blokları) için "
+                    "alıcı alan kapsamı; morfoloji sınıfları için "
+                    "parametre ekonomisi etkilerini birlikte "
+                    "yansıtmaktadır.")
     add_single_body(doc,
                     "Sonuç, referans noktaların geometrik değişmezliği "
                     "çerçevesinde değerlendirilmiştir: EKG'nin tanısal "
@@ -662,24 +713,43 @@ def write_abstract(doc: Document):
                     "hassasiyetinde) hem de göreli genlikleri "
                     "korumaktadır. Girdinin 5000'den 500 örnekleme "
                     "indirgenmesi, referans nokta yoğunluğunu on katına "
-                    "çıkarmakta ve CNN'in etkin alıcı alanının yalnızca "
-                    "pencerenin yaklaşık %40'ını değil, tüm 10 saniyelik "
-                    "pencereyi kapsamasına olanak tanımaktadır.")
+                    "çıkarmakta; ağın yaklaşık 2048 örneklik etkin "
+                    "alıcı alanının pencerenin yalnızca %40'ını değil, "
+                    "tüm 10 saniyelik pencereyi kapsamasına olanak "
+                    "tanımaktadır. Naif bir sıralı havuzlama (anti-"
+                    "aliasing süzgeci olmadan) ise doğruluğu %84 "
+                    "düzeyine düşürmekte; bu, anti-aliasing adımının "
+                    "vazgeçilmezliğini ortaya koymaktadır.")
     add_single_body(doc,
-                    "Bu çalışmada, giriş uzunluğunun yayımlanmış EKG "
-                    "kıyaslama çalışmalarında yetersiz raporlanan bir "
-                    "tasarım değişkeni olduğu ileri sürülmekte; düz "
-                    "1B-CNN modelleri ile son dönem literatürde "
-                    "bildirilen dikkat/hibrit modeller arasındaki "
-                    "performans farkının bir kısmının mimari "
-                    "karmaşıklıktan değil, giriş uzunluğu "
-                    "eniyilemesinden kaynaklanabileceği savunulmaktadır. "
-                    "Veri yükleme, SNOMED CT etiket eşleme, ön işleme, "
-                    "artıklı 1B-CNN mimarisi, karma duyarlıklı odak "
-                    "kayıplı eğitim, değerlendirme ve tek-vuruşlu "
-                    "çıkarım dahil olmak üzere PyTorch referans "
-                    "uygulamasının tamamı, tezin yöntem ve uygulama "
-                    "bölümlerinde verilmiştir.")
+                    "Tezde, giriş uzunluğunun yayımlanmış EKG kıyaslama "
+                    "çalışmalarında yetersiz raporlanan bir tasarım "
+                    "değişkeni olduğu ileri sürülmektedir. Düz 1B-CNN "
+                    "modelleri ile literatürde bildirilen dikkat/hibrit "
+                    "modeller (Oh ve ark. 2018: %94,8; Strodthoff ve "
+                    "ark. 2020: 0,925 makro-AUC) arasındaki performans "
+                    "farkının önemli bir kısmının mimari karmaşıklıktan "
+                    "değil, giriş uzunluğu eniyilemesinden "
+                    "kaynaklanabileceği savunulmaktadır. Bu bulgu, "
+                    "dikkat veya yinelemeli mekanizmaların yararsız "
+                    "olduğu anlamına gelmemekte; bu mekanizmaların "
+                    "uzunluk-eniyilenmiş bir temel modele karşı "
+                    "yeniden değerlendirilmesi gerektiğini ima "
+                    "etmektedir.")
+    add_single_body(doc,
+                    "Veri yükleme, SNOMED CT etiket eşleme, ön işleme "
+                    "hattı, artıklı 1B-CNN mimarisi, karma duyarlıklı "
+                    "(AMP/FP16) odak kayıplı eğitim, değerlendirme ve "
+                    "tek-vuruşlu çıkarım dahil olmak üzere PyTorch "
+                    "referans uygulamasının tamamı (yaklaşık 1.800 "
+                    "satır, tek bir bağımsız modülde), tezin yöntem ve "
+                    "uygulama bölümleri ile EK 1'de verilmiştir. "
+                    "Eşlik eden klinik karar destek web uygulaması "
+                    "(FastAPI + React + ONNX Runtime), pilot "
+                    "kullanımdadır. Gelecek çalışmalar PTB-XL çapraz "
+                    "veri seti doğrulamasını, dikkat ve odak kayıp "
+                    "mekanizmalarının uzunluk-eniyilenmiş temel "
+                    "üzerinde yeniden değerlendirilmesini ve INT8 "
+                    "kenar dağıtımını kapsamaktadır.")
     add_paragraph(doc,
                   "Anahtar Kelimeler: elektrokardiyogram, derin öğrenme, "
                   "evrişimli sinir ağı, anti-aliasing'li altörnekleme, "
@@ -690,33 +760,98 @@ def write_abstract(doc: Document):
 
 
 def write_kyrgyz_abstract(doc: Document):
-    """KTMÜ Madde 14: ÖZ'ün Kırgızca sürümü (КЫСКАЧА МАЗМУНУ)."""
+    """KTMÜ Madde 14: ÖZ'ün Kırgızca sürümü (КЫСКАЧА МАЗМУНУ).
+    Madde 14: en az 2 sayfa olmalıdır."""
     add_heading1(doc, "КЫСКАЧА МАЗМУНУ")
     add_single_body(doc,
-                    "Ушул иш, Chapman-Shaoxing маалымат базасында (45.152 "
-                    "жазуу, 78 көп-белгилүү диагноз классы) 12 каналдуу "
-                    "электрокардиограмманын (ЭКГ) автоматтык "
-                    "классификациясы үчүн киргизилген сигналдын узундугун "
-                    "контролдоо астында изилдөө сунуштайт. Айкын "
-                    "архитектура (1 өлчөмдүү тереңдиктеги нейрондук тарм), "
-                    "оптимизатор, жоготуу функциясы жана үлгүлөрдү көбөйтүү "
-                    "сакталат; ал эми кириш узундугу {5000, 1000, 500} "
-                    "арасында өзгөртүлөт.")
+                    "Дүйнөлүк ден соолук уюмунун маалыматы боюнча, "
+                    "жүрөк-кан тамыр оорулары жыл сайын 17,9 миллион "
+                    "өлүмгө алып келип, дүйнөдөгү башкы өлүм себеби "
+                    "болуп келет. 12 каналдуу электрокардиограмма "
+                    "(ЭКГ); аритмияларды, өткөрүү бузулууларын, "
+                    "ишемиялык окуяларды жана түзүлүштүк жүрөк "
+                    "патологияларын аныктоо үчүн негизги инвазивдүү "
+                    "эмес диагностикалык каражат болуп саналат. "
+                    "Автоматташтырылган ЭКГ классификациясында терең "
+                    "конволюциялык нейрондук тармактар (CNN) адатта "
+                    "канал башына 5000 үлгүдөн турган 500 Гц × 10 "
+                    "секунд белгисине колдонулат. Бул иште, ушул "
+                    "стандарттык кириш узундугунун нейтралдуу "
+                    "тандоо экендиги контролдонуучу абляция изилдөөсү "
+                    "аркылуу талкууланган.")
     add_single_body(doc,
-                    "Анти-aliasing менен 5000 үлгүдөн 500 үлгүгө чейин "
-                    "(scipy.signal.decimate, 8-даражалуу Чебышев тип-I "
-                    "сүзгүчү) кыскартуу, тестирлөө тактыгын %88,43тен "
-                    "%97,34кө, макро-F1 көрсөткүчүн 0,8713тен 0,9737ге "
-                    "жогорулатат; ошол эле учурда NVIDIA RTX 5090 GPU'до "
-                    "бир үлгүлүк божомолдоо узактыгы 89,88 мс'ден 27,20 "
-                    "мс'ге чейин кыскарат. Базалык моделде ийгиликсиз "
-                    "болгон он бир класс (F1 < 0,60) бирдей түрдө F1 ≥ "
-                    "0,95 деңгээлине кайтып келет.")
+                    "Chapman-Shaoxing 12 каналдуу ЭКГ маалымат базасы "
+                    "(45.152 жазуу, 78 көп-белгилүү диагноз "
+                    "категориясы) колдонулуп, моделдин архитектурасы "
+                    "(3,72 миллион параметрлүү калдыктуу 1B-CNN), Adam "
+                    "оптимизатору, фокалдуу жоготуу менен "
+                    "жумшартылган белгилерге негизделген кросс-"
+                    "энтропия, үлгүлөрдү көбөйтүү саясаты, баштапкы "
+                    "урук (42) жана окутуу/валидация/тест бөлүштүрүүсү "
+                    "туруктуу сакталып, {5000, 1000, 500} кириш "
+                    "узундуктары контролдоого алынып салыштырылган. "
+                    "Бардык сигналдар 0,5–40 Гц Баттерворт зоналык "
+                    "өткөрүүчү фильтрден жана канал боюнча z-skor "
+                    "нормалдашуудан өткөн.")
+    add_single_body(doc,
+                    "Негизги жыйынтык катары, кириштин SciPy'нин "
+                    "сегизинчи даражадагы Чебышев тип-I IIR "
+                    "фильтри (scipy.signal.decimate, нөл фазалык "
+                    "режимде) колдонулуп 500 үлгүгө чейин (натыйжалуу "
+                    "тандоо ылдамдыгы 50 Гц) аnti-aliasing менен "
+                    "кыскартуусу тест тактыгын %88,43тен %97,34кө "
+                    "жана макро-F1 көрсөткүчүн 0,8713тен 0,9737ге "
+                    "жогорулатат. Бул, абсолюттук 8,91 пайыздык жана "
+                    "салыштырмалуу %11,7'лик жакшырууга туура келет. "
+                    "Ушул эле шарттарда бир үлгүлүк божомолдоо "
+                    "узактыгы NVIDIA RTX 5090 GPU'да 89,88 мс'ден "
+                    "27,20 мс'ге (3,3× ылдамдатуу) кыскарган; эпоха "
+                    "узактыгы ~195 секунддан ~20 секундга (9,8× "
+                    "ылдамдатуу) кыскарган. Толук окутуу 10 минуттан "
+                    "ашпаган.")
+    add_single_body(doc,
+                    "Класс боюнча талдоо, базалык моделде ийгиликсиз "
+                    "болгон он бир класс (F1 < 0,60; эң начары: Сол "
+                    "Каринчелик Гипертрофия, F1 = 0,022) бирдей "
+                    "түрдө F1 ≥ 0,95 деңгээлине кайтарылганын "
+                    "көрсөтөт. Кээ бир класстар (Аномалдуу Q толкуну, "
+                    "Алдыртан флаттер, Ички өткөрүү айырмасы) F1 ≥ "
+                    "0,99 деңгээлине жетет. Кайтарып келүү профили "
+                    "ритмге негизделген класстар үчүн кабыл алуу "
+                    "талаасынын камтуусунан, морфология класстары "
+                    "үчүн параметр экономиясынан пайдалангандыгын "
+                    "көрсөтөт.")
     add_single_body(doc,
                     "Натыйжа, референс чекиттеринин геометриялык "
-                    "өзгөрүүсүздүгү алкагында тушундурулат: ЭКГнин "
-                    "диагностикалык мазмуну анти-aliasing сүзгүч менен "
-                    "сакталган сейрек чекиттер графында жашайт.")
+                    "өзгөрүүсүздүгү алкагында түшүндүрүлөт: ЭКГнин "
+                    "диагностикалык мазмуну, ар бир кагуу үчүн P, "
+                    "Q, R, S, T'ден турган болжол менен 60 референс "
+                    "чекитти камтыган сейрек жыйнакта топтолот; "
+                    "Чебышев тип-I анти-aliasing фильтри убакыттык "
+                    "позицияларды (±10 мс тактыгында) жана салыштырма "
+                    "амплитудаларды сактайт. Кириштин 5000ден 500гө "
+                    "чейин кыскартылышы референс чекиттердин "
+                    "тыгыздыгын он эсеге жогорулатат жана тармактын "
+                    "болжол менен 2048 үлгүлүк натыйжалуу кабыл "
+                    "алуу талаасы терезенин %40 эмес, бүтүндөй 10 "
+                    "секунддук терезени камтыйт.")
+    add_single_body(doc,
+                    "Бул изилдөөдө, кириш узундугу жарыяланган ЭКГ "
+                    "өлчөө изилдөөлөрүндө жетиштүү билдирилбеген "
+                    "долбоорлоо чен берилгич экендиги ырасталат; "
+                    "жөнөкөй 1B-CNN моделдери менен заманбап адабиятта "
+                    "билдирилген көңүл буруу/гибрид моделдер "
+                    "ортосундагы аткаруу айырмачылыгынын олуттуу "
+                    "бөлүгүнүн архитектуралык татаалдыктан эмес, "
+                    "кириш узундугун оптимизациялоодон келип чыгышы "
+                    "мүмкүн экендиги колдоого алынат. Маалыматты "
+                    "жүктөө, SNOMED CT белгилерин шайкеш келтирүү, "
+                    "алдын ала иштетүү, калдыктуу 1B-CNN "
+                    "архитектурасы, аралаш тактыктагы (AMP/FP16) "
+                    "фокалдуу жоготуу окутуусу жана бир жолку "
+                    "божомолдоо камтыган толук PyTorch шилтемелик "
+                    "ишке ашыруусу тездин ыкма жана ишке ашыруу "
+                    "бөлүмдөрүндө жана 1-Тиркемеде берилет.")
     add_paragraph(doc,
                   "Ачкыч сөздөр: электрокардиограмма, 12 каналдуу ЭКГ, "
                   "терең нейрондук тарм, анти-aliasing, PyTorch, көп "
@@ -727,35 +862,98 @@ def write_kyrgyz_abstract(doc: Document):
 
 
 def write_russian_abstract(doc: Document):
-    """KTMÜ Madde 14: ÖZ'ün Rusça sürümü (АБСТРАКТ)."""
+    """KTMÜ Madde 14: ÖZ'ün Rusça sürümü (АБСТРАКТ).
+    Madde 14: en az 2 sayfa olmalıdır."""
     add_heading1(doc, "АБСТРАКТ")
     add_single_body(doc,
-                    "В данной работе представлено контролируемое "
-                    "исследование длины входного сигнала как переменной "
-                    "проектирования для автоматической классификации "
-                    "12-канальной электрокардиограммы (ЭКГ) на корпусе "
-                    "Chapman-Shaoxing (45 152 записей, 78 многометочных "
-                    "категорий диагностики). При фиксированной "
-                    "архитектуре одномерной свёрточной нейронной сети "
-                    "(1D-CNN), оптимизатора, функции потерь и политики "
-                    "аугментации длина входа варьируется среди {5000, "
-                    "1000, 500} отсчётов на канал.")
+                    "По данным Всемирной организации здравоохранения, "
+                    "сердечно-сосудистые заболевания ежегодно "
+                    "становятся причиной около 17,9 миллионов смертей "
+                    "и остаются ведущей причиной смертности во всём "
+                    "мире. Двенадцатиканальная электрокардиограмма "
+                    "(ЭКГ) является основным неинвазивным "
+                    "диагностическим инструментом для выявления "
+                    "аритмий, нарушений проводимости, ишемических "
+                    "событий и структурных кардиальных аномалий. В "
+                    "автоматической классификации ЭКГ глубокие "
+                    "свёрточные нейронные сети (CNN) традиционно "
+                    "применяются к необработанному сигналу 500 Гц × "
+                    "10 с, состоящему из 5000 отсчётов на канал. В "
+                    "данной диссертации проведено контролируемое "
+                    "исследование, ставящее под сомнение "
+                    "нейтральность этого выбора длины входа.")
     add_single_body(doc,
-                    "Замена входа на антиалиасинговое прореживание до "
-                    "500 отсчётов с помощью фильтра Чебышева типа I "
-                    "восьмого порядка (scipy.signal.decimate) повышает "
-                    "точность теста с 88,43 % до 97,34 %, а макро-F1 — "
-                    "с 0,8713 до 0,9737, при сокращении задержки "
-                    "одиночного вывода с 89,88 мс до 27,20 мс на GPU "
-                    "NVIDIA RTX 5090. Все одиннадцать неудачных классов "
-                    "базовой модели (F1 < 0,60) равномерно "
-                    "восстанавливаются до F1 ≥ 0,95.")
+                    "На корпусе Chapman-Shaoxing (45 152 записей, 78 "
+                    "многометочных диагностических категорий) при "
+                    "фиксированной архитектуре (резидуальная 1D-CNN с "
+                    "3,72 млн параметров), оптимизатора Adam, фокальной "
+                    "потери со сглаживанием меток, политики "
+                    "аугментации, случайного зерна (42) и разделения "
+                    "обучение/валидация/тест проведено контролируемое "
+                    "сравнение длин входа {5000, 1000, 500}. Все "
+                    "сигналы предварительно фильтровались полосовым "
+                    "фильтром Баттерворта 0,5–40 Гц и нормализовались "
+                    "по каналу z-нормировкой.")
     add_single_body(doc,
-                    "Результат интерпретируется в рамках геометрической "
-                    "инвариантности графа реперных точек: диагностический "
-                    "контент ЭКГ сосредоточен в разреженном множестве "
-                    "точек, которые антиалиасинговый фильтр сохраняет с "
-                    "точностью до ±10 мс.")
+                    "Основной результат: замена входа на "
+                    "антиалиасинговое прореживание до 500 отсчётов "
+                    "(эффективная частота дискретизации 50 Гц) с "
+                    "помощью фильтра Чебышева типа I восьмого порядка "
+                    "(scipy.signal.decimate в режиме нулевой фазы) "
+                    "повышает точность теста с 88,43 % до 97,34 % и "
+                    "макро-F1 с 0,8713 до 0,9737. Это соответствует "
+                    "абсолютному улучшению на 8,91 процентных пункта "
+                    "и относительному улучшению на 11,7 %. При тех же "
+                    "условиях задержка одиночного вывода на GPU "
+                    "NVIDIA RTX 5090 сокращается с 89,88 мс до 27,20 "
+                    "мс (3,3-кратное ускорение); время эпохи — с ~195 "
+                    "с до ~20 с (9,8-кратное ускорение). Полное "
+                    "обучение укладывается в десять минут.")
+    add_single_body(doc,
+                    "Поклассовый анализ показал, что одиннадцать "
+                    "неудачных классов базовой модели (F1 < 0,60; "
+                    "наихудший случай: гипертрофия левого желудочка, "
+                    "F1 = 0,022) равномерно восстанавливаются до F1 "
+                    "≥ 0,95. Несколько классов с морфологической "
+                    "сигнатурой (аномальный Q-зубец, трепетание "
+                    "предсердий, межжелудочковые нарушения "
+                    "проводимости) достигают F1 ≥ 0,99. Профиль "
+                    "восстановления отражает выгоды от увеличения "
+                    "охвата рецептивного поля для ритмических "
+                    "классов и параметрической экономии для "
+                    "морфологических классов.")
+    add_single_body(doc,
+                    "Результат интерпретируется в рамках "
+                    "геометрической инвариантности графа реперных "
+                    "точек: диагностический контент ЭКГ "
+                    "сосредоточен в разреженном множестве примерно "
+                    "из 60 реперных точек (P, Q, R, S, T для каждого "
+                    "из ~10 ударов), временные позиции которых "
+                    "антиалиасинговый фильтр Чебышева типа I "
+                    "сохраняет с точностью до ±10 мс. Сокращение "
+                    "входа с 5000 до 500 отсчётов увеличивает "
+                    "плотность реперных точек в десять раз и "
+                    "позволяет эффективному рецептивному полю CNN "
+                    "(~2048 отсчётов) охватить всё 10-секундное "
+                    "окно, а не только ~40 % его. Наивное "
+                    "субдискретизирование без антиалиасингового "
+                    "фильтра, напротив, снижает точность ниже базовой.")
+    add_single_body(doc,
+                    "В работе утверждается, что длина входа является "
+                    "недостаточно отчётной проектной переменной в "
+                    "опубликованных эталонных тестах ЭКГ. Значительная "
+                    "часть разрыва между простыми моделями 1D-CNN и "
+                    "сложными моделями со вниманием/гибридами, "
+                    "обнаруженного в недавней литературе (Oh и др., "
+                    "2018: 94,8 %; Strodthoff и др., 2020: 0,925 "
+                    "макро-AUC), может объясняться оптимизацией длины "
+                    "входа, а не архитектурной сложностью. "
+                    "Полная реализация на PyTorch, включая загрузку "
+                    "данных, отображение SNOMED CT, предобработку, "
+                    "архитектуру CNN, обучение со смешанной "
+                    "точностью, оценку и одноразовый вывод, "
+                    "представлена в главах метода и реализации, а "
+                    "также в Приложении 1.")
     add_paragraph(doc,
                   "Ключевые слова: электрокардиограмма, 12-канальная ЭКГ, "
                   "глубокое обучение, 1D свёрточная нейронная сеть, "
@@ -768,34 +966,98 @@ def write_russian_abstract(doc: Document):
 
 
 def write_english_abstract(doc: Document):
-    """KTMÜ Madde 14: ÖZ'ün İngilizce sürümü (ABSTRACT)."""
+    """KTMÜ Madde 14: ÖZ'ün İngilizce sürümü (ABSTRACT).
+    Madde 14: en az 2 sayfa olmalıdır."""
     add_heading1(doc, "ABSTRACT")
     add_single_body(doc,
-                    "This thesis presents a controlled study of input "
-                    "length as a design variable in 12-lead "
-                    "electrocardiogram (ECG) classification on the "
-                    "Chapman-Shaoxing corpus (45,152 records, 78 "
-                    "multi-label diagnostic categories). Holding the "
-                    "architecture (a residual 1D convolutional neural "
-                    "network), the loss function, the optimiser and the "
-                    "augmentation policy fixed, the input length is "
-                    "varied across {5000, 1000, 500} samples per lead.")
+                    "Cardiovascular disease accounts for an estimated "
+                    "17.9 million deaths annually according to the "
+                    "World Health Organization and remains the leading "
+                    "cause of mortality worldwide. The 12-lead "
+                    "electrocardiogram (ECG) is the principal "
+                    "non-invasive diagnostic tool for arrhythmias, "
+                    "conduction disturbances, ischemic events and "
+                    "structural cardiac abnormalities. In automated "
+                    "ECG classification, deep convolutional neural "
+                    "networks (CNNs) are conventionally applied to the "
+                    "raw 500 Hz × 10 s signal of 5,000 samples per "
+                    "lead. This thesis presents a controlled ablation "
+                    "study that questions the neutrality of this "
+                    "default input-length choice.")
     add_single_body(doc,
-                    "Replacing the input with an anti-aliased decimation "
-                    "to 500 samples (effective 50 Hz) using SciPy's "
-                    "eighth-order Chebyshev type-I filter raises test "
-                    "accuracy from 88.43% to 97.34% and macro-F1 from "
-                    "0.8713 to 0.9737, while reducing single-sample "
-                    "inference latency from 89.88 ms to 27.20 ms on a "
-                    "single NVIDIA RTX 5090 GPU. The eleven baseline "
-                    "failure classes (F1 < 0.60) recover uniformly to "
-                    "F1 ≥ 0.95.")
+                    "On the Chapman-Shaoxing 12-lead ECG corpus "
+                    "(45,152 records, 78 multi-label diagnostic "
+                    "categories), holding the architecture (a 3.72 "
+                    "million-parameter residual 1D-CNN), the Adam "
+                    "optimiser, label-smoothed cross-entropy with "
+                    "focal-loss reweighting, the augmentation policy, "
+                    "the random seed (42) and the train/validation/"
+                    "test split fixed, the input length is varied "
+                    "across {5,000, 1,000, 500} samples per lead. All "
+                    "signals are filtered with a 0.5-40 Hz Butterworth "
+                    "bandpass and z-scored per lead before optional "
+                    "decimation by factor q ∈ {1, 5, 10}.")
     add_single_body(doc,
-                    "The result is framed as geometric invariance of the "
-                    "fiducial-point graph: the diagnostic content of an "
-                    "ECG lives in a sparse fiducial-point set that the "
+                    "The principal finding is that replacing the input "
+                    "with an anti-aliased decimation to 500 samples "
+                    "(effective 50 Hz) using SciPy's eighth-order "
+                    "Chebyshev type-I IIR filter (scipy.signal.decimate "
+                    "in zero-phase mode) raises test accuracy from "
+                    "88.43% to 97.34% and macro-F1 from 0.8713 to "
+                    "0.9737. This corresponds to an absolute "
+                    "improvement of 8.91 percentage points and a "
+                    "relative improvement of 11.7%. Under the same "
+                    "conditions single-sample inference latency on a "
+                    "single NVIDIA RTX 5090 GPU is reduced from 89.88 "
+                    "ms to 27.20 ms (3.3× speed-up); epoch wall-time "
+                    "drops from ~195 s to ~20 s (9.8× speed-up). Full "
+                    "training fits within ten minutes in the len=500 "
+                    "+ 4 DataLoader workers configuration.")
+    add_single_body(doc,
+                    "Per-class analysis reveals that the eleven "
+                    "baseline failure classes (F1 < 0.60; worst case: "
+                    "Left Ventricular Hypertrophy, F1 = 0.022) recover "
+                    "uniformly to F1 ≥ 0.95. Several classes with "
+                    "morphological signatures (abnormal Q-wave, atrial "
+                    "flutter, intraventricular conduction differences) "
+                    "reach F1 ≥ 0.99. The recovery profile reflects "
+                    "the benefits of receptive-field coverage for "
+                    "rhythm-based classes and parameter economy for "
+                    "morphology-based classes.")
+    add_single_body(doc,
+                    "The result is framed as geometric invariance of "
+                    "the fiducial-point graph: the diagnostic content "
+                    "of an ECG lives in a sparse set of approximately "
+                    "60 fiducial points (P, Q, R, S, T per beat for "
+                    "~10 beats), whose temporal positions the "
                     "Chebyshev type-I anti-aliasing filter preserves "
-                    "within ±10 ms.")
+                    "within ±10 ms. Reducing the input from 5,000 to "
+                    "500 samples increases fiducial-point density "
+                    "tenfold and lets the CNN's effective receptive "
+                    "field of ~2,048 samples span the entire "
+                    "10-second window rather than only ~40% of it. "
+                    "Naive strided pooling without an anti-aliasing "
+                    "filter, by contrast, drops accuracy below the "
+                    "baseline.")
+    add_single_body(doc,
+                    "The thesis argues that input length is an "
+                    "under-reported design variable in published ECG "
+                    "benchmarks. A substantial portion of the "
+                    "performance gap between plain 1D-CNN models and "
+                    "the attention/hybrid models reported in recent "
+                    "literature (Oh et al., 2018: 94.8%; Strodthoff "
+                    "et al., 2020: 0.925 macro-AUC) may be attributable "
+                    "to input-length optimisation rather than to "
+                    "architectural sophistication. The full PyTorch "
+                    "reference implementation — including data "
+                    "loading, SNOMED CT label mapping, preprocessing, "
+                    "the residual 1D-CNN architecture, mixed-precision "
+                    "(AMP/FP16) focal-loss training, evaluation and "
+                    "single-shot inference — is provided in the "
+                    "method and implementation chapters and in "
+                    "Appendix 1. An accompanying clinical decision-"
+                    "support web application (FastAPI + React + ONNX "
+                    "Runtime) is in pilot use.")
     add_paragraph(doc,
                   "Keywords: electrocardiogram, 12-lead ECG, deep "
                   "learning, 1D convolutional neural network, anti-aliased "
@@ -893,11 +1155,13 @@ def write_toc(doc: Document):
         ("6.3. Geçerlilik Tehditleri", "52"),
         ("6.4. Yayımlanmış Kıyaslamalar Açısından Çıkarımlar", "53"),
         ("SONUÇ VE ÖNERİLER", "54"),
-        ("KAYNAKLAR", "57"),
-        ("EKLER", "59"),
-        ("EK 1. Tam Kod Listelemeleri", "59"),
-        ("EK 2. Örnek Eğitim Çıktısı", "65"),
-        ("ÖZGEÇMİŞ", "68"),
+        ("ÖZET (TÜRKÇE GENİŞLETİLMİŞ)", "57"),
+        ("КЕҢИРИ КЫСКАЧА МАЗМУНУ (КЫРГЫЗЧА)", "65"),
+        ("KAYNAKLAR", "73"),
+        ("EKLER", "75"),
+        ("EK 1. Tam Kod Listelemeleri", "75"),
+        ("EK 2. Örnek Eğitim Çıktısı", "82"),
+        ("ÖZGEÇMİŞ", "85"),
     ]
     for entry, page in entries:
         p = doc.add_paragraph()
@@ -1020,7 +1284,16 @@ def chapter1(doc: Document):
              "hizmetlerinde, ambulans hizmetlerinde, bu çalışmanın "
              "yürütüldüğü Orta Asya'nın uzak bölgelerinde — 12 "
              "kanallı bir EKG'yi gerçek zamanlı yorumlayacak yerel "
-             "uzmanlık çoğu kez mevcut değildir.")
+             "uzmanlık çoğu kez mevcut değildir. Literatür, EKG "
+             "yorumlarının %33'üne kadarının uzman referansına "
+             "kıyasla bir miktar hata içerdiğini ve bu hataların "
+             "%11'e kadarının yanlış klinik yönetime yol açtığını "
+             "raporlamaktadır (Breen ve ark., 2019). EKG "
+             "yorumlama pedagojisinde evrensel bir temel olmaması "
+             "ve yorumlamanın gözlemciler arasında değişkenlik "
+             "göstermesi, yapay zekâ tabanlı karar destek "
+             "araçlarına olan ihtiyacı belirgin biçimde "
+             "artırmaktadır.")
     add_body(doc,
              "Otomatik EKG yorumlanması, makine öğrenmesinin tıbba "
              "en çok çalışılan uygulamaları arasındadır. Erken kural "
@@ -1074,6 +1347,67 @@ def chapter1(doc: Document):
              "maliyeti karakterize edilmekte; geometrik değişmezlik "
              "argümanının sınıf bazında geri kazanım profilini "
              "açıklamakta yeterli olup olmadığı incelenmektedir.")
+    add_body(doc,
+             "Bu tez, KTMÜ Fen Bilimleri Enstitüsü Bilgisayar "
+             "Mühendisliği Anabilim Dalı'nda 02.09.2024 tarihinde "
+             "Doç. Dr. Bakıt Şarşembaev (tez danışmanı) ve Doç. Dr. "
+             "Rayımbek Sultanov (eş danışman) tarafından onaylanan "
+             "tez önerisi (KTMÜ-fr-Tİİ-28 nolu form, Öğrenci No "
+             "2351y01005) çerçevesinde yürütülmüştür. Önerinin "
+             "özgün başlığı 'Referans düğüm yöntemiyle sinyal "
+             "büyütmeye dayalı 12 kanallı elektrokardiyografi (EKG) "
+             "kullanarak kalp hastalıklarını teşhis etmek için sinir "
+             "ağı'dır. Tez önerisi; iki temel hipotez "
+             "(H1: derin sinir ağları ham EKG verilerinden insanın "
+             "tespit etmekte zorlandığı karmaşık örüntüleri ayırt "
+             "edebilir; H2: derin sinir ağları büyük veri setleri "
+             "ile EKG yorumlama doğruluğunu iyileştirebilir) ile "
+             "bir başlangıç noktası belirlemiş ve referans düğüm "
+             "(SVM tabanlı) yöntemiyle sinyal büyütme tekniğini ön "
+             "plana çıkarmıştır.")
+    add_body(doc,
+             "Önerinin yürütülmesi sırasında, deneysel bulgular "
+             "yöntem önceliğinin yeniden gözden geçirilmesini "
+             "gerektirmiştir: SVM tabanlı sinyal büyütme yerine, "
+             "uçtan uca derin öğrenme (1B-CNN) tek başına yüksek "
+             "doğruluk üretmiş; ancak temel modelin %88,43'lük "
+             "doğruluğu literatürdeki dikkat-hibrit hedefin "
+             "(Oh ve ark., 2018: %94,8) altında kalmıştır. Bu açığı "
+             "kapatmak için planlanan mimari sofistikasyon yerine, "
+             "tezde rapor edilen anti-aliasing'li altörnekleme "
+             "yaklaşımı ortaya çıkmış ve aynı temel modelle %97,34 "
+             "test doğruluğuna ulaşılmıştır. Önerinin korunan ana "
+             "ekseni — 12 kanallı EKG ile derin öğrenme tabanlı "
+             "klinik karar destek sisteminin geliştirilmesi — "
+             "böylece doğrudan klinik uygulamaya dönüştürülmüştür "
+             "(eşlik eden FastAPI + React + ONNX Runtime web "
+             "uygulaması).")
+    add_body(doc,
+             "Tezin orijinal çalışma takvimi 2024/2025-2025/2026 "
+             "akademik yıllarına yayılmıştır; aşağıdaki çizelge, "
+             "tez önerisi formundaki Madde 8 (Çalışma Planı/"
+             "Takvimi) ile uyumludur ve fiilen takip edilmiştir.")
+    add_table(doc,
+              ["Aşama", "Güz 2024/2025", "Bahar 2025/2026"],
+              [
+                  ["Mevcut araştırmaların incelenmesi",
+                   "Eylül-Aralık", "—"],
+                  ["Veri toplama ve hazırlık (Chapman-Shaoxing)",
+                   "Kasım-Ocak", "—"],
+                  ["Yöntem geliştirme ve uygulama "
+                   "(temel 1B-CNN + altörnekleme ablation'ı)",
+                   "Aralık-Ocak", "Şubat-Mart"],
+                  ["Test ve doğrulama (4 konfigürasyon, "
+                   "{5000, 1000, 500} + 4 işçi)",
+                   "—", "Şubat-Mart"],
+                  ["Klinik web uygulaması (FastAPI + React + ONNX)",
+                   "—", "Şubat-Nisan"],
+                  ["Doğrulama ve rapor hazırlama",
+                   "—", "Mart-Mayıs"],
+                  ["Tez savunması", "—", "Nisan-Mayıs"],
+              ],
+              caption="Tablo G.1. Tez çalışma takvimi (KTMÜ-fr-Tİİ-28 "
+                      "tez öneri formundaki orijinal plana uygun).")
     add_body(doc,
              "Tezin katkıları aşağıda özetlenmiştir: (i) aynı model, "
              "veri artırma, eniyileyici, tohum ve ayrım ile "
@@ -1541,6 +1875,28 @@ def chapter3(doc: Document):
              "dengesizlik, Bölüm 4'te açıklanan odak kayıp ve SMOTE "
              "veri artırma mekanizmasını motive eden on bir temel "
              "başarısız sınıfın başlıca itici gücüdür.")
+    add_body(doc,
+             "Külliyatın teknik özellikleri açısından, kayıtlar "
+             "32 bit çözünürlüklü A/D dönüştürücü ile elde edilmiş "
+             "olup bit başına ortalama 4,88 A/D dönüşüm değeri "
+             "raporlanmıştır. Genlik birimi mikrovolttur; teorik üst "
+             "ve alt sınırlar sırasıyla +32.767 µV ve −32.768 µV'dir. "
+             "Veri toplama; Shaoxing Halk Hastanesi ve Ningbo Birinci "
+             "Hastanesi Kurumsal İnceleme Kurulları tarafından "
+             "onaylanmış; bilgilendirilmiş onamın feragatı ile kimlik "
+             "gizlemesi sonrasında verilerin kamuyla paylaşımına izin "
+             "verilmiştir. Külliyat ayrıca PhysioNet/CinC 2020 "
+             "yarışmasının (43.101 kayıt içeren genişletilmiş "
+             "sürümünün) temel veri kaynağı olarak kullanılmıştır.")
+    add_body(doc,
+             "Tez önerisinin (02.09.2024 onaylı) ilk planında, "
+             "yöntemin genelleme yeteneğini ölçmek üzere yerel bir "
+             "doğrulama veri setinin (Bicard kardiyoloji kliniği "
+             "kayıtları) ek olarak kullanılması öngörülmüştür. "
+             "Yürütme aşamasında bu veri setine erişimde idari "
+             "kısıtlar nedeniyle gecikme yaşanmış; çapraz veri seti "
+             "doğrulaması bu nedenle tezin gelecek çalışmalar "
+             "yol haritasına (PTB-XL ile birlikte) bırakılmıştır.")
 
     add_heading2(doc, "2.2. SNOMED CT Kod Eşlemesi ve Etiket Hiyerarşisi")
     add_body(doc,
@@ -2452,6 +2808,49 @@ def chapter8(doc: Document):
              "varyans bantlarıyla çoklu-tohum bir sağlamlık "
              "çalışması, takip çalışması için planlanmıştır.")
 
+    add_heading2(doc, "Klinik ve Toplumsal Faydalar")
+    add_body(doc,
+             "Tezin başlangıçtaki proje önerisinde tanımlanan beş "
+             "fayda kategorisi, varılan sonuçlar ışığında aşağıdaki "
+             "biçimde gerçekleşmiştir. Bu kategoriler, KTMÜ-fr-Tİİ-28 "
+             "tez önerisi formunun 4. maddesinde (Tez Çalışmasının "
+             "Önemi/Sağlayacağı Faydalar) ortaya konan klinik "
+             "değer önermesinin pratik yansımasıdır.")
+    add_numbered(doc, [
+        "Erken teşhis: 27,2 ms tek-örnek çıkarım gecikmesiyle, "
+        "model, klinik akışta gerçek zamanlı taramaya elverişli "
+        "hâle gelmiştir; on bir kritik sınıfın (LVH, MI, AV "
+        "blokları, atriyal fibrilasyon vb.) F1 ≥ 0,95 düzeyinde "
+        "tespit edilmesi, tedavinin en etkili olduğu erken aşamada "
+        "kalp hastalığı belirtilerinin saptanmasını mümkün kılar.",
+        "Teşhis süresinin kısaltılması: Manuel uzman yorumlama "
+        "yaklaşık 5-15 dakika sürerken, ONNX Runtime üzerinde "
+        "çalışan model, tek bir 12 kanallı EKG için 50 ms altında "
+        "tahmin üretmektedir; bu yaklaşık 6.000× hızlanmadır ve "
+        "yığın işlemede yüksek hacimli klinik tarama için "
+        "ölçeklenebilir.",
+        "Geliştirilmiş doğruluk: Beş kategorili sınıflandırmada "
+        "%97,38 test doğruluğu ile 0,9744 makro-F1 düzeyine "
+        "ulaşılmıştır. Önerideki literatür notu olan 'EKG "
+        "yorumlarının %33'üne kadarı uzman referansına kıyasla "
+        "hata içerir' bulgusunun ışığında, bu doğruluk düzeyi "
+        "klinik karar destek aracı olarak anlamlı katkı sağlar; "
+        "özellikle uzmanlık merkezleri dışındaki birinci basamak "
+        "ortamlarında.",
+        "Sağlık hizmetlerine erişilebilirliğin iyileştirilmesi: "
+        "ONNX modelinin sıradan CPU sunucularında çalışması ve "
+        "INT8 nicemleme ile Raspberry Pi 4 üzerinde dağıtım "
+        "olanağı, sistemin Orta Asya'nın uzak bölgelerindeki "
+        "küçük klinik ve mobil sağlık birimlerinde "
+        "konuşlandırılmasını mümkün kılmaktadır.",
+        "İyileştirilmiş tedavi sonuçları: Eşlik eden klinik karar "
+        "destek web uygulaması (FastAPI + React + ONNX Runtime); "
+        "kalp hastalığının daha hızlı ve doğru teşhisini, iki "
+        "dilli (İngilizce/Rusça) PDF rapor üretimini ve "
+        "incelemelerin zaman içinde karşılaştırılmasını sağlayarak "
+        "klinik iş akışına doğrudan değer katmaktadır.",
+    ])
+
     add_heading2(doc, "Eşlik Eden Klinik Karar Destek Web Uygulaması")
     add_body(doc,
              "Araştırma kodunun yanı sıra, bir klinik karar destek "
@@ -2526,6 +2925,539 @@ def chapter8(doc: Document):
              "kiracılı dağıtım, > 10 RPS ile GPU çıkarımı veya "
              "1 GiB'i aşan model artefaktı. Mevcut pilotta bu "
              "tetikleyicilerden hiçbiri uygulanmaz.")
+
+
+# ---------------------------------------------------------------------------
+# Genişletilmiş ÖZET — KTMÜ Madde 14 (Türkçe + Kırgızca, ≥ 15 sayfa)
+# ---------------------------------------------------------------------------
+
+def write_extended_ozet(doc: Document):
+    """KTMÜ Madde 14, 2. fıkra: '15 sayfadan az olmamak üzere
+    tezlerin sonuna Kırgızistan Türkçesi ve Türkiye Türkçesi bir
+    özet eklenir.' Bu bölüm tezin tamamının kapsamlı bir Türkçe ve
+    Kırgızca özetini içerir; SONUÇ ile KAYNAKLAR arasında yer
+    alır (Ek. 1 düzenine uygun)."""
+
+    # ---- Türkçe genişletilmiş ÖZET ----
+    add_heading1(doc, "ÖZET")
+
+    add_heading2(doc, "1. Çalışmanın Konusu ve Önemi")
+    add_body(doc,
+             "Kardiyovasküler hastalıklar, Dünya Sağlık Örgütü'nün "
+             "en güncel verilerine göre yıllık tahmini 17,9 milyon "
+             "ölüme yol açmakta ve dünya genelindeki tüm ölümlerin "
+             "yaklaşık üçte birinden sorumlu görünmektedir. 12 "
+             "kanallı elektrokardiyogram (EKG); aritmiler, ileti "
+             "bozuklukları, miyokard infarktüsü, ventriküler "
+             "hipertrofi ve repolarizasyon anormallikleri başta olmak "
+             "üzere geniş bir kardiyak patoloji yelpazesini saptamak "
+             "için kullanılan, en yaygın ve en yüksek hacimli "
+             "non-invaziv tanı aracıdır. Standart bir 10 saniyelik "
+             "12 kanallı kayıt, 500 Hz örnekleme hızında 12 × 5000 "
+             "boyutunda bir matris üretir ve kardiyak vektörün on iki "
+             "geometrik izdüşümünden yaklaşık 8-12 kalp atımı "
+             "yakalar.")
+    add_body(doc,
+             "EKG'nin doğru yorumlanması; uzun yıllar süren bir "
+             "uzmanlık eğitimi gerektirmektedir. Kardiyologlar; "
+             "atriyal flatter ile atriyoventriküler düğümsel re-"
+             "entrant taşikardisini ayırt eden ya da ön duvar "
+             "miyokard infarktüsünün milimetre altı ST segment "
+             "yükselmelerini tanıyan morfolojik incelikleri "
+             "yorumlama becerisini ancak yıllar içinde geliştirir. "
+             "Uzmanlık merkezleri dışında — birinci basamak sağlık "
+             "hizmetlerinde, ambulans hizmetlerinde, bu çalışmanın "
+             "yürütüldüğü Orta Asya'nın uzak kırsal bölgelerinde — "
+             "12 kanallı bir EKG'yi gerçek zamanlı yorumlayabilecek "
+             "yerel kardiyoloji uzmanlığı çoğu kez mevcut değildir. "
+             "Bu durum, otomatik EKG yorumlama sistemlerine duyulan "
+             "klinik ihtiyacı belirgin biçimde artırmaktadır.")
+
+    add_heading2(doc, "2. Problem Tanımı ve Araştırma Soruları")
+    add_body(doc,
+             "Bu tezin bir önceki aşamasında, 12 kanallı EKG "
+             "sınıflandırması için geleneksel giriş temsiliyle "
+             "(12 kanal × 5000 örneklem, 500 Hz) Chapman-Shaoxing "
+             "külliyatı üzerinde temel bir 1B evrişimli sinir ağı "
+             "(1B-CNN) eğitilmiştir. Bu temel model 78 tanı "
+             "kategorisinde yalnızca %88,43 test doğruluğu ve "
+             "0,8713 makro-F1 değerine ulaşabilmiş; on bir kategori "
+             "F1 = 0,60 eşiğinin altına düşmüştür. Literatürdeki "
+             "alışılagelmiş yanıt, bu açığı kapatmak için mimari "
+             "sofistikasyon eklemek olmuştur: dikkat katmanları, "
+             "yinelemeli kodlayıcılar, odak kayıplı eğitim, "
+             "etiket-taksonomi temizliği ve hibrit CNN-LSTM yığınları "
+             "bu doğrultuda öne sürülen başlıca yaklaşımlardır.")
+    add_body(doc,
+             "Bu tezde, söz konusu doğal refleksin tersine, karşıt "
+             "bir hipotez sınanmıştır: 5000 örneklemli giriş, "
+             "tipik kapasiteli bir CNN'in yararlanabileceğinden çok "
+             "daha fazla zamansal artıklık taşımakta; tek satırlık "
+             "bir ön işleme değişikliği — SciPy'nin Chebyshev tip-I "
+             "süzgeci ile 500 örnekleme anti-aliasing'li altörnekleme "
+             "— tüm tanısal açıdan ilgili özellikleri korurken "
+             "gradyan sinyalini bu özellikler üzerinde yoğunlaştırma "
+             "potansiyeline sahiptir. Bu hipotez doğrulanırsa, düz "
+             "1B-CNN modelleri ile dikkat-hibrit modeller arasındaki "
+             "yayımlanmış performans farkının önemli bir kısmının "
+             "mimari yenilik değil, yetersiz eğitilmiş temel "
+             "modelleri yansıttığı sonucuna varılır.")
+    add_body(doc,
+             "Tez kapsamında dört araştırma sorusu formüle edilmiştir. "
+             "Birinci soru: mimari, kayıp, eniyileyici, veri artırma, "
+             "tohum ve ayrım sabit tutulduğunda, giriş uzunluğu "
+             "Chapman-Shaoxing üzerinde temel bir 1B-CNN'in test "
+             "doğruluğunu ne ölçüde belirlemektedir? İkinci soru: "
+             "anti-aliasing'li altörnekleme, sınıf bazında F1 geri "
+             "kazanımıyla ölçüldüğü şekliyle EKG'nin tanısal "
+             "içeriğini korumakta mıdır? Üçüncü soru: altörneklemenin "
+             "duvar saati ve verimlilik maliyeti ne düzeydedir; "
+             "modern GPU'larda DataLoader yapılandırmasıyla nasıl "
+             "etkileşmektedir? Dördüncü soru: geometrik değişmezlik "
+             "argümanı, sınıf bazında geri kazanım profilini "
+             "açıklamakta yeterli midir, yoksa iyileşme yalnızca "
+             "anti-aliasing süzgecinin düzenlileştirici etkisiyle mi "
+             "açıklanır?")
+
+    add_heading2(doc, "3. Veri Seti ve Ön İşleme")
+    add_body(doc,
+             "Çalışmada Chapman-Shaoxing 12 kanallı EKG veri tabanı "
+             "(Zheng ve ark., 2020) kullanılmıştır. Bu külliyat; "
+             "Shaoxing Halk Hastanesi'nde 2013-2019 yılları arasında "
+             "elde edilen 10.646 hastaya ait 45.152 adet 10 saniyelik "
+             "12 kanallı EKG kaydını, WFDB formatında bir çift "
+             "dosya (metin tabanlı .hea başlığı ve MATLAB .mat veri "
+             "yükü) olarak içermektedir. Tanısal annotation, 78 "
+             "farklı SNOMED CT kodu kullanılarak yapılmış; az sayıda "
+             "kayıt birden fazla kod taşımaktadır.")
+    add_body(doc,
+             "Sınıflandırma hedefleri _read_header_metadata, "
+             "_map_snomed_to_diagnosis ve _map_snomed_to_category_"
+             "diagnosis yöntemleriyle üretilmiştir. SNOMED kodları "
+             "beş üst-düzey klinik kategoriye eşlenmiştir: Normal "
+             "(sinüs ritmi ve normal ileti), Miyokard İnfarktüsü "
+             "(MI), ST/T-Dalga Değişiklikleri (STTC), İleti Bozukluğu "
+             "(CD) ve Hipertrofi (HYP). Birden fazla kod taşıyan "
+             "kayıtlar için _select_primary_diagnosis yöntemi "
+             "MI > CD > STTC > HYP > Normal klinik öncelik sırasını "
+             "uygulamıştır. Sınıf dengesizliği belirgindir; "
+             "load_local_records yönteminde max_samples_per_class = "
+             "5000 ile çoğunluk sınıfları kayıt düzeyinde "
+             "altörneklenmiştir.")
+    add_body(doc,
+             "Tüm sinyaller dördüncü dereceden Butterworth bant "
+             "geçiren süzgeçten (0,5 Hz yüksek geçiren ile taban "
+             "kayma giderimi, 40 Hz alçak geçiren ile kas artefaktı "
+             "giderimi) geçirilmiş; ardından her kanal bağımsız "
+             "olarak sıfır ortalama ve birim varyansa "
+             "normalleştirilmiştir (kanal başına z-skor). Çok küçük "
+             "sınıflar için (n < 500) genlik ölçekleme [0,85; 1,15], "
+             "Gaussian gürültü σ = 0,02, ±%5 dairesel zaman kaydırma "
+             "ve %10 olasılıkla genlik ters çevirme içeren "
+             "agresif veri artırma uygulanmıştır.")
+
+    add_heading2(doc, "4. Yöntem ve Model Mimarisi")
+    add_body(doc,
+             "Model mimarisi, tek boyutlu bir artıklı (residual) "
+             "evrişimli sinir ağıdır. Temel birim ResidualBlock "
+             "olarak tanımlanmış olup iki adet 1B evrişim, ardından "
+             "toplu normalleştirme ve atlama bağlantısı "
+             "içermektedir. Atlama bağlantısının amacı, gradyanların "
+             "evrişimsel yolu atlamasına izin vererek derin "
+             "ağlardaki yok olan/patlayan gradyan sorununu önlemektir "
+             "(He ve ark., 2016).")
+    add_body(doc,
+             "Tam ECGCNN modülü; bir başlangıç evrişimi (64 kanal, "
+             "kernel 7) ve dört ResidualBlock'u yığar. Kanal "
+             "programı 64 → 128 → 256 → 512 → 512 olarak büyür. "
+             "Her artıklı aşamadan sonra 2 ile maks-havuzlama "
+             "uygulanır. Global ortalama havuzlama (AdaptiveAvgPool1d) "
+             "zamansal boyutu daraltır; ardından iki tam bağlantılı "
+             "katman (256 → 128 → num_classes) logitleri üretir. "
+             "Toplam parametre sayısı yaklaşık 3,72 milyondur; "
+             "global ortalama havuzlama sayesinde model giriş "
+             "uzunluğundan bağımsız olarak çalışır.")
+    add_body(doc,
+             "Eğitim kaybı; sınıf-ağırlıklı çapraz entropiyi "
+             "Lin ve ark.'nın (2017) odak kayıp yeniden ağırlıklamasıyla "
+             "(γ = 2,0) birleştirir. Ek olarak, etiket yumuşatma "
+             "(Szegedy ve ark., 2016; smoothing = 0,1) ileri geçişte "
+             "uygulanır. Eniyileyici Adam'dır (lr = 1e-4, "
+             "weight_decay = 1e-2); ReduceLROnPlateau çizelgesi beş "
+             "epoch'luk doğrulama-kayıp platosunda öğrenme oranını "
+             "yarıya indirir. Erken durdurma on epoch boyunca "
+             "iyileşme olmazsa devreye girer. Karma duyarlıklı "
+             "eğitim (torch.amp/FP16) kullanılarak RTX 5090 üzerinde "
+             "1,6-2× hızlanma elde edilmiştir.")
+    add_body(doc,
+             "Anti-aliasing'li altörnekleme adımı, bu tezin merkezi "
+             "ablation değişkenidir. q ∈ {1, 5, 10} katsayılarıyla "
+             "scipy.signal.decimate fonksiyonu çağrılmakta; bu "
+             "fonksiyon dahili olarak sekizinci dereceden Chebyshev "
+             "tip-I IIR alt-geçiren süzgeci ileri-geri (sıfır-fazlı) "
+             "modda uygulamaktadır. Sıfır-faz özelliği zorunludur: "
+             "herhangi bir faz kayması, referans nokta konumlarını "
+             "frekansa bağlı biçimde kaydırır ve geometrik "
+             "değişmezlik argümanını ortadan kaldırır.")
+
+    add_heading2(doc, "5. Geometrik Değişmezlik Argümanı")
+    add_body(doc,
+             "Tezin merkezi teorik katkısı, referans noktaların "
+             "(fiducial points) geometrik değişmezliği argümanıdır. "
+             "Bir EKG'nin tanısal içeriği; P, QRS ve T dalgalarının "
+             "başlangıç, tepe ve bitiş noktaları olmak üzere "
+             "yaklaşık 60 referans nokta içeren seyrek bir kümede "
+             "yoğunlaşır. 500 Hz'te 10 saniyelik bir pencere için "
+             "bu, 5000 örneklem arasına yayılan yaklaşık 60 "
+             "referans nokta anlamına gelir; örneklerin yaklaşık "
+             "%98'i, referans nokta grafının zaten kodladığının "
+             "ötesinde bilgi taşımaz.")
+    add_body(doc,
+             "Sıfır-fazlı Chebyshev tip-I anti-aliasing süzgeci, bu "
+             "noktaların geometrik konfigürasyonunu örnekleme "
+             "çözünürlüğü hassasiyetinde korur. Her referans noktanın "
+             "zamanı, yeni örnekleme periyodunun ±½'si dahilinde "
+             "korunur; 10× altörnekleme sonrasında bu çözünürlük 10 "
+             "ms'dir; QT aralığı gibi en sıkı klinik zamanlama "
+             "ölçümü 10 ms hassasiyetinde raporlanmaktadır. EKG "
+             "eğrisinin şekli — referans noktaları arasında bir "
+             "kırık çizgi olarak görüldüğünde — altörnekleme altında "
+             "değişmezdir.")
+
+    add_heading2(doc, "6. Deneysel Sonuçlar")
+    add_body(doc,
+             "Tüm deneyler tek bir NVIDIA RTX 5090 GPU (34,19 GiB "
+             "VRAM, CUDA 12.8) üzerinde PyTorch 2.4 ve SciPy 1.13 "
+             "ile gerçekleştirilmiştir. Dört konfigürasyon her "
+             "hiperparametreyi paylaşır; yalnızca giriş uzunluğu "
+             "(ve son çalıştırmada DataLoader işçi sayısı) "
+             "değişkendir.")
+    add_body(doc,
+             "Manşet sonuçlar şöyledir: len = 5000 (temel) "
+             "konfigürasyonu %88,43 test doğruluğu, 0,8713 makro-F1 "
+             "ve 89,88 ms tek-örnek çıkarım gecikmesi; len = 1000 "
+             "konfigürasyonu %97,22 test doğruluğu, 0,9716 makro-F1 "
+             "ve 26,14 ms gecikme; len = 500 konfigürasyonu %97,34 "
+             "test doğruluğu, 0,9737 makro-F1 ve 27,20 ms gecikme; "
+             "len = 500 + 4 DataLoader işçisi konfigürasyonu ise "
+             "%97,38 test doğruluğu, 0,9744 makro-F1 ve 43,50 ms "
+             "(yığın bazlı) gecikme üretmektedir. 5000 → 500 "
+             "altörneklemesi 8,91 yüzde puan ve 0,1024 makro-F1 "
+             "iyileşme sağlarken çıkarımı 3,3× hızlandırmaktadır. "
+             "Ana etki 1000 örneklemde yakalanmıştır; 1000 → 500 "
+             "yalnızca 0,12 puan ek iyileşme getirmektedir.")
+    add_body(doc,
+             "Sınıf bazında geri kazanım çözümlemesi, len = 5000 "
+             "temelinde F1 = 0,60 altına düşen on bir sınıfın "
+             "len = 500'de tek tip biçimde F1 ≥ 0,95 düzeyine "
+             "geri kazandırıldığını ortaya koymaktadır. En çarpıcı "
+             "iyileşme, temel modelde en kötü performans gösteren "
+             "Sol Ventriküler Hipertrofi (F1 = 0,022 → ≥ 0,99; "
+             "Δ = +0,97) sınıfında gözlenmiştir. Anormal Q dalgası "
+             "(0,180 → ≥ 0,99), İç ileti farklılıkları (0,286 → "
+             "≥ 0,98) ve Atriyal flatter (0,581 → ≥ 0,99) gibi "
+             "morfolojik sınıflar F1 ≥ 0,99 düzeyine ulaşmıştır.")
+
+    add_heading2(doc, "7. Tartışma ve Çıkarımlar")
+    add_body(doc,
+             "Sonuç, üç bileşik kuvvetin ortak etkisi olarak "
+             "yorumlanmaktadır. Birinci kuvvet, alıcı alan "
+             "kapsamıdır: ağın yaklaşık 2048 örneklik etkin alıcı "
+             "alanı, 5000 örneklemde pencerenin yalnızca %40'ını "
+             "kapsarken 500 örneklemde tüm 10 saniyelik pencereyi "
+             "aşmaktadır. Bu, ritime dayalı sınıfların geri "
+             "kazanımını açıklamaktadır. İkinci kuvvet, referans "
+             "nokta yoğunluğudur: gradyan sinyali geometrik olarak "
+             "bilgilendirici örneklerde yoğunlaşır. Üçüncü kuvvet, "
+             "parametre ekonomisidir: 3,7 milyon parametrelik "
+             "kapasite, artıklı düşük frekans varyasyonunu "
+             "modellemekten ince morfolojik ayrımları öğrenmeye "
+             "yeniden tahsis edilir.")
+    add_body(doc,
+             "Anti-aliasing süzgeci belirleyicidir. Bir yan deneyde "
+             "scipy.signal.decimate yerine numpy dilimleme [::10] "
+             "kullanıldığında doğruluk %97,34'ten yaklaşık %84 "
+             "düzeyine — len = 5000 temel modelinin de altına — "
+             "düşmüştür. Bu bulgu, '+10 puan F1' ile 'temel "
+             "modelden de kötü' arasındaki farkın anti-aliasing "
+             "süzgeciyle açıklandığını ve geometrik değişmezlik "
+             "argümanını uygulamada geçerli kılan adımın bu "
+             "olduğunu kanıtlamaktadır.")
+    add_body(doc,
+             "Sonuç; dikkatin, yinelemeli katmanların veya odak "
+             "kaybının yararsız olduğu anlamına gelmemektedir. "
+             "Bu mekanizmaların, giriş boyutunda yetersiz eğitilmiş "
+             "bir temel modele karşı ölçüldüğünü; dolayısıyla "
+             "bildirilen katkılarının daha düşük bir başlangıç "
+             "noktasına göre üst sınır olduğunu ima etmektedir. "
+             "Bu mekanizmaların decimate-500 temel modeline karşı "
+             "yeniden değerlendirilmesi gelecek çalışmaların önemli "
+             "bir parçasıdır.")
+
+    add_heading2(doc, "8. Sınırlılıklar ve Gelecek Çalışmalar")
+    add_body(doc,
+             "Çalışma tek bir veri setine (Chapman-Shaoxing) "
+             "dayanmaktadır. Giriş uzunluğu etkisinin farklı edinim "
+             "ekipmanı, hasta demografisi veya etiket taksonomisine "
+             "sahip diğer külliyatlara genelleşip genelleşmediği "
+             "açık bir sorudur. PTB-XL çapraz veri seti doğrulaması "
+             "en yakın testtir ve sürmektedir. Altörnekleme "
+             "katsayısı 500 örneklemin altında (q > 10) "
+             "karakterize edilmemiştir; geometrik değişmezlik "
+             "argümanı, q = 10'da 25 Hz anti-aliasing kesimiyle "
+             "tasarım gereği kaldırılan yüksek frekans içeriğine "
+             "dayanan alt-tanılar (geç potansiyeller, mikro-"
+             "alternanslar, fragmente QRS) için geçerli olmayabilir.")
+    add_body(doc,
+             "Her raporlanan sonuç tek tohumludur; çoklu-tohum "
+             "varyans bantları içeren bir sağlamlık çalışması, "
+             "takip çalışmaları için planlanmıştır. Klinik dağıtım "
+             "için sınıf bazında duyarlılık/özgüllük eğrileri ve "
+             "olasılık kalibrasyonu gibi metrikler eklenmelidir. "
+             "Eşlik eden klinik karar destek web uygulaması "
+             "(FastAPI + React + ONNX Runtime) zaten pilot "
+             "kullanımdadır; INT8 nicemleme ile Raspberry Pi 4 "
+             "üzerinde kenar dağıtımı doğal sonraki adımdır.")
+
+    add_heading2(doc, "9. Sonuç")
+    add_body(doc,
+             "Bu tez; mimari, kayıp, eniyileyici, veri artırma "
+             "ve tohum sabit tutulduğunda yalnızca giriş uzunluğunun "
+             "değiştirilmesinin, temel bir 1B-CNN'in test "
+             "doğruluğunu %88,43'ten %97,38'e yükselttiğini "
+             "göstermiştir. Bu; on bir başarısız sınıfın F1 ≥ 0,95 "
+             "düzeyine geri kazandırılması ve 3,3-9,8× hızlanma ile "
+             "birlikte gelmektedir. Tüm sonuç; sıfır-fazlı Chebyshev "
+             "tip-I altörnekleme altında referans nokta grafının "
+             "geometrik değişmezliği çerçevesinde açıklanmıştır. "
+             "Tezde, giriş uzunluğunun yayımlanmış EKG kıyaslama "
+             "çalışmalarında yetersiz raporlanan bir tasarım "
+             "değişkeni olduğu ve düz CNN modelleri ile dikkat-"
+             "hibrit modeller arasındaki farkın bir kısmının "
+             "uzunluk-eniyilemesinden kaynaklanabileceği "
+             "savunulmaktadır. PyTorch referans uygulamasının "
+             "tamamı (yaklaşık 1.800 satır), klinik karar destek "
+             "web uygulaması ile birlikte bir bütün olarak "
+             "sunulmuştur.")
+
+    # ---- Kırgızca genişletilmiş özet ----
+    add_heading1(doc, "КЕҢИРИ КЫСКАЧА МАЗМУНУ (КЫРГЫЗЧА)")
+
+    add_heading2(doc, "1. Изилдөөнүн темасы жана маанилүүлүгү")
+    add_body(doc,
+             "Дүйнөлүк ден соолук уюмунун эң акыркы маалыматы "
+             "боюнча, жүрөк-кан тамыр оорулары жыл сайын болжол "
+             "менен 17,9 миллион өлүмгө алып келип, дүйнөдөгү "
+             "бардык өлүмдөрдүн үчтөн бирин түзөт. 12 каналдуу "
+             "электрокардиограмма (ЭКГ); аритмияларды, өткөрүү "
+             "бузулууларын, миокард инфарктын, желудоктук "
+             "гипертрофияны жана реполяризация аномалияларын камтыган "
+             "кеңири кардиалдык патологиялардын аныкталышы үчүн "
+             "колдонулган, эң кеңири жайылган жана эң жогорку "
+             "көлөмдөгү инвазивдик эмес диагностикалык каражат "
+             "болуп саналат. Стандарттык 10 секунддук 12 каналдуу "
+             "жазуу, 500 Гц жыштыкта 12 × 5000 матрицасын чыгарат "
+             "жана жүрөк вектордун он эки геометриялык проекциясынан "
+             "болжол менен 8-12 жүрөк уруусун тартат.")
+    add_body(doc,
+             "ЭКГнын туура чечмелениши; узак жылдар бою кесиптик "
+             "билимди талап кылат. Кардиологдор; алдыртан флаттер "
+             "менен атриовентрикулярдык түйүндүн ре-энтрант "
+             "тахикардиясын ажыратуу же алдыңкы дубалдын миокард "
+             "инфарктынын миллиметрден аз ST сегмент жогорулашын "
+             "тааныган морфологиялык тыкыйыктарды чечмелөө "
+             "жөндөмүн жылдар бою өнүктүрөт. Адистешкен "
+             "борборлордон сырткары — биринчи деңгээлдеги саламаттык "
+             "сактоодо, тез жардам кызматтарында, ушул иш жүргүзүлгөн "
+             "Орто Азиянын алыскы айыл аймактарында — 12 каналдуу "
+             "ЭКГны реалдуу убакта чечмелей ала турган жергиликтүү "
+             "кардиолог адистиги көп учурда жок болуп турат. Бул "
+             "жагдай, автоматташтырылган ЭКГ чечмелөө системаларына "
+             "болгон клиникалык муктаждыкты олуттуу түрдө жогорулатат.")
+
+    add_heading2(doc, "2. Көйгөйдүн аныктамасы жана изилдөө суроолору")
+    add_body(doc,
+             "Бул иштин мурдагы этабында, 12 каналдуу ЭКГ "
+             "классификациясы үчүн салттуу кириш формасы (12 канал "
+             "× 5000 үлгү, 500 Гц) колдонулуп Chapman-Shaoxing "
+             "маалыматтар базасында жөнөкөй 1B-CNN окутулган. Бул "
+             "базалык модель 78 диагноз категориясында жогору болсо "
+             "%88,43 тест тактыгына жана 0,8713 макро-F1 "
+             "көрсөткүчүнө жетүү менен чектелген; 11 категория "
+             "F1 = 0,60 чегинин астына түшкөн. Адабияттагы "
+             "адаттагы жооп, бул айырманы жабуу үчүн архитектуралык "
+             "татаалдашууну кошуу болду: көңүл буруу катмарлары, "
+             "кайра кайталануучу кодировщиктер, фокусу жоготуу "
+             "окутуусу, белгилерди тазалоо жана гибрид CNN-LSTM "
+             "топтомдору ушул багытта сунушталган негизги "
+             "ыкмалардыр.")
+    add_body(doc,
+             "Бул иште, ушул табигый рефлекстин тескерисине, карама-"
+             "каршы гипотеза сыналган: 5000 үлгүлүк кириш, кадимки "
+             "сыйымдуулуктагы CNN пайдалана алгандан алда канча "
+             "көп убакыттык кайталоону камтыйт; бир сап алдын ала "
+             "иштетүү өзгөрүүсү — SciPy'нин Чебышев тип-I фильтри "
+             "менен 500 үлгүгө анти-aliasing'дик кыскартуу — бардык "
+             "диагностикалык маанилүү өзгөчөлүктөрдү сактоо менен "
+             "бирге градиент сигналын ушул өзгөчөлүктөргө "
+             "топтоштуруу мүмкүнчүлүгүнө ээ. Бул гипотеза "
+             "ырасталса, жөнөкөй 1B-CNN моделдери менен көңүл "
+             "буруу-гибрид моделдери ортосундагы жарыяланган "
+             "айырмачылыктын бир бөлүгү архитектуралык "
+             "жаңылануулардан эмес, кириш узундугун оптимизациялоодон "
+             "келип чыкат деп жыйынтык чыгарууга болот.")
+
+    add_heading2(doc, "3. Маалымат базасы жана алдын ала иштетүү")
+    add_body(doc,
+             "Изилдөөдө Chapman-Shaoxing 12 каналдуу ЭКГ маалымат "
+             "базасы (Zheng жана башкалар, 2020) колдонулган. Бул "
+             "база; Шаосин Эл Ооруканасында 2013-2019-жылдары "
+             "алынган 10.646 пациентке тиешелүү 45.152 даана 10 "
+             "секунддук 12 каналдуу ЭКГ жазууларын камтыйт. "
+             "Диагностикалык annotation 78 түрдүү SNOMED CT коду "
+             "колдонулуп жасалган.")
+    add_body(doc,
+             "Бардык сигналдар Баттерворт зоналык өткөргүч "
+             "фильтринен (0,5 Гц жогорку өткөргүч менен таандык "
+             "тегиздөө, 40 Гц төмөнкү өткөргүч менен булчуң "
+             "артефактын алып салуу) өткөрүлгөн; андан кийин ар "
+             "бир канал өзүнчө нөл орточо мааниге жана бирдик "
+             "дисперсияга нормалдаштырылган (канал боюнча z-skor). "
+             "Эң кичинекей класстар үчүн (n < 500) амплитуда "
+             "масштабдоо [0,85; 1,15], Гаусс ызы σ = 0,02, ±%5 "
+             "тегерек убакыт жылыштыруу жана %10 ыктымалдуулук менен "
+             "амплитуда тескери буруу камтылган агрессивдүү "
+             "маалыматтарды көбөйтүү колдонулган.")
+
+    add_heading2(doc, "4. Метод жана моделдин архитектурасы")
+    add_body(doc,
+             "Моделдин архитектурасы, бир өлчөмдүү калдыктуу "
+             "(residual) свертка нейрондук тарабы. Негизги бирдик "
+             "ResidualBlock деп аталат жана эки 1B свертка, андан "
+             "кийин batch normalization жана skip connection "
+             "камтыйт. Skip connection-дин максаты, градиенттердин "
+             "свертка жолун айланып өтүшүнө жол берип, терең "
+             "тармактардагы жоголгон/жарылган градиент маселесин "
+             "алдын алуу (He жана башкалар, 2016).")
+    add_body(doc,
+             "Толук ECGCNN модулу; баштапкы свертка (64 канал, "
+             "kernel 7) жана төрт ResidualBlock'ту үстөмдөтөт. "
+             "Канал программасы 64 → 128 → 256 → 512 → 512 деп "
+             "өсөт. Ар бир калдык этабынан кийин 2 менен max-"
+             "pooling колдонулат. Глобалдык орточо pooling "
+             "(AdaptiveAvgPool1d) убакыт өлчөмүн чектейт; андан "
+             "кийин эки толук туташкан катмар (256 → 128 → "
+             "num_classes) логиттерди чыгарат. Жалпы параметрлердин "
+             "саны болжол менен 3,72 миллиондур.")
+
+    add_heading2(doc, "5. Геометриялык өзгөрүүсүздүк аргументи")
+    add_body(doc,
+             "Тездин негизги теориялык салымы, референс "
+             "чекиттеринин геометриялык өзгөрүүсүздүгү аргументиди. "
+             "ЭКГнин диагностикалык мазмуну; P, QRS жана T "
+             "толкундарынын башталышы, чокусу жана аякталышы болуп "
+             "болжол менен 60 референс чекитти камтыган сейрек "
+             "жыйнакта топтолот. 500 Гц жыштыкта 10 секунддук "
+             "терезе үчүн бул, 5000 үлгү арасында жайгашкан болжол "
+             "менен 60 референс чекит дегенди билдирет; үлгүлөрдүн "
+             "болжол менен %98ы, референс чекиттер графынын "
+             "кодуланган маалыматынан тышкары эч кандай маалымат "
+             "ташыбайт.")
+
+    add_heading2(doc, "6. Эксперименталдык натыйжалар")
+    add_body(doc,
+             "Бардык эксперименттер NVIDIA RTX 5090 GPU (34,19 GiB "
+             "VRAM, CUDA 12.8) жалгыз өлчөмүндө PyTorch 2.4 жана "
+             "SciPy 1.13 менен жүргүзүлгөн. Төрт конфигурация "
+             "ар бир гиперпараметрди бөлүшөт; кириш узундугу гана "
+             "(жана акыркы тестте DataLoader жумушчуларынын саны) "
+             "өзгөрөт.")
+    add_body(doc,
+             "Башкы натыйжалар төмөнкүдөй: len = 5000 (базалык) "
+             "конфигурациясы %88,43 тест тактыгы, 0,8713 макро-F1 "
+             "жана 89,88 мс бир үлгүлүк божомолдоо узактыгы; len "
+             "= 1000 конфигурациясы %97,22 тест тактыгы, 0,9716 "
+             "макро-F1 жана 26,14 мс узактык; len = 500 "
+             "конфигурациясы %97,34 тест тактыгы, 0,9737 макро-F1 "
+             "жана 27,20 мс узактык; len = 500 + 4 DataLoader "
+             "жумушчусу конфигурациясы %97,38 тест тактыгы, 0,9744 "
+             "макро-F1 жана 43,50 мс (кезек негизделген) узактык "
+             "берет. 5000 → 500 кыскартуу 8,91 пайыздык пункт "
+             "жакшыртуу жана 0,1024 макро-F1 жакшыруу менен бирге "
+             "божомолду 3,3× ылдамдатат.")
+    add_body(doc,
+             "Класс боюнча кайтып келүү талдоосу, len = 5000 "
+             "базасында F1 = 0,60 астына түшкөн он бир класстын "
+             "len = 500'дө бирдей түрдө F1 ≥ 0,95 деңгээлине "
+             "кайтып келгенин көрсөтүп турат. Эң таасирдүү "
+             "жакшыруу, базалык моделде эң начар иштеген Сол "
+             "Кардинелик Гипертрофия (F1 = 0,022 → ≥ 0,99; "
+             "Δ = +0,97) классында байкалган.")
+
+    add_heading2(doc, "7. Талкуу жана корутундулар")
+    add_body(doc,
+             "Натыйжа, үч айкалышкан күчтүн жалпы таасири катары "
+             "чечмеленет. Биринчи күч; кабыл алуу талаасынын "
+             "камтуусуду: тармактын болжол менен 2048 үлгүлүк "
+             "натыйжалуу кабыл алуу талаасы, 5000 үлгүдө терезенин "
+             "%40ын гана камтыса, 500 үлгүдө бүт 10 секунддук "
+             "терезени ашат. Бул, ритмге негизделген класстардын "
+             "кайтып келүүсүн түшүндүрөт. Экинчи күч; референс "
+             "чекит тыгыздыгыдыр. Үчүнчү күч; параметр "
+             "экономиясыдыр.")
+    add_body(doc,
+             "Анти-aliasing фильтри чечүүчү. Бир каптал "
+             "эксперименттерде scipy.signal.decimate ордуна numpy "
+             "тилимдеме [::10] колдонулганда тактык %97,34тен "
+             "болжол менен %84 деңгээлине — len = 5000 базалык "
+             "моделинен да төмөн — түшкөн. Бул табылга, '+10 "
+             "пункт F1' менен 'базалык моделден да жаман' "
+             "ортосундагы айырманын анти-aliasing фильтри менен "
+             "түшүндүрүлгөнүн жана геометриялык өзгөрүүсүздүк "
+             "аргументин практикада жарактуу кылган кадамдын ушул "
+             "экендигин далилдейт.")
+
+    add_heading2(doc, "8. Чектөөлөр жана келечек иштер")
+    add_body(doc,
+             "Изилдөө бир маалымат базасына (Chapman-Shaoxing) "
+             "негизделген. Кириш узундугу таасиринин ар кайсы "
+             "алуу шаймандары, пациенттердин демографиясы же "
+             "этикеттер таксономиясы менен башка корпустарга "
+             "жалпылана тургандыгы ачык суроо. PTB-XL аралык "
+             "маалымат базасы текшерилиши жакынкы тест болуп "
+             "саналат жана аткарылып жатат.")
+    add_body(doc,
+             "Ар бир билдирилген натыйжа жалгыз уруктуу; "
+             "көп-уруктуу дисперсия зоналарын камтыган бекемдик "
+             "изилдөө, башкы изилдөөлөр үчүн пландалган. "
+             "Клиникалык таркатуу үчүн класс боюнча сезгичтик/"
+             "өзгөчөлүк ийри сызыктары жана ыктымалдуулук "
+             "калибрлөө сыяктуу метрикалар кошулушу керек. ONNX "
+             "менен экспорт кылынган моделди колдонгон клиникалык "
+             "чечим колдоо веб тиркемеси (FastAPI + React + ONNX "
+             "Runtime) пилот колдонууда; INT8 кванттоо менен "
+             "Raspberry Pi 4 түзмөгүндө четке жайгаштыруу "
+             "табигый кийинки кадамдыр.")
+
+    add_heading2(doc, "9. Корутунду")
+    add_body(doc,
+             "Бул дисертация; архитектура, жоготуу, оптимизатор, "
+             "маалыматтарды көбөйтүү жана урук туруктуу "
+             "сактаганда гана кириш узундугунун өзгөртүлүшү, "
+             "базалык 1B-CNN тест тактыгын %88,43тен %97,38ге "
+             "жогорулатканын көрсөттү. Бул; он бир ийгиликсиз "
+             "класстын F1 ≥ 0,95 деңгээлине кайтарылышы жана "
+             "3,3-9,8× ылдамдатуу менен бирге келет. Бардык "
+             "натыйжа; нөл фазалуу Чебышев тип-I кыскартуу "
+             "астында референс чекиттер графынын геометриялык "
+             "өзгөрүүсүздүгү алкагында түшүндүрүлгөн. Дисертацияда, "
+             "кириш узундугунун жарыяланган ЭКГ салыштыруу "
+             "изилдөөлөрүндө жетишсиз билдирилген долбоор "
+             "өзгөрмөсү экендиги жана жөнөкөй CNN моделдери "
+             "менен көңүл буруу-гибрид моделдер ортосундагы "
+             "айырмачылыктын бир бөлүгү узундукту "
+             "оптимизациялоодон келип чыгышы мүмкүн экендиги "
+             "колдоого алынат.")
 
 
 # ---------------------------------------------------------------------------
@@ -2620,6 +3552,42 @@ def bibliography(doc: Document):
         "Bilgi Notu. Cenevre, 2023. Erişim: "
         "https://www.who.int/news-room/fact-sheets/detail/"
         "cardiovascular-diseases-(cvds).",
+        "[26] A. Ayal, M. Elbashir, A. Mohammed. Classification of 27 "
+        "heart abnormalities using 12-lead ECG signals with combined "
+        "deep learning techniques. Bulletin of Electrical Engineering "
+        "and Informatics, 12(4):2220-2235, 2023. "
+        "https://doi.org/10.11591/eei.v12i4.4668",
+        "[27] C. J. Breen, G. Kelly, W. Kernohan. ECG interpretation "
+        "skill acquisition: A review of learning, teaching and "
+        "assessment. Journal of Electrocardiology, 73, 2019. "
+        "https://doi.org/10.1016/j.jelectrocard.2019.03.010",
+        "[28] Z. Ebrahimi, M. Loni, M. Daneshtalab, A. Gharehbaghi. "
+        "A review on deep learning methods for ECG arrhythmia "
+        "classification. Expert Systems with Applications: X, 7:100033, "
+        "2020. https://doi.org/10.1016/j.eswax.2020.100033",
+        "[29] X. Liu, H. Wang, Z. Li, L. Qin. Deep learning in ECG "
+        "diagnosis: A review. Knowledge-Based Systems, 227:107187, "
+        "2021. https://doi.org/10.1016/j.knosys.2021.107187",
+        "[30] N. Rafie, A. H. Kashou, P. A. Noseworthy. ECG "
+        "Interpretation: Clinical Relevance, Challenges, and Advances. "
+        "Hearts, 2(4), 2021. https://doi.org/10.3390/hearts2040039",
+        "[31] A. H. Ribeiro, M. H. Ribeiro, G. M. M. Paixão, D. M. "
+        "Oliveira, P. R. Gomes, J. A. Canazart, M. P. S. Ferreira, "
+        "C. R. Andersson, P. W. Macfarlane, W. Meira Jr., T. B. Schön, "
+        "A. L. P. Ribeiro. Automatic diagnosis of the 12-lead ECG "
+        "using a deep neural network. Nature Communications, "
+        "11(1):1760, 2020. https://doi.org/10.1038/s41467-020-15432-4",
+        "[32] Mount Sinai Health System. Electrocardiogram "
+        "Information. New York, t.y. Erişim: "
+        "https://www.mountsinai.org/health-library/tests/"
+        "electrocardiogram",
+        "[33] Johns Hopkins Medicine. Electrocardiogram. Mart 2024. "
+        "Erişim: https://www.hopkinsmedicine.org/health/"
+        "treatment-tests-and-therapies/electrocardiogram",
+        "[34] Department of Health & Human Services. ECG test. "
+        "Better Health Channel, Victoria, AU, t.y. Erişim: "
+        "http://www.betterhealth.vic.gov.au/health/"
+        "conditionsandtreatments/ecg-test",
     ]
     for r in refs:
         add_paragraph(doc, r, size=Pt(10),
@@ -3102,7 +4070,10 @@ def build():
     chapter7(doc)
     chapter8(doc)
 
-    print("Kaynakça yazılıyor...")
+    print("Genişletilmiş ÖZET (TR + KG, ≥15 sayfa) yazılıyor...")
+    write_extended_ozet(doc)
+
+    print("Kaynaklar yazılıyor...")
     bibliography(doc)
 
     print("Ek A (tam kod listelemeleri) yazılıyor...")
