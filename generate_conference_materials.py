@@ -40,6 +40,8 @@ FIG_1000 = OUT / "Figure_1000.png"
 FIG_500 = OUT / "Figure_1_500.png"
 FIG_500_W4 = OUT / "Figure_500_4_worker.png"
 FIG_GEOMETRY = OUT / "Figure_geometry_invariance.png"
+FIG_HYBRID_HEADLINE = OUT / "Figure_hybrid_headline.png"
+FIG_HYBRID_INFERENCE = OUT / "Figure_hybrid_inference.png"
 
 # ---------------------------------------------------------------------------
 # Colours
@@ -662,6 +664,135 @@ def slide_per_class(prs: Presentation) -> None:
     add_fade_transition(slide)
 
 
+# ---------------------------------------------------------------------------
+# Hybrid-plan ablation slides (30 April 2026 run)
+# ---------------------------------------------------------------------------
+
+def slide_hybrid_intro(prs: Presentation) -> None:
+    slide = prs.slides.add_slide(_blank_layout(prs))
+    add_title_banner(
+        slide,
+        "Hybrid-plan ablation: separating two title commitments",
+        subtitle="Why a 2×2 ablation is necessary to attribute the gains in the title.",
+    )
+    items = [
+        "The thesis title makes two independent commitments: (i) a 12-lead "
+        "input, and (ii) reference-node augmentation on top of the decimated baseline.",
+        "Until 30 April 2026, both were always varied together — so we could not say "
+        "which lever was actually carrying the accuracy.",
+        "We therefore ran a 2×2 ablation: {1-lead, 12-lead} × {augment OFF, augment ON}, "
+        "at fixed decimation=10 (len=500), identical seed, identical code revision, "
+        "Chapman–Shaoxing.",
+        "Each cell is otherwise identical to the len=500 reference reported earlier: same "
+        "1D-CNN, same optimiser, same train/val/test split, same early-stop criterion.",
+        "The four cells let us answer: 'is the title's hybrid plan really the source of "
+        "the +9 pp gain, or is one ingredient doing all the work?'",
+    ]
+    tb = add_bullets(slide, Cm(1.5), Cm(3), Cm(30.5), Cm(14), items, size=Pt(18))
+    add_footer(slide, "Hybrid ablation · setup", "13 / 21")
+    add_fade_transition(slide)
+    add_appear_animations(slide, [tb.shape_id])
+
+
+def slide_hybrid_augment(prs: Presentation) -> None:
+    slide = prs.slides.add_slide(_blank_layout(prs))
+    add_title_banner(
+        slide,
+        "Augmentation is the dominant lever",
+        subtitle="Toggling reference-node augmentation moves accuracy by ≈30 pp — "
+                 "with or without 12 leads.",
+    )
+    # Headline figure on the left
+    add_image_fit(
+        slide, FIG_HYBRID_HEADLINE,
+        Cm(1.0), Cm(3.0), Cm(17.0), Cm(13.0),
+        caption=None,
+    )
+    items = [
+        "augment OFF → ON: 1-lead +30.36 pp accuracy / +0.91 macro F1 "
+        "(67.14 → 97.50%, 0.0682 → 0.9755).",
+        "augment OFF → ON: 12-lead +29.11 pp accuracy / +0.90 macro F1 "
+        "(68.29 → 97.40%, 0.0762 → 0.9743).",
+        "The reference-node oversampler is the empirical heart of the title — "
+        "not the channel count.",
+        "Without it, long-tail classes never accumulate enough gradient to lift "
+        "macro F1 above 0.08, no matter how many leads are fed in.",
+    ]
+    tb = add_bullets(slide, Cm(18.5), Cm(3.5), Cm(14), Cm(13), items, size=Pt(16))
+    add_footer(slide, "Hybrid ablation · augmentation lever", "14 / 21")
+    add_fade_transition(slide)
+    add_appear_animations(slide, [tb.shape_id])
+
+
+def slide_hybrid_channels(prs: Presentation) -> None:
+    slide = prs.slides.add_slide(_blank_layout(prs))
+    add_title_banner(
+        slide,
+        "Channel count is a tie-breaker, not a lever",
+        subtitle="Once augmentation is on, 1-lead and 12-lead are within seed-noise of each other.",
+    )
+    rows = [
+        ("Config", "Test Acc", "Macro F1", "Inference", "Confidence"),
+        ("1-lead · aug OFF",   "67.14%", "0.0682", "14.74 ms", "60.01%"),
+        ("12-lead · aug OFF",  "68.29%", "0.0762", "14.76 ms", "87.88%"),
+        ("1-lead · aug ON",    "97.50%", "0.9755", "13.25 ms", "77.38%"),
+        ("12-lead · aug ON",   "97.40%", "0.9743", "45.86 ms", "90.15%"),
+    ]
+    add_table(slide, Cm(1.0), Cm(3.0), Cm(16.5), Cm(7.0), rows)
+
+    items = [
+        "With augment ON: 1-lead beats 12-lead by 0.10 pp accuracy and 0.0012 macro F1 "
+        "— well inside the seed-noise band of this corpus.",
+        "With augment OFF: 12-lead beats 1-lead by 1.15 pp accuracy and 0.008 macro F1 "
+        "— also within seed-noise.",
+        "Decimation has already concentrated diagnostic signal on the fiducial-point "
+        "graph — the model does not need 12 leads to recover the same morphology.",
+        "Channel count is a deployment choice, not an accuracy lever, once augmentation "
+        "is on the decimated input.",
+    ]
+    tb = add_bullets(slide, Cm(18.0), Cm(3.0), Cm(14.5), Cm(14), items, size=Pt(15))
+    add_footer(slide, "Hybrid ablation · channel count", "15 / 21")
+    add_fade_transition(slide)
+    add_appear_animations(slide, [tb.shape_id])
+
+
+def slide_hybrid_deployment(prs: Presentation) -> None:
+    slide = prs.slides.add_slide(_blank_layout(prs))
+    add_title_banner(
+        slide,
+        "Deployment implication: edge vs hospital",
+        subtitle="Same accuracy, different operating-point: speed vs confidence.",
+    )
+    has_fig = FIG_HYBRID_INFERENCE.exists()
+    if has_fig:
+        add_image_fit(
+            slide, FIG_HYBRID_INFERENCE,
+            Cm(1.0), Cm(3.0), Cm(17.0), Cm(13.0),
+            caption=None,
+        )
+        right_x = Cm(18.5)
+        right_w = Cm(14)
+    else:
+        right_x = Cm(1.5)
+        right_w = Cm(30.5)
+    items = [
+        "1-lead is 3.5× faster than 12-lead on single-sample CPU inference "
+        "(13.25 ms vs 45.86 ms).",
+        "12-lead softmax confidence on a held-out sample is higher than 1-lead "
+        "(90.15% vs 77.38%) — more headroom for confidence-thresholded reads.",
+        "Edge / wearable deployment → 1-lead: faster, same accuracy, lower hardware "
+        "and bandwidth budget.",
+        "Hospital workflow with per-decision confidence reporting → 12-lead: "
+        "accuracy is identical but the calibration margin is larger.",
+        "The title's '12-lead' commitment is therefore best read as the hospital-grade "
+        "operating point of a single classifier family.",
+    ]
+    tb = add_bullets(slide, right_x, Cm(3.5), right_w, Cm(13), items, size=Pt(16))
+    add_footer(slide, "Hybrid ablation · deployment", "16 / 21")
+    add_fade_transition(slide)
+    add_appear_animations(slide, [tb.shape_id])
+
+
 def slide_speed(prs: Presentation) -> None:
     slide = prs.slides.add_slide(_blank_layout(prs))
     add_title_banner(slide, "Speed: Training and Inference",
@@ -688,7 +819,7 @@ def slide_speed(prs: Presentation) -> None:
     tb1 = add_bullets(slide, Cm(1.5), Cm(3), Cm(15.5), Cm(14), left,
                       size=Pt(17), bullet="")
     tb2 = add_bullets(slide, Cm(17), Cm(3), Cm(15.5), Cm(14), right, size=Pt(16))
-    add_footer(slide, "Speed", "13 / 21")
+    add_footer(slide, "Speed", "17 / 21")
     add_fade_transition(slide)
     add_appear_animations(slide, [tb1.shape_id, tb2.shape_id])
 
@@ -712,7 +843,7 @@ def slide_discussion(prs: Presentation) -> None:
         "constant. The win is purely in the input representation.",
     ]
     tb = add_bullets(slide, Cm(1.5), Cm(3), Cm(30.5), Cm(14), items, size=Pt(17))
-    add_footer(slide, "Discussion", "14 / 21")
+    add_footer(slide, "Discussion", "18 / 21")
     add_fade_transition(slide)
     add_appear_animations(slide, [tb.shape_id])
 
@@ -732,7 +863,7 @@ def slide_limitations(prs: Presentation) -> None:
         "but still needs per-class calibration for deployment.",
     ]
     tb = add_bullets(slide, Cm(1.5), Cm(3), Cm(30.5), Cm(14), items, size=Pt(18))
-    add_footer(slide, "Limitations", "15 / 21")
+    add_footer(slide, "Limitations", "19 / 21")
     add_fade_transition(slide)
     add_appear_animations(slide, [tb.shape_id])
 
@@ -756,7 +887,7 @@ def slide_future_work(prs: Presentation) -> None:
         "benchmarks.",
     ]
     tb = add_bullets(slide, Cm(1.5), Cm(3), Cm(30.5), Cm(14), items, size=Pt(17))
-    add_footer(slide, "Future work", "16 / 21")
+    add_footer(slide, "Future work", "20 / 21")
     add_fade_transition(slide)
     add_appear_animations(slide, [tb.shape_id])
 
@@ -775,13 +906,15 @@ def slide_conclusion(prs: Presentation) -> None:
     )
     items = [
         "The biggest single lever in the baseline was the input representation.",
+        "After decimation, the bigger lever for the title's hybrid plan is "
+        "reference-node augmentation, not channel count.",
         "Aspirational numbers in the literature may hide a length-optimisation artefact "
         "more than a modelling one.",
         "All planned hybrid-model / loss-engineering improvements remain on the roadmap — "
         "now starting from a much stronger reference point.",
     ]
     tb = add_bullets(slide, Cm(2), Cm(9.5), Cm(30), Cm(8), items, size=Pt(20))
-    add_footer(slide, "Conclusion", "17 / 21")
+    add_footer(slide, "Conclusion", "21 / 21")
     add_fade_transition(slide)
     add_appear_animations(slide, [tb.shape_id])
 
@@ -822,6 +955,10 @@ def build_presentation() -> Path:
     slide_results_figure(prs)
     slide_training_histories(prs)
     slide_per_class(prs)
+    slide_hybrid_intro(prs)
+    slide_hybrid_augment(prs)
+    slide_hybrid_channels(prs)
+    slide_hybrid_deployment(prs)
     slide_speed(prs)
     slide_discussion(prs)
     slide_limitations(prs)

@@ -1,9 +1,10 @@
 """
-Build the geometry-invariance figure in two languages.
+Build the geometry-invariance figure in three languages.
 
 Outputs in C:/Users/enazarkulov/Documents/Мастер/:
   Figure_geometry_invariance.png      (English — for EN paper / HTML EN deck)
   Figure_geometry_invariance_TR.png   (Turkish — for TR paper / Manas docx / HTML TR deck)
+  Figure_geometry_invariance_KG.png   (Kyrgyz  — for KG long/short papers, Manas e-journal)
 
 Two-panel figure that visually argues why anti-aliased decimation from 5000
 to 500 samples lifts a baseline 1D-CNN from 88.43% to 97.34% on
@@ -84,6 +85,30 @@ STRINGS = {
             "indirgemek referans nokta yoğunluğunu 10× artırır ve "
             "1D-CNN'in alıcı alanının tüm 10 s pencereyi kapsamasını "
             "sağlar."
+        ),
+    },
+    "kg": {
+        "out": OUT / "Figure_geometry_invariance_KG.png",
+        "label_5000": "II-канал, 5000 үлгү (500 Гц × 10 с)",
+        "label_5000_rf": "1Б-ЖНТ кабылдоо аймагы (~2048 үлгү ≈ терезенин %40'ы)",
+        "rf_text_5000": "1Б-ЖНТ кабылдоо аймагы ≈ терезенин %40'ы",
+        "label_500": "II-канал, 500 үлгү (50 Гц × 10 с) — алиаска каршы",
+        "label_500_rf": "1Б-ЖНТ кабылдоо аймагы (~2048 үлгү > бүт терезе)",
+        "rf_text_500": "1Б-ЖНТ кабылдоо аймагы терезенин %100'үн камтыйт",
+        "xlabel": "Убакыт (с)",
+        "ylabel": "Амплитуда (мВ)",
+        "title_a": ("(A)  Кириштин узундугу = 5000 үлгү — референс чекиттер "
+                    "сейрек (≈ 60 / 5000 ≈ %1.2)"),
+        "title_b": ("(B)  Кириштин узундугу = 500 үлгү — ошол эле референс "
+                    "чекиттер, 10× жыш (≈ 60 / 500 ≈ %12)"),
+        "suptitle": (
+            "Алиаска каршы децимация астында геометриялык өзгөрбөстүк. "
+            "Диагностикалык маалымат ар бир жүрөк согуусунда P, Q, R, S, T "
+            "болгон референс чекиттердин графында сакталат жана "
+            "scipy.signal.decimate бул чекиттерди дискреттештирүү тактыгында "
+            "сактайт. 5000 → 500 үлгүгө кичирейтүү референс чекиттердин "
+            "тыгыздыгын 10× жогорулатат жана 1Б-ЖНТнин кабылдоо аймагы "
+            "10 секунддук бүт терезени камтыйт."
         ),
     },
 }
